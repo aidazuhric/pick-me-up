@@ -1,0 +1,44 @@
+services:
+  pickmeup-db:
+    image: postgres:16.4
+    container_name: pickmeup-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-pickmeup}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    # Host port 5434 — 5432/5433 are commonly taken by other local stacks.
+    # Container-to-container traffic still uses 5432 (see the API connection string).
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-pickmeup}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - pickmeup
+
+  pickmeup-api:
+    build:
+      context: .
+    container_name: pickmeup-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=pickmeup-db;Port=5432;Database=${POSTGRES_DB:-pickmeup};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
+      - JwtToken__SecretKey=${JWT_SECRET_KEY:-replace-me-with-a-32-byte-or-longer-development-secret-key}
+    ports:
+      - "5121:5121"
+    depends_on:
+      pickmeup-db:
+        condition: service_healthy
+    networks:
+      - pickmeup
+
+volumes:
+  postgres_data:
+
+networks:
+  pickmeup:
+    driver: bridge

@@ -1,0 +1,27 @@
+using Microsoft.EntityFrameworkCore;
+
+namespace PickMeUp.Services.Database
+{
+    public partial class PickMeUpDbContext : DbContext
+    {
+        public PickMeUpDbContext(DbContextOptions<PickMeUpDbContext> options) : base(options)
+        {
+        }
+
+        public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            CreateConfiguration(modelBuilder);
+
+            CreateSeed(modelBuilder);
+
+        }
+
+    }
+}
