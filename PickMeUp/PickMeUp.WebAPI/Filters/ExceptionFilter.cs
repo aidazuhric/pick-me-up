@@ -27,7 +27,7 @@ namespace PickMeUp.WebAPI.Filters
                 context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 _logger.LogWarning(context.Exception, "Validation failed for request.");
             }
-            else if (context.Exception is ClinetException ce)
+            else if (context.Exception is BusinessException ce)
             {
                 context.ModelState.AddModelError("clientError", ce.Message);
                 context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
@@ -48,7 +48,7 @@ namespace PickMeUp.WebAPI.Filters
 
             var allMessages = list.Values.SelectMany(v => v).Where(m => !string.IsNullOrWhiteSpace(m)).ToList();
             var message = allMessages.FirstOrDefault()
-                ?? (context.Exception is ClinetException ? context.Exception.Message : null)
+                ?? (context.Exception is BusinessException ? context.Exception.Message : null)
                 ?? "Request could not be processed.";
 
             context.Result = new JsonResult(new

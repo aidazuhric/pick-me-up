@@ -1,3 +1,4 @@
+using PickMeUp.Common.Services.Configuration;
 using PickMeUp.Common.Services.CryptoService;
 using PickMeUp.Model.Requests;
 using PickMeUp.Model.Responses;
@@ -10,25 +11,41 @@ using PickMeUp.WebAPI.Services.AccessManager;
 using FluentValidation;
 using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 using System.Text;
 
+EnvironmentConfigurationExtensions.LoadEnvFile();
+
 var builder = WebApplication.CreateBuilder(args);
 
+var startupOptions = builder.Services.AddEnvironmentConfiguration();
+
+const string CorsPolicyName = "PickMeUpCors";
+
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
+builder.Services.AddMemoryCache();
 builder.Services.AddScoped<IAuthenticatedUserAccessor, HttpAuthenticatedUserAccessor>();
 
 builder.Services.AddControllers(
    options => options.Filters.Add<ExceptionFilter>()
 );
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(CorsPolicyName, policy =>
+    {
+        policy.WithOrigins(startupOptions.Api.CorsAllowedOrigins.ToArray())
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddDbContext<PickMeUpDbContext>(options =>
-    options.UseNpgsql(connectionString)
+    options.UseNpgsql(startupOptions.Database.ConnectionString)
 );
 
 builder.Services.AddMapster();
@@ -60,9 +77,9 @@ builder.Services.AddAuthentication(options =>
 {
     o.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidIssuer = builder.Configuration["JwtToken:Issuer"],
-        ValidAudience = builder.Configuration["JwtToken:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtToken:SecretKey"] ?? string.Empty)),
+        ValidIssuer = startupOptions.Jwt.Issuer,
+        ValidAudience = startupOptions.Jwt.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(startupOptions.Jwt.SecretKey)),
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
@@ -115,6 +132,7 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
+if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
@@ -122,6 +140,8 @@ using (var scope = app.Services.CreateScope())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors(CorsPolicyName);
 
 app.UseAuthentication();
 

@@ -26,7 +26,7 @@ namespace PickMeUp.Services
 
             if (token == null)
             {
-                throw new ClinetException("Refresh token not found.");
+                throw new BusinessException("Refresh token not found.");
             }
 
             return token;

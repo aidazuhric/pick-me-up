@@ -1,9 +1,11 @@
+using PickMeUp.Common.Services.Configuration;
 using PickMeUp.Common.Services.CryptoService;
 using PickMeUp.Model.Access;
 using PickMeUp.Model.Exceptions;
 using PickMeUp.Model.Responses;
 using PickMeUp.Services;
 using PickMeUp.Services.Database;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -15,14 +17,14 @@ namespace PickMeUp.WebAPI.Services.AccessManager
     public class AccessManager : IAccessManager
     {
         private readonly IUserService _userService;
-        private readonly IConfiguration _configuration;
+        private readonly JwtOptions _jwtOptions;
         private readonly ICryptoService _cryptoService;
         private readonly IRefreshTokenService _refreshTokenService;
 
-        public AccessManager(IUserService userService, IConfiguration configuration, ICryptoService cryptoService, IRefreshTokenService refreshTokenService)
+        public AccessManager(IUserService userService, IOptions<JwtOptions> jwtOptions, ICryptoService cryptoService, IRefreshTokenService refreshTokenService)
         {
             _userService = userService;
-            _configuration = configuration;
+            _jwtOptions = jwtOptions.Value;
             _cryptoService = cryptoService;
             _refreshTokenService = refreshTokenService;
         }
@@ -33,7 +35,7 @@ namespace PickMeUp.WebAPI.Services.AccessManager
 
             if (user == null || !_cryptoService.Verify(user.PasswordHash, user.PasswordSalt, request.Password))
             {
-                throw new ClinetException("Invalid username or password.");
+                throw new BusinessException("Invalid username or password.");
             }
 
             var accessToken = GenerateToken(user);
@@ -59,31 +61,31 @@ namespace PickMeUp.WebAPI.Services.AccessManager
         {
             if (string.IsNullOrEmpty(request.RefreshToken))
             {
-                throw new ClinetException("Refresh token is required");
+                throw new BusinessException("Refresh token is required");
             }
 
             var refreshToken = await _refreshTokenService.GetStoredTokenAsync(request.RefreshToken);
 
             if (refreshToken == null)
             {
-                throw new ClinetException("Invalid refresh token");
+                throw new BusinessException("Invalid refresh token");
             }
 
             if (refreshToken.ExpiresAt < DateTime.UtcNow)
             {
-                throw new ClinetException("Refresh token has expired");
+                throw new BusinessException("Refresh token has expired");
             }
 
             var user = await _userService.GetWithRoleByIdAsync(refreshToken.UserId);
 
             if (user == null)
             {
-                throw new ClinetException("User not found");
+                throw new BusinessException("User not found");
             }
 
             if (!user.IsActive)
             {
-                throw new ClinetException("User is not active");
+                throw new BusinessException("User is not active");
             }
 
             await _refreshTokenService.DeleteAllUserRefreshTokensAsync(user.Id);
@@ -110,12 +112,7 @@ namespace PickMeUp.WebAPI.Services.AccessManager
 
         private string GenerateToken(UserResponse user)
         {
-            string secretKeyString = _configuration["JwtToken:SecretKey"] ?? string.Empty;
-            var issuer = _configuration["JwtToken:Issuer"];
-            var audience = _configuration["JwtToken:Audience"];
-            var durationInMinutes = int.Parse(_configuration["JwtToken:DurationInMinutes"] ?? "1");
-
-            var secretKey = Encoding.ASCII.GetBytes(secretKeyString);
+            var secretKey = Encoding.UTF8.GetBytes(_jwtOptions.SecretKey);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -128,9 +125,9 @@ namespace PickMeUp.WebAPI.Services.AccessManager
                     new Claim(ClaimNames.Role, user.Role ?? "user"),
                     new Claim(ClaimNames.IsActive, user.IsActive.ToString())
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(durationInMinutes),
-                Issuer = issuer,
-                Audience = audience,
+                Expires = DateTime.UtcNow.AddMinutes(_jwtOptions.DurationInMinutes),
+                Issuer = _jwtOptions.Issuer,
+                Audience = _jwtOptions.Audience,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKey), SecurityAlgorithms.HmacSha256Signature)
             };
 

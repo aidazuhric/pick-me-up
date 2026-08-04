@@ -20,10 +20,6 @@ namespace PickMeUp.Services
         protected readonly MapsterMapper.IMapper _mapper;
         protected readonly PickMeUpDbContext _dbContext;
 
-        /// <summary>
-        /// Sortable property names per entity type, resolved once by reflection.
-        /// Only scalar properties are sortable — navigation properties and collections are excluded.
-        /// </summary>
         private static readonly ConcurrentDictionary<Type, HashSet<string>> _sortableProperties = new();
 
         protected BaseReadService(MapsterMapper.IMapper mapper, PickMeUpDbContext dbContext)
@@ -32,10 +28,6 @@ namespace PickMeUp.Services
             _dbContext = dbContext;
         }
 
-        /// <summary>
-        /// Applies search filters to the query. Override in derived classes to implement specific filtering logic.
-        /// Keep expressions EF-translatable — this runs in the database, not in memory.
-        /// </summary>
         protected abstract IQueryable<TEntity> ApplyFilters(IQueryable<TEntity> query, TSearch? search);
 
         public virtual async Task<PageResult<TResponse>> GetAllAsync(TSearch? search = null)
@@ -76,12 +68,6 @@ namespace PickMeUp.Services
             };
         }
 
-        /// <summary>
-        /// Applies <paramref name="sortBy"/> after validating it against the entity's sortable properties.
-        /// Accepts "Property" or "Property asc" / "Property desc". Anything else is rejected rather than
-        /// passed through, because Dynamic LINQ would otherwise interpret arbitrary caller input.
-        /// Falls back to ordering by Id (when present) so paging is deterministic.
-        /// </summary>
         private static IQueryable<TEntity> ApplySorting(IQueryable<TEntity> query, string? sortBy)
         {
             var sortable = _sortableProperties.GetOrAdd(typeof(TEntity), static type =>
@@ -99,12 +85,12 @@ namespace PickMeUp.Services
 
             if (parts.Length > 2)
             {
-                throw new ClinetException($"Invalid sort expression '{sortBy}'.");
+                throw new BusinessException($"Invalid sort expression '{sortBy}'.");
             }
 
             if (!sortable.TryGetValue(parts[0], out var canonicalName))
             {
-                throw new ClinetException($"Cannot sort by '{parts[0]}'.");
+                throw new BusinessException($"Cannot sort by '{parts[0]}'.");
             }
 
             var direction = "asc";
@@ -113,7 +99,7 @@ namespace PickMeUp.Services
                 direction = parts[1].ToLowerInvariant();
                 if (direction is not ("asc" or "desc"))
                 {
-                    throw new ClinetException($"Invalid sort direction '{parts[1]}'. Use 'asc' or 'desc'.");
+                    throw new BusinessException($"Invalid sort direction '{parts[1]}'. Use 'asc' or 'desc'.");
                 }
             }
 
@@ -149,10 +135,6 @@ namespace PickMeUp.Services
             return _mapper.Map<TResponse>(entity);
         }
 
-        /// <summary>
-        /// Escapes ILIKE wildcards so user input is matched literally.
-        /// Use when building <c>EF.Functions.ILike</c> patterns in <see cref="ApplyFilters"/>.
-        /// </summary>
         protected static string EscapeLikePattern(string value) =>
             value.Replace("\\", "\\\\").Replace("%", "\\%").Replace("_", "\\_");
     }

@@ -11,9 +11,6 @@ using System.Threading.Tasks;
 
 namespace PickMeUp.Services
 {
-    /// <summary>
-    /// Generic base service for CRUD operations (Create, Read, Update, Delete)
-    /// </summary>
     public abstract class BaseCRUDService<TEntity, TResponse, TSearch, TInsertRequest, TUpdateRequest>
         : BaseReadService<TEntity, TResponse, TSearch>
         where TEntity : class
@@ -28,30 +25,17 @@ namespace PickMeUp.Services
             _updateValidator = updateValidator;
         }
 
-        /// <summary>
-        /// Gets a writable data source for CRUD operations. Override in derived classes.
-        /// </summary>
-
-        /// <summary>
-        /// Maps an insert request to an entity. Override in derived classes for custom logic.
-        /// </summary>
         protected virtual TEntity MapInsertRequestToEntity(TInsertRequest request)
         {
             var entity = _mapper.Map<TEntity>(request ?? throw new ArgumentNullException(nameof(request)));
             return entity;
         }
 
-        /// <summary>
-        /// Maps an update request to an existing entity. Override in derived classes for custom logic.
-        /// </summary>
         protected virtual void MapUpdateRequestToEntity(TUpdateRequest request, TEntity entity)
         {
             _mapper.Map(request, entity);
         }
 
-        /// <summary>
-        /// Inserts a new entity into the data source.
-        /// </summary>
         public virtual async Task<TResponse> InsertAsync(TInsertRequest request)
         {
             var validationResult = await _insertValidator.ValidateAsync(request);
@@ -78,9 +62,6 @@ namespace PickMeUp.Services
             return await Task.FromResult(_mapper.Map<TResponse>(entity));
         }
 
-        /// <summary>
-        /// Updates an existing entity in the data source.
-        /// </summary>
         public virtual async Task<TResponse> UpdateAsync(int id, TUpdateRequest request)
         {
             var validationResult = await _updateValidator.ValidateAsync(request);
@@ -108,9 +89,6 @@ namespace PickMeUp.Services
             return await Task.FromResult(_mapper.Map<TResponse>(entity));
         }
 
-        /// <summary>
-        /// Deletes an entity from the data source by id.
-        /// </summary>
         public virtual async Task DeleteAsync(int id)
         {
             var entity = this._dbContext.Set<TEntity>().Find(id);

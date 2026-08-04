@@ -82,12 +82,12 @@ namespace PickMeUp.Services
 
             if (await _dbContext.Users.AnyAsync(u => u.Email == request.Email))
             {
-                throw new ClinetException($"Email '{request.Email}' is already in use.");
+                throw new BusinessException($"Email '{request.Email}' is already in use.");
             }
 
             if (await _dbContext.Users.AnyAsync(u => u.Username == request.Username))
             {
-                throw new ClinetException($"Username '{request.Username}' is already in use.");
+                throw new BusinessException($"Username '{request.Username}' is already in use.");
             }
 
             var entity = MapInsertRequestToEntity(request);
@@ -111,12 +111,12 @@ namespace PickMeUp.Services
 
             if (await _dbContext.Users.AnyAsync(u => u.Email == request.Email && u.Id != id))
             {
-                throw new ClinetException($"Email '{request.Email}' is already in use.");
+                throw new BusinessException($"Email '{request.Email}' is already in use.");
             }
 
             if (await _dbContext.Users.AnyAsync(u => u.Username == request.Username && u.Id != id))
             {
-                throw new ClinetException($"Username '{request.Username}' is already in use.");
+                throw new BusinessException($"Username '{request.Username}' is already in use.");
             }
 
             MapUpdateRequestToEntity(request, entity);
@@ -139,7 +139,7 @@ namespace PickMeUp.Services
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<UserSensitveResponse?> GetByUsernameAsync(string username)
+        public async Task<UserSensitiveResponse?> GetByUsernameAsync(string username)
         {
             var user = await _dbContext.Users
                 .AsNoTracking()
@@ -147,11 +147,11 @@ namespace PickMeUp.Services
                 .ThenInclude(ur => ur.Role)
                 .FirstOrDefaultAsync(u => u.Username == username);
 
-            UserSensitveResponse? response = null;
+            UserSensitiveResponse? response = null;
 
             if (user != null)
             {
-                response = _mapper.Map<UserSensitveResponse>(user);
+                response = _mapper.Map<UserSensitiveResponse>(user);
                 response.Role = user.UserRoles.FirstOrDefault()?.Role.Name ?? string.Empty;
             }
 
@@ -193,13 +193,13 @@ namespace PickMeUp.Services
             var user = _dbContext.Users.FirstOrDefault(u => u.Id == request.Id);
 
             if (user == null)
-                throw new ClinetException("User not found.");
+                throw new BusinessException("User not found.");
 
             if (!_cryptoService.Verify(user.PasswordHash, user.PasswordSalt, request.Password))
-                throw new ClinetException("Wrong credential.");
+                throw new BusinessException("Wrong credential.");
 
             if (!request.NewPassword.Equals(request.ConfirmNewPassword))
-                throw new ClinetException("Password confirmation doesn't match new password.");
+                throw new BusinessException("Password confirmation doesn't match new password.");
 
             user.PasswordSalt = _cryptoService.GenerateSlat();
             user.PasswordHash = _cryptoService.GenerateHash(request.NewPassword, user.PasswordSalt);
