@@ -20,6 +20,7 @@ namespace PickMeUp.Services.Database
         public DbSet<TaxiCompany> TaxiCompanies { get; set; }
         public DbSet<Driver> Drivers { get; set; }
         public DbSet<Car> Cars { get; set; }
+        public DbSet<CarAssignment> CarAssignments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

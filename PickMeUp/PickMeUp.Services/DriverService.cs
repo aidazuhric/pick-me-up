@@ -191,6 +191,7 @@ namespace PickMeUp.Services
             var driver = await LoadOwnedDriverAsync(id);
 
             EnsureDriverHasResigned(driver);
+            await EnsureDriverHasNoAssignmentsAsync(id);
 
             await base.DeleteAsync(id);
         }
@@ -232,6 +233,17 @@ namespace PickMeUp.Services
             }
 
             return driver;
+        }
+
+        private async Task EnsureDriverHasNoAssignmentsAsync(int driverId)
+        {
+            var assigned = await _dbContext.CarAssignments.AnyAsync(a => a.DriverId == driverId);
+
+            if (assigned)
+            {
+                throw new BusinessException(
+                    "This driver still has a vehicle assigned and cannot be removed. Remove their assignments first.");
+            }
         }
 
         private static void EnsureDriverHasResigned(Driver driver)

@@ -127,6 +127,25 @@ namespace PickMeUp.Services
             return _mapper.Map<CarResponse>(car);
         }
 
+        public override async Task DeleteAsync(int id)
+        {
+            await LoadOwnedCarAsync(id);
+            await EnsureCarHasNoAssignmentsAsync(id);
+
+            await base.DeleteAsync(id);
+        }
+
+        private async Task EnsureCarHasNoAssignmentsAsync(int carId)
+        {
+            var assigned = await _dbContext.CarAssignments.AnyAsync(a => a.CarId == carId);
+
+            if (assigned)
+            {
+                throw new BusinessException(
+                    "This vehicle is still assigned to a driver and cannot be removed. Remove its assignments first.");
+            }
+        }
+
         public async Task<string> StorePhotoAsync(int id, Stream content, string fileName, string contentType)
         {
             var car = await LoadOwnedCarAsync(id);

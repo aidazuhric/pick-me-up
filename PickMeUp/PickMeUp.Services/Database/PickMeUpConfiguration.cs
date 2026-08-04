@@ -111,6 +111,27 @@ namespace PickMeUp.Services.Database
                 .WithMany()
                 .HasForeignKey(c => c.TaxiCompanyId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CarAssignment>()
+                .HasQueryFilter(a => !a.IsDeleted);
+
+            modelBuilder.Entity<CarAssignment>()
+                .HasOne(a => a.Car)
+                .WithMany()
+                .HasForeignKey(a => a.CarId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CarAssignment>()
+                .HasOne(a => a.Driver)
+                .WithMany()
+                .HasForeignKey(a => a.DriverId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CarAssignment>()
+                .HasIndex(a => new { a.CarId, a.AssignedFrom });
+
+            modelBuilder.Entity<CarAssignment>()
+                .HasIndex(a => new { a.DriverId, a.AssignedFrom });
         }
     }
 }

@@ -21,6 +21,7 @@ namespace PickMeUp.Services.Database
             SeedTaxiCompanies(modelBuilder);
             SeedDrivers(modelBuilder);
             SeedCars(modelBuilder);
+            SeedCarAssignments(modelBuilder);
         }
 
         private void SeedCities(ModelBuilder modelBuilder)
@@ -395,6 +396,15 @@ namespace PickMeUp.Services.Database
                 new { Id = 3, Make = "Ford", Model = "Tourneo", Plate = "A56-M-789", Year = 2020, Seats = 8, VehicleCategoryId = 3, TaxiCompanyId = 1, PhotoImagePath = (string?)null, IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null },
                 new { Id = 4, Make = "Skoda", Model = "Superb", Plate = "E56-M-789", Year = 2022, Seats = 4, VehicleCategoryId = 2, TaxiCompanyId = 2, PhotoImagePath = (string?)null, IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null },
                 new { Id = 5, Make = "Toyota", Model = "Corolla", Plate = "K78-J-012", Year = 2018, Seats = 4, VehicleCategoryId = 3, TaxiCompanyId = 3, PhotoImagePath = (string?)null, IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null }
+            );
+        }
+
+        private void SeedCarAssignments(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<CarAssignment>().HasData(
+                new { Id = 1, CarId = 1, DriverId = 1, AssignedFrom = SeedTimestamp, AssignedTo = (DateTime?)null, IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null },
+                new { Id = 2, CarId = 2, DriverId = 2, AssignedFrom = SeedTimestamp, AssignedTo = (DateTime?)null, IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null },
+                new { Id = 3, CarId = 5, DriverId = 3, AssignedFrom = SeedTimestamp, AssignedTo = (DateTime?)null, IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null }
             );
         }
     }

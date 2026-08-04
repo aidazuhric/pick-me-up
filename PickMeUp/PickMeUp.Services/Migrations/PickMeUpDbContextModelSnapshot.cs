@@ -160,6 +160,82 @@ namespace PickMeUp.Services.Migrations
                         });
                 });
 
+            modelBuilder.Entity("PickMeUp.Services.Database.CarAssignment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AssignedFrom")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("AssignedTo")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CarId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DriverId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CarId", "AssignedFrom");
+
+                    b.HasIndex("DriverId", "AssignedFrom");
+
+                    b.ToTable("CarAssignments");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AssignedFrom = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CarId = 1,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            DriverId = 1,
+                            IsActive = true,
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AssignedFrom = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CarId = 2,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            DriverId = 2,
+                            IsActive = true,
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AssignedFrom = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CarId = 5,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            DriverId = 3,
+                            IsActive = true,
+                            IsDeleted = false
+                        });
+                });
+
             modelBuilder.Entity("PickMeUp.Services.Database.City", b =>
                 {
                     b.Property<int>("Id")
@@ -1043,6 +1119,25 @@ namespace PickMeUp.Services.Migrations
                     b.Navigation("TaxiCompany");
 
                     b.Navigation("VehicleCategory");
+                });
+
+            modelBuilder.Entity("PickMeUp.Services.Database.CarAssignment", b =>
+                {
+                    b.HasOne("PickMeUp.Services.Database.Car", "Car")
+                        .WithMany()
+                        .HasForeignKey("CarId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PickMeUp.Services.Database.Driver", "Driver")
+                        .WithMany()
+                        .HasForeignKey("DriverId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Car");
+
+                    b.Navigation("Driver");
                 });
 
             modelBuilder.Entity("PickMeUp.Services.Database.Driver", b =>
