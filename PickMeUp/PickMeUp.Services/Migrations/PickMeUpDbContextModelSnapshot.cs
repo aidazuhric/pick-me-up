@@ -371,6 +371,134 @@ namespace PickMeUp.Services.Migrations
                         });
                 });
 
+            modelBuilder.Entity("PickMeUp.Services.Database.TaxiCompany", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CityId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ContactEmail")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("ContactPhone")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("HqAddress")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LogoImagePath")
+                        .HasMaxLength(260)
+                        .HasColumnType("character varying(260)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<string>("OwnerName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<decimal>("PricePerKm")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal>("StartingPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TaxiCompanies");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CityId = 1,
+                            ContactEmail = "info@mostartaxi.local",
+                            ContactPhone = "+38736111222",
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            HqAddress = "Bulevar 12",
+                            IsActive = true,
+                            IsDeleted = false,
+                            Name = "Mostar Taxi",
+                            OwnerName = "Bella Company",
+                            PricePerKm = 1.20m,
+                            StartingPrice = 2.50m,
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CityId = 1,
+                            ContactEmail = "info@neretvaprevoz.local",
+                            ContactPhone = "+38736333444",
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            HqAddress = "Kralja Tomislava 4",
+                            IsActive = true,
+                            IsDeleted = false,
+                            Name = "Neretva Prevoz",
+                            OwnerName = "Nedim Neretva",
+                            PricePerKm = 1.35m,
+                            StartingPrice = 2.00m,
+                            UserId = 5
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CityId = 2,
+                            ContactEmail = "info@sarajevoexpress.local",
+                            ContactPhone = "+38733555666",
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            HqAddress = "Zmaja od Bosne 88",
+                            IsActive = true,
+                            IsDeleted = false,
+                            Name = "Sarajevo Express",
+                            OwnerName = "Selma Express",
+                            PricePerKm = 1.10m,
+                            StartingPrice = 3.00m,
+                            UserId = 6
+                        });
+                });
+
             modelBuilder.Entity("PickMeUp.Services.Database.User", b =>
                 {
                     b.Property<int>("Id")
@@ -486,6 +614,32 @@ namespace PickMeUp.Services.Migrations
                             PasswordHash = "052xFoGxDl/+S7j6ADYmEJRJj1k=",
                             PasswordSalt = "QtT/dkd9xeip5+bSeaA+4A==",
                             Username = "passenger1"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "company2@pickmeup.local",
+                            FirstName = "Nedim",
+                            IsActive = true,
+                            IsDeleted = false,
+                            LastName = "Neretva",
+                            PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
+                            PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
+                            Username = "company2"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "company3@pickmeup.local",
+                            FirstName = "Selma",
+                            IsActive = true,
+                            IsDeleted = false,
+                            LastName = "Express",
+                            PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
+                            PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
+                            Username = "company3"
                         });
                 });
 
@@ -542,6 +696,20 @@ namespace PickMeUp.Services.Migrations
                             DateAssigned = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
                             RoleId = 4,
                             UserId = 4
+                        },
+                        new
+                        {
+                            Id = 5,
+                            DateAssigned = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            RoleId = 2,
+                            UserId = 5
+                        },
+                        new
+                        {
+                            Id = 6,
+                            DateAssigned = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            RoleId = 2,
+                            UserId = 6
                         });
                 });
 
@@ -610,6 +778,25 @@ namespace PickMeUp.Services.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PickMeUp.Services.Database.TaxiCompany", b =>
+                {
+                    b.HasOne("PickMeUp.Services.Database.City", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PickMeUp.Services.Database.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("City");
 
                     b.Navigation("User");
                 });

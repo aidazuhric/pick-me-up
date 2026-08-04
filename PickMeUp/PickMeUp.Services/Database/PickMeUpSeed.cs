@@ -18,6 +18,7 @@ namespace PickMeUp.Services.Database
             SeedOrderStatuses(modelBuilder);
             SeedSupportTicketStatuses(modelBuilder);
             SeedPaymentStatuses(modelBuilder);
+            SeedTaxiCompanies(modelBuilder);
         }
 
         private void SeedCities(ModelBuilder modelBuilder)
@@ -179,6 +180,103 @@ namespace PickMeUp.Services.Database
                     ProfileImagePath = (string?)null,
                     IsDeleted = false,
                     DeletedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 5,
+                    FirstName = "Nedim",
+                    LastName = "Neretva",
+                    Email = "company2@pickmeup.local",
+                    Username = "company2",
+                    PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
+                    PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
+                    IsActive = true,
+                    CreatedAt = SeedTimestamp,
+                    LastLoginAt = (DateTime?)null,
+                    PhoneNumber = (string?)null,
+                    ProfileImagePath = (string?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 6,
+                    FirstName = "Selma",
+                    LastName = "Express",
+                    Email = "company3@pickmeup.local",
+                    Username = "company3",
+                    PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
+                    PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
+                    IsActive = true,
+                    CreatedAt = SeedTimestamp,
+                    LastLoginAt = (DateTime?)null,
+                    PhoneNumber = (string?)null,
+                    ProfileImagePath = (string?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
+                }
+            );
+        }
+
+        private void SeedTaxiCompanies(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<TaxiCompany>().HasData(
+                new
+                {
+                    Id = 1,
+                    Name = "Mostar Taxi",
+                    HqAddress = "Bulevar 12",
+                    CityId = 1,
+                    ContactEmail = "info@mostartaxi.local",
+                    ContactPhone = "+38736111222",
+                    OwnerName = "Bella Company",
+                    StartingPrice = 2.50m,
+                    PricePerKm = 1.20m,
+                    LogoImagePath = (string?)null,
+                    UserId = 2,
+                    IsActive = true,
+                    CreatedAt = SeedTimestamp,
+                    UpdatedAt = (DateTime?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 2,
+                    Name = "Neretva Prevoz",
+                    HqAddress = "Kralja Tomislava 4",
+                    CityId = 1,
+                    ContactEmail = "info@neretvaprevoz.local",
+                    ContactPhone = "+38736333444",
+                    OwnerName = "Nedim Neretva",
+                    StartingPrice = 2.00m,
+                    PricePerKm = 1.35m,
+                    LogoImagePath = (string?)null,
+                    UserId = 5,
+                    IsActive = true,
+                    CreatedAt = SeedTimestamp,
+                    UpdatedAt = (DateTime?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 3,
+                    Name = "Sarajevo Express",
+                    HqAddress = "Zmaja od Bosne 88",
+                    CityId = 2,
+                    ContactEmail = "info@sarajevoexpress.local",
+                    ContactPhone = "+38733555666",
+                    OwnerName = "Selma Express",
+                    StartingPrice = 3.00m,
+                    PricePerKm = 1.10m,
+                    LogoImagePath = (string?)null,
+                    UserId = 6,
+                    IsActive = true,
+                    CreatedAt = SeedTimestamp,
+                    UpdatedAt = (DateTime?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
                 }
             );
         }
@@ -212,6 +310,20 @@ namespace PickMeUp.Services.Database
                     Id = 4,
                     UserId = 4,
                     RoleId = 4,
+                    DateAssigned = SeedTimestamp
+                },
+                new
+                {
+                    Id = 5,
+                    UserId = 5,
+                    RoleId = 2,
+                    DateAssigned = SeedTimestamp
+                },
+                new
+                {
+                    Id = 6,
+                    UserId = 6,
+                    RoleId = 2,
                     DateAssigned = SeedTimestamp
                 }
             );

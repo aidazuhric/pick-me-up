@@ -46,6 +46,33 @@ namespace PickMeUp.Services.Database
             modelBuilder.Entity<PaymentStatus>()
                 .HasIndex(s => s.Name)
                 .IsUnique();
+
+            modelBuilder.Entity<TaxiCompany>()
+                .HasQueryFilter(t => !t.IsDeleted);
+
+            modelBuilder.Entity<TaxiCompany>()
+                .HasIndex(t => t.Name)
+                .IsUnique();
+
+            modelBuilder.Entity<TaxiCompany>()
+                .HasOne(t => t.City)
+                .WithMany()
+                .HasForeignKey(t => t.CityId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<TaxiCompany>()
+                .HasOne(t => t.User)
+                .WithMany()
+                .HasForeignKey(t => t.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<TaxiCompany>()
+                .Property(t => t.StartingPrice)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<TaxiCompany>()
+                .Property(t => t.PricePerKm)
+                .HasPrecision(18, 2);
         }
     }
 }

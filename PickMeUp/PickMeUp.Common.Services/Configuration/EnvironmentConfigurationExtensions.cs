@@ -59,6 +59,11 @@ namespace PickMeUp.Common.Services.Configuration
                 ApiKey = EnvironmentReader.Optional("MAPS_API_KEY")
             }));
 
+            services.AddSingleton(Options.Create(new FileStorageOptions
+            {
+                RootPath = EnvironmentReader.Optional("FILE_STORAGE_ROOT", "storage")
+            }));
+
             return new StartupOptions(database, jwt, api);
         }
 

@@ -70,31 +70,13 @@ namespace PickMeUp.Services
             {
                 await base.DeleteAsync(id);
             }
-            catch (DbUpdateException exception) when (IsForeignKeyViolation(exception))
+            catch (DbUpdateException exception) when (exception.IsForeignKeyViolation())
             {
                 throw new BusinessException(
                     $"This {EntityDisplayName} is used by existing records and cannot be deleted. Deactivate it instead.");
             }
 
             InvalidateCache();
-        }
-
-        private static bool IsForeignKeyViolation(DbUpdateException exception)
-        {
-            var inner = exception.InnerException;
-
-            while (inner != null)
-            {
-                var sqlState = inner.GetType().GetProperty("SqlState")?.GetValue(inner) as string;
-                if (sqlState == "23503")
-                {
-                    return true;
-                }
-
-                inner = inner.InnerException;
-            }
-
-            return false;
         }
 
         private static string BuildCacheKey(TSearch? search)
