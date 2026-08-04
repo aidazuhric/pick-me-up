@@ -62,6 +62,18 @@ TypeAdapterConfig<TaxiCompany, TaxiCompanyResponse>.NewConfig()
     .Ignore(dest => dest.InitialLoginUsername!)
     .Ignore(dest => dest.InitialLoginPassword!);
 TypeAdapterConfig<TaxiCompanyUpdateRequest, TaxiCompany>.NewConfig().IgnoreNullValues(true);
+TypeAdapterConfig<Driver, DriverResponse>.NewConfig()
+    .Map(dest => dest.FullName, src => src.User.FirstName + " " + src.User.LastName)
+    .Map(dest => dest.Email, src => src.User.Email)
+    .Map(dest => dest.PhoneNumber, src => src.User.PhoneNumber)
+    .Map(dest => dest.CompanyName, src => src.TaxiCompany.Name)
+    .Ignore(dest => dest.InitialLoginUsername!)
+    .Ignore(dest => dest.InitialLoginPassword!);
+TypeAdapterConfig<Car, CarResponse>.NewConfig()
+    .Map(dest => dest.CategoryName, src => src.VehicleCategory.Name)
+    .Map(dest => dest.CompanyName, src => src.TaxiCompany.Name)
+    .Map(dest => dest.PhotoImageUrl, src => src.PhotoImagePath);
+TypeAdapterConfig<CarUpdateRequest, Car>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<CityUpdateRequest, City>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<VehicleCategoryUpdateRequest, VehicleCategory>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<OrderStatusUpdateRequest, OrderStatus>.NewConfig().IgnoreNullValues(true);
@@ -71,6 +83,8 @@ TypeAdapterConfig<PaymentStatusUpdateRequest, PaymentStatus>.NewConfig().IgnoreN
 builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<ITaxiCompanyService, TaxiCompanyService>();
+builder.Services.AddScoped<IDriverService, DriverService>();
+builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<IImageFileStore, ImageFileStore>();
 
 builder.Services.AddScoped<ICityService, CityService>();
@@ -87,6 +101,10 @@ builder.Services.AddScoped<ICryptoService, CryptoService>();
 
 builder.Services.AddScoped<IValidator<UserInsertRequest>, UserInsertValidator>();
 builder.Services.AddScoped<IValidator<UserUpdateRequest>, UserUpdateValidator>();
+builder.Services.AddScoped<IValidator<DriverInsertRequest>, DriverInsertValidator>();
+builder.Services.AddScoped<IValidator<DriverUpdateRequest>, DriverUpdateValidator>();
+builder.Services.AddScoped<IValidator<CarInsertRequest>, CarInsertValidator>();
+builder.Services.AddScoped<IValidator<CarUpdateRequest>, CarUpdateValidator>();
 builder.Services.AddScoped<IValidator<TaxiCompanyInsertRequest>, TaxiCompanyInsertValidator>();
 builder.Services.AddScoped<IValidator<TaxiCompanyUpdateRequest>, TaxiCompanyUpdateValidator>();
 builder.Services.AddScoped<IValidator<CityInsertRequest>, CityInsertValidator>();

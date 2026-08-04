@@ -22,6 +22,144 @@ namespace PickMeUp.Services.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("PickMeUp.Services.Database.Car", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Make")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<string>("PhotoImagePath")
+                        .HasMaxLength(260)
+                        .HasColumnType("character varying(260)");
+
+                    b.Property<string>("Plate")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int>("Seats")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TaxiCompanyId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("VehicleCategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Plate")
+                        .IsUnique();
+
+                    b.HasIndex("TaxiCompanyId");
+
+                    b.HasIndex("VehicleCategoryId");
+
+                    b.ToTable("Cars");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            IsDeleted = false,
+                            Make = "Skoda",
+                            Model = "Octavia",
+                            Plate = "A12-T-345",
+                            Seats = 4,
+                            TaxiCompanyId = 1,
+                            VehicleCategoryId = 1,
+                            Year = 2019
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            IsDeleted = false,
+                            Make = "Volkswagen",
+                            Model = "Passat",
+                            Plate = "A34-K-567",
+                            Seats = 4,
+                            TaxiCompanyId = 1,
+                            VehicleCategoryId = 2,
+                            Year = 2021
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            IsDeleted = false,
+                            Make = "Ford",
+                            Model = "Tourneo",
+                            Plate = "A56-M-789",
+                            Seats = 8,
+                            TaxiCompanyId = 1,
+                            VehicleCategoryId = 3,
+                            Year = 2020
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            IsDeleted = false,
+                            Make = "Skoda",
+                            Model = "Superb",
+                            Plate = "E56-M-789",
+                            Seats = 4,
+                            TaxiCompanyId = 2,
+                            VehicleCategoryId = 2,
+                            Year = 2022
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            IsDeleted = false,
+                            Make = "Toyota",
+                            Model = "Corolla",
+                            Plate = "K78-J-012",
+                            Seats = 4,
+                            TaxiCompanyId = 3,
+                            VehicleCategoryId = 3,
+                            Year = 2018
+                        });
+                });
+
             modelBuilder.Entity("PickMeUp.Services.Database.City", b =>
                 {
                     b.Property<int>("Id")
@@ -84,6 +222,83 @@ namespace PickMeUp.Services.Migrations
                             IsActive = true,
                             Name = "Zenica",
                             PostalCode = "72000"
+                        });
+                });
+
+            modelBuilder.Entity("PickMeUp.Services.Database.Driver", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("HireDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("ResignedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("TaxiCompanyId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TaxiCompanyId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Drivers");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            HireDate = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            IsDeleted = false,
+                            TaxiCompanyId = 1,
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            HireDate = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            IsDeleted = false,
+                            TaxiCompanyId = 1,
+                            UserId = 7
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            HireDate = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            IsDeleted = false,
+                            TaxiCompanyId = 3,
+                            UserId = 8
                         });
                 });
 
@@ -640,6 +855,32 @@ namespace PickMeUp.Services.Migrations
                             PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
                             PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
                             Username = "company3"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "driver2@pickmeup.local",
+                            FirstName = "Haris",
+                            IsActive = true,
+                            IsDeleted = false,
+                            LastName = "Hodzic",
+                            PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
+                            PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
+                            Username = "driver2"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "driver3@pickmeup.local",
+                            FirstName = "Lejla",
+                            IsActive = true,
+                            IsDeleted = false,
+                            LastName = "Kovac",
+                            PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
+                            PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
+                            Username = "driver3"
                         });
                 });
 
@@ -710,6 +951,20 @@ namespace PickMeUp.Services.Migrations
                             DateAssigned = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
                             RoleId = 2,
                             UserId = 6
+                        },
+                        new
+                        {
+                            Id = 7,
+                            DateAssigned = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            RoleId = 3,
+                            UserId = 7
+                        },
+                        new
+                        {
+                            Id = 8,
+                            DateAssigned = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            RoleId = 3,
+                            UserId = 8
                         });
                 });
 
@@ -769,6 +1024,44 @@ namespace PickMeUp.Services.Migrations
                             IsActive = true,
                             Name = "Premium"
                         });
+                });
+
+            modelBuilder.Entity("PickMeUp.Services.Database.Car", b =>
+                {
+                    b.HasOne("PickMeUp.Services.Database.TaxiCompany", "TaxiCompany")
+                        .WithMany()
+                        .HasForeignKey("TaxiCompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PickMeUp.Services.Database.VehicleCategory", "VehicleCategory")
+                        .WithMany()
+                        .HasForeignKey("VehicleCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("TaxiCompany");
+
+                    b.Navigation("VehicleCategory");
+                });
+
+            modelBuilder.Entity("PickMeUp.Services.Database.Driver", b =>
+                {
+                    b.HasOne("PickMeUp.Services.Database.TaxiCompany", "TaxiCompany")
+                        .WithMany()
+                        .HasForeignKey("TaxiCompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PickMeUp.Services.Database.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("TaxiCompany");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("PickMeUp.Services.Database.RefreshToken", b =>

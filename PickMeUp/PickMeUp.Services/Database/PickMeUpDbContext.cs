@@ -18,6 +18,8 @@ namespace PickMeUp.Services.Database
         public DbSet<SupportTicketStatus> SupportTicketStatuses { get; set; }
         public DbSet<PaymentStatus> PaymentStatuses { get; set; }
         public DbSet<TaxiCompany> TaxiCompanies { get; set; }
+        public DbSet<Driver> Drivers { get; set; }
+        public DbSet<Car> Cars { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -33,6 +33,12 @@ namespace PickMeUp.WebAPI.Filters
                 context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 _logger.LogWarning("Client rule: {Message}", ce.Message);
             }
+            else if (context.Exception is KeyNotFoundException)
+            {
+                context.ModelState.AddModelError("notFound", "The requested record was not found.");
+                context.HttpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                _logger.LogInformation("Not found: {Message}", context.Exception.Message);
+            }
             else
             {
                 context.ModelState.AddModelError("serverError", "Server side error, please check logs.");

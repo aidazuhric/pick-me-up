@@ -19,6 +19,8 @@ namespace PickMeUp.Services.Database
             SeedSupportTicketStatuses(modelBuilder);
             SeedPaymentStatuses(modelBuilder);
             SeedTaxiCompanies(modelBuilder);
+            SeedDrivers(modelBuilder);
+            SeedCars(modelBuilder);
         }
 
         private void SeedCities(ModelBuilder modelBuilder)
@@ -214,6 +216,40 @@ namespace PickMeUp.Services.Database
                     ProfileImagePath = (string?)null,
                     IsDeleted = false,
                     DeletedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 7,
+                    FirstName = "Haris",
+                    LastName = "Hodzic",
+                    Email = "driver2@pickmeup.local",
+                    Username = "driver2",
+                    PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
+                    PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
+                    IsActive = true,
+                    CreatedAt = SeedTimestamp,
+                    LastLoginAt = (DateTime?)null,
+                    PhoneNumber = (string?)null,
+                    ProfileImagePath = (string?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 8,
+                    FirstName = "Lejla",
+                    LastName = "Kovac",
+                    Email = "driver3@pickmeup.local",
+                    Username = "driver3",
+                    PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
+                    PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
+                    IsActive = true,
+                    CreatedAt = SeedTimestamp,
+                    LastLoginAt = (DateTime?)null,
+                    PhoneNumber = (string?)null,
+                    ProfileImagePath = (string?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
                 }
             );
         }
@@ -325,7 +361,40 @@ namespace PickMeUp.Services.Database
                     UserId = 6,
                     RoleId = 2,
                     DateAssigned = SeedTimestamp
+                },
+                new
+                {
+                    Id = 7,
+                    UserId = 7,
+                    RoleId = 3,
+                    DateAssigned = SeedTimestamp
+                },
+                new
+                {
+                    Id = 8,
+                    UserId = 8,
+                    RoleId = 3,
+                    DateAssigned = SeedTimestamp
                 }
+            );
+        }
+        private void SeedDrivers(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Driver>().HasData(
+                new { Id = 1, UserId = 3, TaxiCompanyId = 1, HireDate = SeedTimestamp, ResignedAt = (DateTime?)null, IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null },
+                new { Id = 2, UserId = 7, TaxiCompanyId = 1, HireDate = SeedTimestamp, ResignedAt = (DateTime?)null, IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null },
+                new { Id = 3, UserId = 8, TaxiCompanyId = 3, HireDate = SeedTimestamp, ResignedAt = (DateTime?)null, IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null }
+            );
+        }
+
+        private void SeedCars(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Car>().HasData(
+                new { Id = 1, Make = "Skoda", Model = "Octavia", Plate = "A12-T-345", Year = 2019, Seats = 4, VehicleCategoryId = 1, TaxiCompanyId = 1, PhotoImagePath = (string?)null, IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null },
+                new { Id = 2, Make = "Volkswagen", Model = "Passat", Plate = "A34-K-567", Year = 2021, Seats = 4, VehicleCategoryId = 2, TaxiCompanyId = 1, PhotoImagePath = (string?)null, IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null },
+                new { Id = 3, Make = "Ford", Model = "Tourneo", Plate = "A56-M-789", Year = 2020, Seats = 8, VehicleCategoryId = 3, TaxiCompanyId = 1, PhotoImagePath = (string?)null, IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null },
+                new { Id = 4, Make = "Skoda", Model = "Superb", Plate = "E56-M-789", Year = 2022, Seats = 4, VehicleCategoryId = 2, TaxiCompanyId = 2, PhotoImagePath = (string?)null, IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null },
+                new { Id = 5, Make = "Toyota", Model = "Corolla", Plate = "K78-J-012", Year = 2018, Seats = 4, VehicleCategoryId = 3, TaxiCompanyId = 3, PhotoImagePath = (string?)null, IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null }
             );
         }
     }

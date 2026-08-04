@@ -73,6 +73,44 @@ namespace PickMeUp.Services.Database
             modelBuilder.Entity<TaxiCompany>()
                 .Property(t => t.PricePerKm)
                 .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Driver>()
+                .HasQueryFilter(d => !d.IsDeleted);
+
+            modelBuilder.Entity<Driver>()
+                .HasOne(d => d.User)
+                .WithMany()
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Driver>()
+                .HasOne(d => d.TaxiCompany)
+                .WithMany()
+                .HasForeignKey(d => d.TaxiCompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Driver>()
+                .HasIndex(d => d.UserId)
+                .IsUnique();
+
+            modelBuilder.Entity<Car>()
+                .HasQueryFilter(c => !c.IsDeleted);
+
+            modelBuilder.Entity<Car>()
+                .HasIndex(c => c.Plate)
+                .IsUnique();
+
+            modelBuilder.Entity<Car>()
+                .HasOne(c => c.VehicleCategory)
+                .WithMany()
+                .HasForeignKey(c => c.VehicleCategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Car>()
+                .HasOne(c => c.TaxiCompany)
+                .WithMany()
+                .HasForeignKey(c => c.TaxiCompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

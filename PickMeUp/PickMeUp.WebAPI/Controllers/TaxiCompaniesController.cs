@@ -62,14 +62,7 @@ public class TaxiCompaniesController
     [HttpGet("{id}/Logo")]
     public async Task<IActionResult> GetLogo(int id)
     {
-        try
-        {
-            var (content, contentType, fileName) = await _service.GetLogoAsync(id);
-            return File(content, contentType, fileName);
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound();
-        }
+        var (content, contentType, fileName) = await _service.GetLogoAsync(id);
+        return File(content, contentType, fileName);
     }
 }
