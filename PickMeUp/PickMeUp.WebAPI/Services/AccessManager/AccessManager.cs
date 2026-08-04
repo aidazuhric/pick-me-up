@@ -110,6 +110,9 @@ namespace PickMeUp.WebAPI.Services.AccessManager
 
         }
 
+        public Task LogoutAsync(int userId) =>
+            _refreshTokenService.DeleteAllUserRefreshTokensAsync(userId);
+
         private string GenerateToken(UserResponse user)
         {
             var secretKey = Encoding.UTF8.GetBytes(_jwtOptions.SecretKey);

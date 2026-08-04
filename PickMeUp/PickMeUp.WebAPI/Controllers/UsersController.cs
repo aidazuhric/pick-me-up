@@ -1,4 +1,5 @@
 using PickMeUp.Model.Access;
+using PickMeUp.Model.Constants;
 using PickMeUp.Model.Requests;
 using PickMeUp.Model.Responses;
 using PickMeUp.Model.SearchObjects;
@@ -17,7 +18,7 @@ public class UsersController : BaseCRUDController<UserResponse, UserSearch, User
     {
     }
 
-    [Authorization("Admin")]
+    [Authorization(Roles.Admin)]
     public override Task<PageResult<UserResponse>> GetAll([FromQuery] UserSearch? search)
     {
         return base.GetAll(search);

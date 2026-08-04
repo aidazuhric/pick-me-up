@@ -103,7 +103,7 @@ namespace PickMeUp.Services
         {
             await _updateValidator.ValidateAndThrowAsync(request);
 
-            var entity = await _dbContext.Users.FindAsync(id);
+            var entity = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
             if (entity == null)
             {
                 throw new KeyNotFoundException($"User with id {id} not found.");
@@ -125,18 +125,6 @@ namespace PickMeUp.Services
             await _dbContext.SaveChangesAsync();
 
             return _mapper.Map<UserResponse>(entity);
-        }
-
-        public override async Task DeleteAsync(int id)
-        {
-            var entity = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
-            if (entity == null)
-            {
-                throw new KeyNotFoundException($"User with id {id} not found.");
-            }
-
-            _dbContext.Users.Remove(entity);
-            await _dbContext.SaveChangesAsync();
         }
 
         public async Task<UserSensitiveResponse?> GetByUsernameAsync(string username)
@@ -190,7 +178,7 @@ namespace PickMeUp.Services
 
         public async Task ChangePasswordAsync(UserPasswordChangeRequest request)
         {
-            var user = _dbContext.Users.FirstOrDefault(u => u.Id == request.Id);
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == request.Id);
 
             if (user == null)
                 throw new BusinessException("User not found.");

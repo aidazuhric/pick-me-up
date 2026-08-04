@@ -13,6 +13,6 @@ namespace PickMeUp.Model.Responses
         public DateTime? LastLoginAt { get; set; }
         public string? PhoneNumber { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public string? ProfileImageBase64 { get; set; }
+        public string? ProfileImageUrl { get; set; }
     }
 }

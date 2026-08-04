@@ -1,3 +1,4 @@
+using RoleNames = PickMeUp.Model.Constants.Roles;
 using Microsoft.EntityFrameworkCore;
 
 namespace PickMeUp.Services.Database
@@ -19,7 +20,7 @@ namespace PickMeUp.Services.Database
                 new
                 {
                     Id = 1,
-                    Name = "Admin",
+                    Name = RoleNames.Admin,
                     Description = "Platform administrator",
                     IsActive = true,
                     CreatedAt = SeedTimestamp
@@ -27,7 +28,7 @@ namespace PickMeUp.Services.Database
                 new
                 {
                     Id = 2,
-                    Name = "Company",
+                    Name = RoleNames.Company,
                     Description = "Taxi company operating drivers and vehicles",
                     IsActive = true,
                     CreatedAt = SeedTimestamp
@@ -35,7 +36,7 @@ namespace PickMeUp.Services.Database
                 new
                 {
                     Id = 3,
-                    Name = "Driver",
+                    Name = RoleNames.Driver,
                     Description = "Driver working for a taxi company",
                     IsActive = true,
                     CreatedAt = SeedTimestamp
@@ -43,7 +44,7 @@ namespace PickMeUp.Services.Database
                 new
                 {
                     Id = 4,
-                    Name = "Passenger",
+                    Name = RoleNames.Passenger,
                     Description = "End user ordering rides",
                     IsActive = true,
                     CreatedAt = SeedTimestamp
@@ -66,7 +67,10 @@ namespace PickMeUp.Services.Database
                     IsActive = true,
                     CreatedAt = SeedTimestamp,
                     LastLoginAt = (DateTime?)null,
-                    PhoneNumber = (string?)null
+                    PhoneNumber = (string?)null,
+                    ProfileImagePath = (string?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
                 },
                 new
                 {
@@ -80,7 +84,10 @@ namespace PickMeUp.Services.Database
                     IsActive = true,
                     CreatedAt = SeedTimestamp,
                     LastLoginAt = (DateTime?)null,
-                    PhoneNumber = (string?)null
+                    PhoneNumber = (string?)null,
+                    ProfileImagePath = (string?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
                 },
                 new
                 {
@@ -94,7 +101,10 @@ namespace PickMeUp.Services.Database
                     IsActive = true,
                     CreatedAt = SeedTimestamp,
                     LastLoginAt = (DateTime?)null,
-                    PhoneNumber = (string?)null
+                    PhoneNumber = (string?)null,
+                    ProfileImagePath = (string?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
                 },
                 new
                 {
@@ -108,7 +118,10 @@ namespace PickMeUp.Services.Database
                     IsActive = true,
                     CreatedAt = SeedTimestamp,
                     LastLoginAt = (DateTime?)null,
-                    PhoneNumber = (string?)null
+                    PhoneNumber = (string?)null,
+                    ProfileImagePath = (string?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
                 }
             );
         }

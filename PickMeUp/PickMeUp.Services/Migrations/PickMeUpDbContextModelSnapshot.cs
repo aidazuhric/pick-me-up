@@ -122,6 +122,9 @@ namespace PickMeUp.Services.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -133,6 +136,9 @@ namespace PickMeUp.Services.Migrations
                         .HasColumnType("character varying(50)");
 
                     b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastLoginAt")
@@ -155,8 +161,9 @@ namespace PickMeUp.Services.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
-                    b.Property<string>("ProfileImageBase64")
-                        .HasColumnType("text");
+                    b.Property<string>("ProfileImagePath")
+                        .HasMaxLength(260)
+                        .HasColumnType("character varying(260)");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -175,6 +182,7 @@ namespace PickMeUp.Services.Migrations
                             Email = "admin1@pickmeup.local",
                             FirstName = "Alice",
                             IsActive = true,
+                            IsDeleted = false,
                             LastName = "Admin",
                             PasswordHash = "w2ka8ahYEDcLTXF5tlMLcMfIjIA=",
                             PasswordSalt = "nlQ9pafmLDDgNQjCdCHDBA==",
@@ -187,6 +195,7 @@ namespace PickMeUp.Services.Migrations
                             Email = "company1@pickmeup.local",
                             FirstName = "Bella",
                             IsActive = true,
+                            IsDeleted = false,
                             LastName = "Company",
                             PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
                             PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
@@ -199,6 +208,7 @@ namespace PickMeUp.Services.Migrations
                             Email = "driver1@pickmeup.local",
                             FirstName = "Damir",
                             IsActive = true,
+                            IsDeleted = false,
                             LastName = "Driver",
                             PasswordHash = "C2PEEH/Xup8N70SBm2JUe+0ZOgw=",
                             PasswordSalt = "JEexDUo3l4SMx/4mz4etmQ==",
@@ -211,6 +221,7 @@ namespace PickMeUp.Services.Migrations
                             Email = "passenger1@pickmeup.local",
                             FirstName = "Petra",
                             IsActive = true,
+                            IsDeleted = false,
                             LastName = "Passenger",
                             PasswordHash = "052xFoGxDl/+S7j6ADYmEJRJj1k=",
                             PasswordSalt = "QtT/dkd9xeip5+bSeaA+4A==",

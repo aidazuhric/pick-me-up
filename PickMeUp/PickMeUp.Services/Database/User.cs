@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PickMeUp.Services.Database
 {
-    public class User
+    public class User : ISoftDeletable
     {
         [Key]
         public int Id { get; set; }
@@ -40,7 +40,12 @@ namespace PickMeUp.Services.Database
         [MaxLength(20)]
         public string? PhoneNumber { get; set; }
 
-        public string? ProfileImageBase64 { get; set; }
+        [MaxLength(260)]
+        public string? ProfileImagePath { get; set; }
+
+        public bool IsDeleted { get; set; }
+
+        public DateTime? DeletedAt { get; set; }
 
         public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 

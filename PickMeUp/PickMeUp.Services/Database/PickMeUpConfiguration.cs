@@ -6,6 +6,15 @@ namespace PickMeUp.Services.Database
     {
         private void CreateConfiguration(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<User>()
+                .HasQueryFilter(u => !u.IsDeleted);
+
+            modelBuilder.Entity<UserRole>()
+                .HasQueryFilter(ur => !ur.User.IsDeleted);
+
+            modelBuilder.Entity<RefreshToken>()
+                .HasQueryFilter(rt => !rt.User.IsDeleted);
+
             modelBuilder.Entity<UserRole>()
                 .HasOne(ur => ur.User)
                 .WithMany(ur => ur.UserRoles)

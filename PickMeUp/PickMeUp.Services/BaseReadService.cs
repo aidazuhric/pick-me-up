@@ -45,18 +45,10 @@ namespace PickMeUp.Services
 
             query = ApplySorting(query, search?.SortBy);
 
-            var page = search?.Page;
-            var pageSize = search?.PageSize;
+            var page = Math.Max(search?.Page ?? 1, 1);
+            var pageSize = Math.Clamp(search?.PageSize ?? BaseSearchObject.DefaultPageSize, 1, BaseSearchObject.MaxPageSize);
 
-            if (page.HasValue && pageSize.HasValue)
-            {
-                query = query.Skip((page.Value - 1) * pageSize.Value);
-            }
-
-            if (pageSize.HasValue)
-            {
-                query = query.Take(pageSize.Value);
-            }
+            query = query.Skip((page - 1) * pageSize).Take(pageSize);
 
             var entities = await query.ToListAsync();
             var items = entities.Select(entity => _mapper.Map<TResponse>(entity)).ToList();
@@ -126,13 +118,21 @@ namespace PickMeUp.Services
 
         public virtual async Task<TResponse> GetByIdAsync(int id)
         {
-            var entity = await _dbContext.Set<TEntity>().FindAsync(id);
+            var entity = await FindByIdAsync(id);
             if (entity == null)
             {
                 throw new KeyNotFoundException($"{typeof(TEntity).Name} with id {id} not found.");
             }
 
             return _mapper.Map<TResponse>(entity);
+        }
+
+        protected async Task<TEntity?> FindByIdAsync(int id)
+        {
+            IQueryable<TEntity> query = _dbContext.Set<TEntity>();
+            query = await IncludeRelatedEntitiesAsync(default, query);
+
+            return await query.FirstOrDefaultAsync(entity => EF.Property<int>(entity, "Id") == id);
         }
 
         protected static string EscapeLikePattern(string value) =>

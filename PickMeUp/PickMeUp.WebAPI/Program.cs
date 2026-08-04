@@ -52,6 +52,7 @@ builder.Services.AddMapster();
 
 TypeAdapterConfig<User, UserResponse>.NewConfig()
     .Map(dest => dest.Role, src => src.UserRoles.Select(ur => ur.Role.Name).FirstOrDefault() ?? string.Empty)
+    .Map(dest => dest.ProfileImageUrl, src => src.ProfileImagePath)
     .IgnoreNullValues(true);
 TypeAdapterConfig<UserUpdateRequest, User>.NewConfig().IgnoreNullValues(true);
 

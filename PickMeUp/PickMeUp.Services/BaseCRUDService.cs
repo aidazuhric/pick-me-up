@@ -91,12 +91,21 @@ namespace PickMeUp.Services
 
         public virtual async Task DeleteAsync(int id)
         {
-            var entity = this._dbContext.Set<TEntity>().Find(id);
+            var entity = await FindByIdAsync(id);
 
             if (entity == null)
                 throw new KeyNotFoundException($"{typeof(TEntity).Name} with id {id} not found.");
 
-            this._dbContext.Set<TEntity>().Remove(entity);
+            if (entity is ISoftDeletable softDeletable)
+            {
+                softDeletable.IsDeleted = true;
+                softDeletable.DeletedAt = DateTime.UtcNow;
+            }
+            else
+            {
+                this._dbContext.Set<TEntity>().Remove(entity);
+            }
+
             await this._dbContext.SaveChangesAsync();
         }
     }
