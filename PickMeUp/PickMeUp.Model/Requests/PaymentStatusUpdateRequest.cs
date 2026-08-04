@@ -1,0 +1,10 @@
+namespace PickMeUp.Model.Requests
+{
+    public class PaymentStatusUpdateRequest
+    {
+        public string? Name { get; set; }
+        public string? Description { get; set; }
+        public int? SortOrder { get; set; }
+        public bool? IsActive { get; set; }
+    }
+}

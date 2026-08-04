@@ -1,3 +1,4 @@
+using PickMeUp.Model.Enums;
 using RoleNames = PickMeUp.Model.Constants.Roles;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +13,62 @@ namespace PickMeUp.Services.Database
             SeedRoles(modelBuilder);
             SeedUsers(modelBuilder);
             SeedUserRoles(modelBuilder);
+            SeedCities(modelBuilder);
+            SeedVehicleCategories(modelBuilder);
+            SeedOrderStatuses(modelBuilder);
+            SeedSupportTicketStatuses(modelBuilder);
+            SeedPaymentStatuses(modelBuilder);
+        }
+
+        private void SeedCities(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<City>().HasData(
+                new { Id = 1, Name = "Mostar", PostalCode = (string?)"88000", IsActive = true },
+                new { Id = 2, Name = "Sarajevo", PostalCode = (string?)"71000", IsActive = true },
+                new { Id = 3, Name = "Banja Luka", PostalCode = (string?)"78000", IsActive = true },
+                new { Id = 4, Name = "Tuzla", PostalCode = (string?)"75000", IsActive = true },
+                new { Id = 5, Name = "Zenica", PostalCode = (string?)"72000", IsActive = true }
+            );
+        }
+
+        private void SeedVehicleCategories(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<VehicleCategory>().HasData(
+                new { Id = 1, Name = "Standard", Description = (string?)"Everyday four-seat saloon", IsActive = true },
+                new { Id = 2, Name = "Comfort", Description = (string?)"Higher class vehicle with extra legroom", IsActive = true },
+                new { Id = 3, Name = "Van", Description = (string?)"Six to eight seats for groups and luggage", IsActive = true },
+                new { Id = 4, Name = "Premium", Description = (string?)"Executive vehicle for business rides", IsActive = true }
+            );
+        }
+
+        private void SeedOrderStatuses(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<OrderStatus>().HasData(
+                new { Id = (int)OrderStatusEnum.Pending, Name = nameof(OrderStatusEnum.Pending), Description = (string?)"Waiting for a driver to accept", SortOrder = 1, IsActive = true },
+                new { Id = (int)OrderStatusEnum.Confirmed, Name = nameof(OrderStatusEnum.Confirmed), Description = (string?)"A driver accepted and is on the way", SortOrder = 2, IsActive = true },
+                new { Id = (int)OrderStatusEnum.InProgress, Name = nameof(OrderStatusEnum.InProgress), Description = (string?)"Passenger picked up, ride underway", SortOrder = 3, IsActive = true },
+                new { Id = (int)OrderStatusEnum.Completed, Name = nameof(OrderStatusEnum.Completed), Description = (string?)"Ride finished, payment follows", SortOrder = 4, IsActive = true },
+                new { Id = (int)OrderStatusEnum.Cancelled, Name = nameof(OrderStatusEnum.Cancelled), Description = (string?)"Cancelled with a mandatory reason", SortOrder = 5, IsActive = true }
+            );
+        }
+
+        private void SeedSupportTicketStatuses(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<SupportTicketStatus>().HasData(
+                new { Id = (int)SupportTicketStatusEnum.Open, Name = nameof(SupportTicketStatusEnum.Open), Description = (string?)"Submitted and awaiting review", SortOrder = 1, IsActive = true },
+                new { Id = (int)SupportTicketStatusEnum.InProgress, Name = nameof(SupportTicketStatusEnum.InProgress), Description = (string?)"Being handled by an administrator", SortOrder = 2, IsActive = true },
+                new { Id = (int)SupportTicketStatusEnum.Resolved, Name = nameof(SupportTicketStatusEnum.Resolved), Description = (string?)"Closed with a reply", SortOrder = 3, IsActive = true }
+            );
+        }
+
+        private void SeedPaymentStatuses(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<PaymentStatus>().HasData(
+                new { Id = (int)PaymentStatusEnum.Unpaid, Name = nameof(PaymentStatusEnum.Unpaid), Description = (string?)"No successful charge recorded", SortOrder = 1, IsActive = true },
+                new { Id = (int)PaymentStatusEnum.Paid, Name = nameof(PaymentStatusEnum.Paid), Description = (string?)"Confirmed by the payment provider webhook", SortOrder = 2, IsActive = true },
+                new { Id = (int)PaymentStatusEnum.PartiallyRefunded, Name = nameof(PaymentStatusEnum.PartiallyRefunded), Description = (string?)"Part of the charged amount returned", SortOrder = 3, IsActive = true },
+                new { Id = (int)PaymentStatusEnum.Refunded, Name = nameof(PaymentStatusEnum.Refunded), Description = (string?)"Full charged amount returned", SortOrder = 4, IsActive = true }
+            );
         }
 
         private void SeedRoles(ModelBuilder modelBuilder)

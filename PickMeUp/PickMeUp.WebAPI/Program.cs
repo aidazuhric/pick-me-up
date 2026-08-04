@@ -55,8 +55,19 @@ TypeAdapterConfig<User, UserResponse>.NewConfig()
     .Map(dest => dest.ProfileImageUrl, src => src.ProfileImagePath)
     .IgnoreNullValues(true);
 TypeAdapterConfig<UserUpdateRequest, User>.NewConfig().IgnoreNullValues(true);
+TypeAdapterConfig<CityUpdateRequest, City>.NewConfig().IgnoreNullValues(true);
+TypeAdapterConfig<VehicleCategoryUpdateRequest, VehicleCategory>.NewConfig().IgnoreNullValues(true);
+TypeAdapterConfig<OrderStatusUpdateRequest, OrderStatus>.NewConfig().IgnoreNullValues(true);
+TypeAdapterConfig<SupportTicketStatusUpdateRequest, SupportTicketStatus>.NewConfig().IgnoreNullValues(true);
+TypeAdapterConfig<PaymentStatusUpdateRequest, PaymentStatus>.NewConfig().IgnoreNullValues(true);
 
 builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddScoped<ICityService, CityService>();
+builder.Services.AddScoped<IVehicleCategoryService, VehicleCategoryService>();
+builder.Services.AddScoped<IOrderStatusService, OrderStatusService>();
+builder.Services.AddScoped<ISupportTicketStatusService, SupportTicketStatusService>();
+builder.Services.AddScoped<IPaymentStatusService, PaymentStatusService>();
 
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 
@@ -66,6 +77,16 @@ builder.Services.AddScoped<ICryptoService, CryptoService>();
 
 builder.Services.AddScoped<IValidator<UserInsertRequest>, UserInsertValidator>();
 builder.Services.AddScoped<IValidator<UserUpdateRequest>, UserUpdateValidator>();
+builder.Services.AddScoped<IValidator<CityInsertRequest>, CityInsertValidator>();
+builder.Services.AddScoped<IValidator<CityUpdateRequest>, CityUpdateValidator>();
+builder.Services.AddScoped<IValidator<VehicleCategoryInsertRequest>, VehicleCategoryInsertValidator>();
+builder.Services.AddScoped<IValidator<VehicleCategoryUpdateRequest>, VehicleCategoryUpdateValidator>();
+builder.Services.AddScoped<IValidator<OrderStatusInsertRequest>, OrderStatusInsertValidator>();
+builder.Services.AddScoped<IValidator<OrderStatusUpdateRequest>, OrderStatusUpdateValidator>();
+builder.Services.AddScoped<IValidator<SupportTicketStatusInsertRequest>, SupportTicketStatusInsertValidator>();
+builder.Services.AddScoped<IValidator<SupportTicketStatusUpdateRequest>, SupportTicketStatusUpdateValidator>();
+builder.Services.AddScoped<IValidator<PaymentStatusInsertRequest>, PaymentStatusInsertValidator>();
+builder.Services.AddScoped<IValidator<PaymentStatusUpdateRequest>, PaymentStatusUpdateValidator>();
 
 builder.Services.AddOpenApi();
 

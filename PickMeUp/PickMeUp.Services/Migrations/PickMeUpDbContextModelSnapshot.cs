@@ -22,6 +22,209 @@ namespace PickMeUp.Services.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("PickMeUp.Services.Database.City", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("PostalCode")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Cities");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            IsActive = true,
+                            Name = "Mostar",
+                            PostalCode = "88000"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            IsActive = true,
+                            Name = "Sarajevo",
+                            PostalCode = "71000"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            IsActive = true,
+                            Name = "Banja Luka",
+                            PostalCode = "78000"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            IsActive = true,
+                            Name = "Tuzla",
+                            PostalCode = "75000"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            IsActive = true,
+                            Name = "Zenica",
+                            PostalCode = "72000"
+                        });
+                });
+
+            modelBuilder.Entity("PickMeUp.Services.Database.OrderStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("OrderStatuses");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Waiting for a driver to accept",
+                            IsActive = true,
+                            Name = "Pending",
+                            SortOrder = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "A driver accepted and is on the way",
+                            IsActive = true,
+                            Name = "Confirmed",
+                            SortOrder = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Passenger picked up, ride underway",
+                            IsActive = true,
+                            Name = "InProgress",
+                            SortOrder = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Ride finished, payment follows",
+                            IsActive = true,
+                            Name = "Completed",
+                            SortOrder = 4
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Description = "Cancelled with a mandatory reason",
+                            IsActive = true,
+                            Name = "Cancelled",
+                            SortOrder = 5
+                        });
+                });
+
+            modelBuilder.Entity("PickMeUp.Services.Database.PaymentStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("PaymentStatuses");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "No successful charge recorded",
+                            IsActive = true,
+                            Name = "Unpaid",
+                            SortOrder = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Confirmed by the payment provider webhook",
+                            IsActive = true,
+                            Name = "Paid",
+                            SortOrder = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Part of the charged amount returned",
+                            IsActive = true,
+                            Name = "PartiallyRefunded",
+                            SortOrder = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Full charged amount returned",
+                            IsActive = true,
+                            Name = "Refunded",
+                            SortOrder = 4
+                        });
+                });
+
             modelBuilder.Entity("PickMeUp.Services.Database.RefreshToken", b =>
                 {
                     b.Property<int>("Id")
@@ -108,6 +311,63 @@ namespace PickMeUp.Services.Migrations
                             Description = "End user ordering rides",
                             IsActive = true,
                             Name = "Passenger"
+                        });
+                });
+
+            modelBuilder.Entity("PickMeUp.Services.Database.SupportTicketStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("SupportTicketStatuses");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Submitted and awaiting review",
+                            IsActive = true,
+                            Name = "Open",
+                            SortOrder = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Being handled by an administrator",
+                            IsActive = true,
+                            Name = "InProgress",
+                            SortOrder = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Closed with a reply",
+                            IsActive = true,
+                            Name = "Resolved",
+                            SortOrder = 3
                         });
                 });
 
@@ -282,6 +542,64 @@ namespace PickMeUp.Services.Migrations
                             DateAssigned = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
                             RoleId = 4,
                             UserId = 4
+                        });
+                });
+
+            modelBuilder.Entity("PickMeUp.Services.Database.VehicleCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("VehicleCategories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Everyday four-seat saloon",
+                            IsActive = true,
+                            Name = "Standard"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Higher class vehicle with extra legroom",
+                            IsActive = true,
+                            Name = "Comfort"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Six to eight seats for groups and luggage",
+                            IsActive = true,
+                            Name = "Van"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Executive vehicle for business rides",
+                            IsActive = true,
+                            Name = "Premium"
                         });
                 });
 
