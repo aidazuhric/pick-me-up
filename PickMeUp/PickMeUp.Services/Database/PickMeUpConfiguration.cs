@@ -156,6 +156,66 @@ namespace PickMeUp.Services.Database
 
             modelBuilder.Entity<ShiftBreak>()
                 .HasIndex(b => new { b.ShiftId, b.EndedAt });
+
+            modelBuilder.Entity<Order>()
+                .HasQueryFilter(o => !o.IsDeleted);
+
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.Passenger).WithMany().HasForeignKey(o => o.PassengerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.TaxiCompany).WithMany().HasForeignKey(o => o.TaxiCompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.Driver).WithMany().HasForeignKey(o => o.DriverId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.Car).WithMany().HasForeignKey(o => o.CarId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.OrderStatus).WithMany().HasForeignKey(o => o.OrderStatusId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Order>().Property(o => o.DistanceKm).HasPrecision(18, 2);
+            modelBuilder.Entity<Order>().Property(o => o.Fare).HasPrecision(18, 2);
+            modelBuilder.Entity<Order>().HasIndex(o => new { o.OrderStatusId, o.TaxiCompanyId });
+
+            modelBuilder.Entity<OrderStatusHistory>()
+                .HasOne(h => h.Order).WithMany(o => o.StatusHistory).HasForeignKey(h => h.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<OrderStatusHistory>()
+                .HasOne(h => h.FromStatus).WithMany().HasForeignKey(h => h.FromStatusId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<OrderStatusHistory>()
+                .HasOne(h => h.ToStatus).WithMany().HasForeignKey(h => h.ToStatusId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<OrderStatusHistory>()
+                .HasOne(h => h.ChangedByUser).WithMany().HasForeignKey(h => h.ChangedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<OrderStatusHistory>()
+                .HasQueryFilter(h => !h.Order.IsDeleted);
+
+            modelBuilder.Entity<OrderRejection>()
+                .HasOne(r => r.Order).WithMany(o => o.Rejections).HasForeignKey(r => r.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<OrderRejection>()
+                .HasOne(r => r.Driver).WithMany().HasForeignKey(r => r.DriverId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<OrderRejection>()
+                .HasQueryFilter(r => !r.Order.IsDeleted);
+
+            modelBuilder.Entity<OrderRejection>()
+                .HasIndex(r => new { r.OrderId, r.DriverId }).IsUnique();
         }
     }
 }

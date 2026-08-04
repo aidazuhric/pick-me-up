@@ -23,6 +23,9 @@ namespace PickMeUp.Services.Database
         public DbSet<CarAssignment> CarAssignments { get; set; }
         public DbSet<Shift> Shifts { get; set; }
         public DbSet<ShiftBreak> ShiftBreaks { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderStatusHistory> OrderStatusHistories { get; set; }
+        public DbSet<OrderRejection> OrderRejections { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

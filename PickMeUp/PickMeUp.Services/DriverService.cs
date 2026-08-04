@@ -1,5 +1,6 @@
 using PickMeUp.Common.Services.CryptoService;
 using PickMeUp.Model.Constants;
+using PickMeUp.Model.Enums;
 using PickMeUp.Model.Exceptions;
 using PickMeUp.Model.Requests;
 using PickMeUp.Model.Responses;
@@ -191,6 +192,7 @@ namespace PickMeUp.Services
             var driver = await LoadOwnedDriverAsync(id);
 
             await EnsureDriverHasNoOpenShiftAsync(id);
+            await EnsureDriverHasNoActiveOrderAsync(id);
             EnsureDriverHasResigned(driver);
             await EnsureDriverHasNoAssignmentsAsync(id);
 
@@ -207,6 +209,7 @@ namespace PickMeUp.Services
             }
 
             await EnsureDriverHasNoOpenShiftAsync(id);
+            await EnsureDriverHasNoActiveOrderAsync(id);
 
             driver.ResignedAt = DateTime.UtcNow;
             driver.IsActive = false;
@@ -246,6 +249,19 @@ namespace PickMeUp.Services
             {
                 throw new BusinessException(
                     "This driver is currently on an open shift. Wait for the shift to end before removing them.");
+            }
+        }
+
+        private async Task EnsureDriverHasNoActiveOrderAsync(int driverId)
+        {
+            var busy = await _dbContext.Orders.AnyAsync(o => o.DriverId == driverId
+                && (o.OrderStatusId == (int)OrderStatusEnum.Confirmed
+                    || o.OrderStatusId == (int)OrderStatusEnum.InProgress));
+
+            if (busy)
+            {
+                throw new BusinessException(
+                    "This driver has a ride in progress. Wait for it to finish before removing them.");
             }
         }
 

@@ -4,6 +4,7 @@ using PickMeUp.Model.Requests;
 using PickMeUp.Model.Responses;
 using PickMeUp.Services;
 using PickMeUp.Services.Database;
+using PickMeUp.Services.Orders;
 using PickMeUp.Services.Storage;
 using PickMeUp.Services.Validators;
 using PickMeUp.WebAPI.Filters;
@@ -74,6 +75,17 @@ TypeAdapterConfig<Car, CarResponse>.NewConfig()
     .Map(dest => dest.CompanyName, src => src.TaxiCompany.Name)
     .Map(dest => dest.PhotoImageUrl, src => src.PhotoImagePath);
 TypeAdapterConfig<CarUpdateRequest, Car>.NewConfig().IgnoreNullValues(true);
+TypeAdapterConfig<OrderStatusHistory, OrderStatusHistoryResponse>.NewConfig()
+    .Map(dest => dest.FromStatus, src => src.FromStatus != null ? src.FromStatus.Name : null)
+    .Map(dest => dest.ToStatus, src => src.ToStatus.Name)
+    .Map(dest => dest.ChangedBy, src => src.ChangedByUser.FirstName + " " + src.ChangedByUser.LastName);
+TypeAdapterConfig<Order, OrderResponse>.NewConfig()
+    .Map(dest => dest.PassengerName, src => src.Passenger.FirstName + " " + src.Passenger.LastName)
+    .Map(dest => dest.CompanyName, src => src.TaxiCompany != null ? src.TaxiCompany.Name : null)
+    .Map(dest => dest.DriverName, src => src.Driver != null ? src.Driver.User.FirstName + " " + src.Driver.User.LastName : null)
+    .Map(dest => dest.CarPlate, src => src.Car != null ? src.Car.Plate : null)
+    .Map(dest => dest.Status, src => src.OrderStatus.Name)
+    .Map(dest => dest.IsGeneralOrder, src => src.TaxiCompanyId == null);
 TypeAdapterConfig<ShiftBreak, ShiftBreakResponse>.NewConfig()
     .Map(dest => dest.IsOngoing, src => src.EndedAt == null)
     .AfterMapping((src, dest) =>
@@ -111,6 +123,9 @@ builder.Services.AddScoped<IDriverService, DriverService>();
 builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<ICarAssignmentService, CarAssignmentService>();
 builder.Services.AddScoped<IShiftService, ShiftService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddSingleton<IOrderStateMachine, OrderStateMachine>();
+builder.Services.AddSingleton<IFareCalculator, FareCalculator>();
 builder.Services.AddScoped<IImageFileStore, ImageFileStore>();
 
 builder.Services.AddScoped<ICityService, CityService>();
@@ -129,6 +144,8 @@ builder.Services.AddScoped<IValidator<UserInsertRequest>, UserInsertValidator>()
 builder.Services.AddScoped<IValidator<UserUpdateRequest>, UserUpdateValidator>();
 builder.Services.AddScoped<IValidator<DriverInsertRequest>, DriverInsertValidator>();
 builder.Services.AddScoped<IValidator<DriverUpdateRequest>, DriverUpdateValidator>();
+builder.Services.AddScoped<IValidator<OrderInsertRequest>, OrderInsertValidator>();
+builder.Services.AddScoped<IValidator<OrderCancelRequest>, OrderCancelValidator>();
 builder.Services.AddScoped<IValidator<CarAssignmentInsertRequest>, CarAssignmentInsertValidator>();
 builder.Services.AddScoped<IValidator<CarAssignmentUpdateRequest>, CarAssignmentUpdateValidator>();
 builder.Services.AddScoped<IValidator<CarInsertRequest>, CarInsertValidator>();
