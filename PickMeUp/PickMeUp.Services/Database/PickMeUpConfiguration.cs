@@ -132,6 +132,30 @@ namespace PickMeUp.Services.Database
 
             modelBuilder.Entity<CarAssignment>()
                 .HasIndex(a => new { a.DriverId, a.AssignedFrom });
+
+            modelBuilder.Entity<Shift>()
+                .HasQueryFilter(s => !s.IsDeleted);
+
+            modelBuilder.Entity<Shift>()
+                .HasOne(s => s.Driver)
+                .WithMany()
+                .HasForeignKey(s => s.DriverId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Shift>()
+                .HasIndex(s => new { s.DriverId, s.EndedAt });
+
+            modelBuilder.Entity<ShiftBreak>()
+                .HasOne(b => b.Shift)
+                .WithMany(s => s.Breaks)
+                .HasForeignKey(b => b.ShiftId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ShiftBreak>()
+                .HasQueryFilter(b => !b.Shift.IsDeleted);
+
+            modelBuilder.Entity<ShiftBreak>()
+                .HasIndex(b => new { b.ShiftId, b.EndedAt });
         }
     }
 }

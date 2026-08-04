@@ -190,6 +190,7 @@ namespace PickMeUp.Services
         {
             var driver = await LoadOwnedDriverAsync(id);
 
+            await EnsureDriverHasNoOpenShiftAsync(id);
             EnsureDriverHasResigned(driver);
             await EnsureDriverHasNoAssignmentsAsync(id);
 
@@ -204,6 +205,8 @@ namespace PickMeUp.Services
             {
                 throw new BusinessException("This driver has already resigned.");
             }
+
+            await EnsureDriverHasNoOpenShiftAsync(id);
 
             driver.ResignedAt = DateTime.UtcNow;
             driver.IsActive = false;
@@ -233,6 +236,17 @@ namespace PickMeUp.Services
             }
 
             return driver;
+        }
+
+        private async Task EnsureDriverHasNoOpenShiftAsync(int driverId)
+        {
+            var onShift = await _dbContext.Shifts.AnyAsync(s => s.DriverId == driverId && s.EndedAt == null);
+
+            if (onShift)
+            {
+                throw new BusinessException(
+                    "This driver is currently on an open shift. Wait for the shift to end before removing them.");
+            }
         }
 
         private async Task EnsureDriverHasNoAssignmentsAsync(int driverId)

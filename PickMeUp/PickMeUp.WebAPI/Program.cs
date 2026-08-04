@@ -74,6 +74,22 @@ TypeAdapterConfig<Car, CarResponse>.NewConfig()
     .Map(dest => dest.CompanyName, src => src.TaxiCompany.Name)
     .Map(dest => dest.PhotoImageUrl, src => src.PhotoImagePath);
 TypeAdapterConfig<CarUpdateRequest, Car>.NewConfig().IgnoreNullValues(true);
+TypeAdapterConfig<ShiftBreak, ShiftBreakResponse>.NewConfig()
+    .Map(dest => dest.IsOngoing, src => src.EndedAt == null)
+    .AfterMapping((src, dest) =>
+        dest.DurationMinutes = (int)((src.EndedAt ?? DateTime.UtcNow) - src.StartedAt).TotalMinutes);
+TypeAdapterConfig<Shift, ShiftResponse>.NewConfig()
+    .Map(dest => dest.DriverName, src => src.Driver.User.FirstName + " " + src.Driver.User.LastName)
+    .Map(dest => dest.CompanyName, src => src.Driver.TaxiCompany.Name)
+    .Map(dest => dest.IsOngoing, src => src.EndedAt == null)
+    .AfterMapping((src, dest) =>
+    {
+        dest.IsOnBreak = src.Breaks.Any(b => b.EndedAt == null);
+        dest.IsDispatchEligible = src.EndedAt == null && !dest.IsOnBreak;
+        dest.DurationMinutes = (int)((src.EndedAt ?? DateTime.UtcNow) - src.StartedAt).TotalMinutes;
+        dest.BreakMinutes = src.Breaks.Sum(b => (int)((b.EndedAt ?? DateTime.UtcNow) - b.StartedAt).TotalMinutes);
+        dest.WorkedMinutes = Math.Max(dest.DurationMinutes - dest.BreakMinutes, 0);
+    });
 TypeAdapterConfig<CarAssignment, CarAssignmentResponse>.NewConfig()
     .Map(dest => dest.CarPlate, src => src.Car.Plate)
     .Map(dest => dest.CarMake, src => src.Car.Make)
@@ -94,6 +110,7 @@ builder.Services.AddScoped<ITaxiCompanyService, TaxiCompanyService>();
 builder.Services.AddScoped<IDriverService, DriverService>();
 builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<ICarAssignmentService, CarAssignmentService>();
+builder.Services.AddScoped<IShiftService, ShiftService>();
 builder.Services.AddScoped<IImageFileStore, ImageFileStore>();
 
 builder.Services.AddScoped<ICityService, CityService>();

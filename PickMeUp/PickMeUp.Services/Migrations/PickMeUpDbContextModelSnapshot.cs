@@ -605,6 +605,75 @@ namespace PickMeUp.Services.Migrations
                         });
                 });
 
+            modelBuilder.Entity("PickMeUp.Services.Database.Shift", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DriverId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("EndedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("OrdersHandled")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DriverId", "EndedAt");
+
+                    b.ToTable("Shifts");
+                });
+
+            modelBuilder.Entity("PickMeUp.Services.Database.ShiftBreak", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("EndedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ShiftId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ShiftId", "EndedAt");
+
+                    b.ToTable("ShiftBreaks");
+                });
+
             modelBuilder.Entity("PickMeUp.Services.Database.SupportTicketStatus", b =>
                 {
                     b.Property<int>("Id")
@@ -1170,6 +1239,28 @@ namespace PickMeUp.Services.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("PickMeUp.Services.Database.Shift", b =>
+                {
+                    b.HasOne("PickMeUp.Services.Database.Driver", "Driver")
+                        .WithMany()
+                        .HasForeignKey("DriverId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Driver");
+                });
+
+            modelBuilder.Entity("PickMeUp.Services.Database.ShiftBreak", b =>
+                {
+                    b.HasOne("PickMeUp.Services.Database.Shift", "Shift")
+                        .WithMany("Breaks")
+                        .HasForeignKey("ShiftId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Shift");
+                });
+
             modelBuilder.Entity("PickMeUp.Services.Database.TaxiCompany", b =>
                 {
                     b.HasOne("PickMeUp.Services.Database.City", "City")
@@ -1211,6 +1302,11 @@ namespace PickMeUp.Services.Migrations
             modelBuilder.Entity("PickMeUp.Services.Database.Role", b =>
                 {
                     b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("PickMeUp.Services.Database.Shift", b =>
+                {
+                    b.Navigation("Breaks");
                 });
 
             modelBuilder.Entity("PickMeUp.Services.Database.User", b =>
