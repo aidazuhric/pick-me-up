@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../layouts/nav_destination.dart';
 import '../layouts/role_side_nav.dart';
 import 'placeholder_screen.dart';
+import 'shell_gallery_screen.dart';
 
 class AdminShell extends StatelessWidget {
   const AdminShell({super.key});
@@ -51,6 +52,11 @@ class AdminShell extends StatelessWidget {
             title: 'PDF reports',
             arrivesWith: 'the reporting endpoints',
           ),
+        ),
+        NavDestination(
+          label: 'Shared shells',
+          icon: Icons.widgets_outlined,
+          builder: (_) => const ShellGalleryScreen(),
         ),
         NavDestination(
           label: 'Settings',
