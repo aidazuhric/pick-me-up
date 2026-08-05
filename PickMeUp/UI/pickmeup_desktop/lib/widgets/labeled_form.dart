@@ -187,7 +187,7 @@ class AppToggleField extends StatelessWidget {
           onChanged: onChanged,
         ),
         const SizedBox(width: 12),
-        Text(description),
+        Expanded(child: Text(description)),
       ],
     );
   }

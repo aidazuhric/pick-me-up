@@ -4,6 +4,7 @@ import '../layouts/nav_destination.dart';
 import '../layouts/role_side_nav.dart';
 import 'placeholder_screen.dart';
 import 'shell_gallery_screen.dart';
+import 'taxi_company_list_screen.dart';
 
 class AdminShell extends StatelessWidget {
   const AdminShell({super.key});
@@ -16,10 +17,7 @@ class AdminShell extends StatelessWidget {
         NavDestination(
           label: 'Taxi companies',
           icon: Icons.business,
-          builder: (_) => const PlaceholderScreen(
-            title: 'Taxi companies',
-            arrivesWith: 'the TaxiCompany entity',
-          ),
+          builder: (_) => const TaxiCompanyListScreen(),
         ),
         NavDestination(
           label: 'Users',
