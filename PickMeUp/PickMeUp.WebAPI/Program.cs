@@ -81,6 +81,10 @@ TypeAdapterConfig<Car, CarResponse>.NewConfig()
     .Map(dest => dest.CompanyName, src => src.TaxiCompany.Name)
     .Map(dest => dest.PhotoImageUrl, src => src.PhotoImagePath);
 TypeAdapterConfig<CarUpdateRequest, Car>.NewConfig().IgnoreNullValues(true);
+TypeAdapterConfig<Review, ReviewResponse>.NewConfig()
+    .Map(dest => dest.AuthorName, src => src.Passenger.FirstName + " " + src.Passenger.LastName)
+    .Map(dest => dest.CompanyName, src => src.TargetCompany != null ? src.TargetCompany.Name : null)
+    .Map(dest => dest.DriverName, src => src.TargetDriver != null ? src.TargetDriver.User.FirstName + " " + src.TargetDriver.User.LastName : null);
 TypeAdapterConfig<PaymentRefund, PaymentRefundResponse>.NewConfig();
 TypeAdapterConfig<Payment, PaymentResponse>.NewConfig()
     .Map(dest => dest.PassengerName, src => src.Order.Passenger.FirstName + " " + src.Order.Passenger.LastName)
@@ -138,6 +142,7 @@ builder.Services.AddScoped<ICarAssignmentService, CarAssignmentService>();
 builder.Services.AddScoped<IShiftService, ShiftService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderNotificationDispatcher, OrderNotificationDispatcher>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IPaymentNotificationDispatcher, PaymentNotificationDispatcher>();
 if (builder.Environment.IsDevelopment() && string.IsNullOrWhiteSpace(EnvironmentReader.Optional("STRIPE_SECRET_KEY")))
@@ -171,6 +176,8 @@ builder.Services.AddScoped<IValidator<UserInsertRequest>, UserInsertValidator>()
 builder.Services.AddScoped<IValidator<UserUpdateRequest>, UserUpdateValidator>();
 builder.Services.AddScoped<IValidator<DriverInsertRequest>, DriverInsertValidator>();
 builder.Services.AddScoped<IValidator<DriverUpdateRequest>, DriverUpdateValidator>();
+builder.Services.AddScoped<IValidator<ReviewInsertRequest>, ReviewInsertValidator>();
+builder.Services.AddScoped<IValidator<ReviewUpdateRequest>, ReviewUpdateValidator>();
 builder.Services.AddScoped<IValidator<OrderInsertRequest>, OrderInsertValidator>();
 builder.Services.AddScoped<IValidator<OrderCancelRequest>, OrderCancelValidator>();
 builder.Services.AddScoped<IValidator<CarAssignmentInsertRequest>, CarAssignmentInsertValidator>();

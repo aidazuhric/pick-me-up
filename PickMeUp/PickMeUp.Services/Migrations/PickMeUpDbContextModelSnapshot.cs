@@ -794,6 +794,62 @@ namespace PickMeUp.Services.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
+            modelBuilder.Entity("PickMeUp.Services.Database.Review", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PassengerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("TargetCompanyId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("TargetDriverId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PassengerId");
+
+                    b.HasIndex("TargetCompanyId");
+
+                    b.HasIndex("TargetDriverId");
+
+                    b.HasIndex("OrderId", "TargetCompanyId")
+                        .IsUnique();
+
+                    b.HasIndex("OrderId", "TargetDriverId")
+                        .IsUnique();
+
+                    b.ToTable("Reviews");
+                });
+
             modelBuilder.Entity("PickMeUp.Services.Database.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -1612,6 +1668,39 @@ namespace PickMeUp.Services.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PickMeUp.Services.Database.Review", b =>
+                {
+                    b.HasOne("PickMeUp.Services.Database.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PickMeUp.Services.Database.User", "Passenger")
+                        .WithMany()
+                        .HasForeignKey("PassengerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PickMeUp.Services.Database.TaxiCompany", "TargetCompany")
+                        .WithMany()
+                        .HasForeignKey("TargetCompanyId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("PickMeUp.Services.Database.Driver", "TargetDriver")
+                        .WithMany()
+                        .HasForeignKey("TargetDriverId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Passenger");
+
+                    b.Navigation("TargetCompany");
+
+                    b.Navigation("TargetDriver");
                 });
 
             modelBuilder.Entity("PickMeUp.Services.Database.Shift", b =>
