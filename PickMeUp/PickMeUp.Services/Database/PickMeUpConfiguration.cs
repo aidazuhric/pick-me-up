@@ -216,6 +216,28 @@ namespace PickMeUp.Services.Database
 
             modelBuilder.Entity<OrderRejection>()
                 .HasIndex(r => new { r.OrderId, r.DriverId }).IsUnique();
+
+            modelBuilder.Entity<Payment>()
+                .HasQueryFilter(p => !p.IsDeleted);
+
+            modelBuilder.Entity<Payment>()
+                .HasOne(p => p.Order).WithMany().HasForeignKey(p => p.OrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Payment>()
+                .HasOne(p => p.PaymentStatus).WithMany().HasForeignKey(p => p.PaymentStatusId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Payment>().Property(p => p.AmountCharged).HasPrecision(18, 2);
+            modelBuilder.Entity<Payment>().HasIndex(p => p.OrderId);
+            modelBuilder.Entity<Payment>().HasIndex(p => p.StripePaymentIntentId).IsUnique();
+
+            modelBuilder.Entity<PaymentRefund>()
+                .HasOne(r => r.Payment).WithMany(p => p.Refunds).HasForeignKey(r => r.PaymentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<PaymentRefund>().Property(r => r.RefundedAmount).HasPrecision(18, 2);
+            modelBuilder.Entity<PaymentRefund>().HasQueryFilter(r => !r.Payment.IsDeleted);
         }
     }
 }

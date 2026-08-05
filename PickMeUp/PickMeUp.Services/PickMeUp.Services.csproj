@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <PackageReference Include="RabbitMQ.Client" Version="7.1.2" />
+    <PackageReference Include="Stripe.net" Version="47.4.0" />
   </ItemGroup>
 
 </Project>

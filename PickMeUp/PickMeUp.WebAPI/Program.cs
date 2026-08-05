@@ -7,6 +7,7 @@ using PickMeUp.Services.Database;
 using PickMeUp.Services.Messaging;
 using PickMeUp.Services.Notifications;
 using PickMeUp.Services.Orders;
+using PickMeUp.Services.Payments;
 using PickMeUp.Services.Storage;
 using PickMeUp.Services.Validators;
 using PickMeUp.WebAPI.Filters;
@@ -80,6 +81,13 @@ TypeAdapterConfig<Car, CarResponse>.NewConfig()
     .Map(dest => dest.CompanyName, src => src.TaxiCompany.Name)
     .Map(dest => dest.PhotoImageUrl, src => src.PhotoImagePath);
 TypeAdapterConfig<CarUpdateRequest, Car>.NewConfig().IgnoreNullValues(true);
+TypeAdapterConfig<PaymentRefund, PaymentRefundResponse>.NewConfig();
+TypeAdapterConfig<Payment, PaymentResponse>.NewConfig()
+    .Map(dest => dest.PassengerName, src => src.Order.Passenger.FirstName + " " + src.Order.Passenger.LastName)
+    .Map(dest => dest.CompanyName, src => src.Order.TaxiCompany != null ? src.Order.TaxiCompany.Name : null)
+    .Map(dest => dest.DriverName, src => src.Order.Driver != null ? src.Order.Driver.User.FirstName + " " + src.Order.Driver.User.LastName : null)
+    .Map(dest => dest.Status, src => src.PaymentStatus.Name)
+    .Map(dest => dest.RefundedTotal, src => src.Refunds.Sum(r => r.RefundedAmount));
 TypeAdapterConfig<OrderStatusHistory, OrderStatusHistoryResponse>.NewConfig()
     .Map(dest => dest.FromStatus, src => src.FromStatus != null ? src.FromStatus.Name : null)
     .Map(dest => dest.ToStatus, src => src.ToStatus.Name)
@@ -130,6 +138,16 @@ builder.Services.AddScoped<ICarAssignmentService, CarAssignmentService>();
 builder.Services.AddScoped<IShiftService, ShiftService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderNotificationDispatcher, OrderNotificationDispatcher>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IPaymentNotificationDispatcher, PaymentNotificationDispatcher>();
+if (builder.Environment.IsDevelopment() && string.IsNullOrWhiteSpace(EnvironmentReader.Optional("STRIPE_SECRET_KEY")))
+{
+    builder.Services.AddSingleton<IStripeGateway, DevelopmentStripeGateway>();
+}
+else
+{
+    builder.Services.AddSingleton<IStripeGateway, StripeGateway>();
+}
 builder.Services.AddSingleton<IOrderStateMachine, OrderStateMachine>();
 builder.Services.AddSingleton<IFareCalculator, FareCalculator>();
 builder.Services.AddSingleton<IRabbitMqConnection, RabbitMqConnection>();

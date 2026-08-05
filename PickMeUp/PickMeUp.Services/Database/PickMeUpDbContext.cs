@@ -26,6 +26,8 @@ namespace PickMeUp.Services.Database
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderStatusHistory> OrderStatusHistories { get; set; }
         public DbSet<OrderRejection> OrderRejections { get; set; }
+        public DbSet<Payment> Payments { get; set; }
+        public DbSet<PaymentRefund> PaymentRefunds { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
