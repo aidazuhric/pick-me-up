@@ -175,6 +175,7 @@ builder.Services.AddScoped<IEventPublisher, RabbitMqEventPublisher>();
 builder.Services.AddScoped<INotificationPublisher, SignalRNotificationPublisher>();
 builder.Services.AddScoped<INotificationRecorder, NotificationRecorder>();
 builder.Services.AddScoped<IInteractionRecorder, InteractionRecorder>();
+builder.Services.AddScoped<IRecommendationService, RecommendationService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IImageFileStore, ImageFileStore>();
 
