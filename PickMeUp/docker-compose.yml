@@ -18,19 +18,56 @@ services:
     networks:
       - pickmeup
 
+  pickmeup-rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: pickmeup-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_port_connectivity"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+    networks:
+      - pickmeup
+
   pickmeup-api:
     build:
       context: .
+      dockerfile: Dockerfile
     container_name: pickmeup-api
     env_file:
       - .env
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       DATABASE_CONNECTION_STRING: Host=pickmeup-db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      RABBITMQ_HOST: pickmeup-rabbitmq
     ports:
       - "5121:5121"
     depends_on:
       pickmeup-db:
+        condition: service_healthy
+      pickmeup-rabbitmq:
+        condition: service_healthy
+    networks:
+      - pickmeup
+
+  pickmeup-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.Worker
+    container_name: pickmeup-worker
+    env_file:
+      - .env
+    environment:
+      DOTNET_ENVIRONMENT: Development
+      RABBITMQ_HOST: pickmeup-rabbitmq
+    depends_on:
+      pickmeup-rabbitmq:
         condition: service_healthy
     networks:
       - pickmeup

@@ -4,6 +4,7 @@ using PickMeUp.Model.Requests;
 using PickMeUp.Model.Responses;
 using PickMeUp.Services;
 using PickMeUp.Services.Database;
+using PickMeUp.Services.Messaging;
 using PickMeUp.Services.Orders;
 using PickMeUp.Services.Storage;
 using PickMeUp.Services.Validators;
@@ -126,6 +127,8 @@ builder.Services.AddScoped<IShiftService, ShiftService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddSingleton<IOrderStateMachine, OrderStateMachine>();
 builder.Services.AddSingleton<IFareCalculator, FareCalculator>();
+builder.Services.AddSingleton<IRabbitMqConnection, RabbitMqConnection>();
+builder.Services.AddScoped<IEventPublisher, RabbitMqEventPublisher>();
 builder.Services.AddScoped<IImageFileStore, ImageFileStore>();
 
 builder.Services.AddScoped<ICityService, CityService>();
