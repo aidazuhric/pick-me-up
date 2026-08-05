@@ -8,5 +8,7 @@ namespace PickMeUp.Services
         Task<ReportFile> GenerateOrdersByPeriodAsync(OrdersByPeriodReportSearch search);
 
         Task<ReportFile> GenerateTopCompaniesAsync(ReportRangeSearch search);
+
+        Task<ReportFile> GenerateCompanyBusinessAsync(CompanyBusinessReportSearch search);
     }
 }

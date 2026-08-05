@@ -1,4 +1,5 @@
 using System.Globalization;
+using PickMeUp.Model.Constants;
 using PickMeUp.Model.Enums;
 using PickMeUp.Model.Exceptions;
 using PickMeUp.Model.Responses;
@@ -18,11 +19,16 @@ namespace PickMeUp.Services
 
         protected readonly PickMeUpDbContext _dbContext;
         protected readonly IReportDocumentBuilder _documentBuilder;
+        protected readonly IAuthenticatedUserAccessor _userAccessor;
 
-        public ReportService(PickMeUpDbContext dbContext, IReportDocumentBuilder documentBuilder)
+        public ReportService(
+            PickMeUpDbContext dbContext,
+            IReportDocumentBuilder documentBuilder,
+            IAuthenticatedUserAccessor userAccessor)
         {
             _dbContext = dbContext;
             _documentBuilder = documentBuilder;
+            _userAccessor = userAccessor;
         }
 
         public async Task<ReportFile> GenerateOrdersByPeriodAsync(OrdersByPeriodReportSearch search)
@@ -210,6 +216,188 @@ namespace PickMeUp.Services
             return new ReportFile(
                 $"top-companies-{range.FileStamp}.pdf",
                 _documentBuilder.Render(definition));
+        }
+
+        public async Task<ReportFile> GenerateCompanyBusinessAsync(CompanyBusinessReportSearch search)
+        {
+            var range = ReportRange.Of(search);
+            var company = await ResolveReportedCompanyAsync(search.CompanyId);
+            var completed = (int)OrderStatusEnum.Completed;
+
+            var rides = _dbContext.Orders
+                .AsNoTracking()
+                .Where(o => o.TaxiCompanyId == company.Id
+                    && o.OrderStatusId == completed
+                    && o.CompletedAt >= range.From
+                    && o.CompletedAt < range.ToExclusive)
+                .Select(o => new
+                {
+                    o.DriverId,
+                    o.CarId,
+                    Fare = o.Fare ?? 0m,
+                    IsPaid = _dbContext.Payments.Any(p => p.OrderId == o.Id && p.IsPaid)
+                });
+
+            var driverRatings = _dbContext.Reviews
+                .AsNoTracking()
+                .Where(r => r.TargetDriverId != null
+                    && r.CreatedAt >= range.From
+                    && r.CreatedAt < range.ToExclusive)
+                .GroupBy(r => r.TargetDriverId!.Value)
+                .Select(g => new
+                {
+                    DriverId = g.Key,
+                    Average = g.Average(r => (double)r.Rating),
+                    ReviewCount = g.Count()
+                });
+
+            var byDriver = rides
+                .Where(x => x.DriverId != null)
+                .GroupBy(x => x.DriverId!.Value)
+                .Select(g => new
+                {
+                    DriverId = g.Key,
+                    CompletedRides = g.Count(),
+                    Revenue = g.Sum(x => x.IsPaid ? x.Fare : 0m)
+                });
+
+            var driverRows = await (from row in byDriver
+                                    join driver in _dbContext.Drivers on row.DriverId equals driver.Id
+                                    join rating in driverRatings on row.DriverId equals rating.DriverId into rated
+                                    from rating in rated.DefaultIfEmpty()
+                                    orderby row.CompletedRides descending, row.Revenue descending
+                                    select new CompanyDriverRow
+                                    {
+                                        DriverName = driver.User.FirstName + " " + driver.User.LastName,
+                                        CompletedRides = row.CompletedRides,
+                                        Revenue = row.Revenue,
+                                        AverageRating = rating == null ? null : (double?)rating.Average,
+                                        ReviewCount = rating == null ? 0 : rating.ReviewCount
+                                    })
+                                   .ToListAsync();
+
+            var byCar = rides
+                .Where(x => x.CarId != null)
+                .GroupBy(x => x.CarId!.Value)
+                .Select(g => new
+                {
+                    CarId = g.Key,
+                    CompletedRides = g.Count(),
+                    Revenue = g.Sum(x => x.IsPaid ? x.Fare : 0m)
+                });
+
+            var vehicleRows = await (from row in byCar
+                                     join car in _dbContext.Cars on row.CarId equals car.Id
+                                     orderby row.CompletedRides descending, row.Revenue descending
+                                     select new CompanyVehicleRow
+                                     {
+                                         Vehicle = car.Make + " " + car.Model,
+                                         Plate = car.Plate,
+                                         Category = car.VehicleCategory.Name,
+                                         CompletedRides = row.CompletedRides,
+                                         Revenue = row.Revenue
+                                     })
+                                    .ToListAsync();
+
+            var companyRating = await _dbContext.Reviews
+                .AsNoTracking()
+                .Where(r => r.CreatedAt >= range.From
+                    && r.CreatedAt < range.ToExclusive
+                    && (r.TargetCompanyId == company.Id
+                        || (r.TargetDriver != null && r.TargetDriver.TaxiCompanyId == company.Id)))
+                .GroupBy(r => 1)
+                .Select(g => new
+                {
+                    Average = (double?)g.Average(r => (double)r.Rating),
+                    ReviewCount = g.Count()
+                })
+                .FirstOrDefaultAsync();
+
+            var definition = new ReportDefinition
+            {
+                Title = "Company business report",
+                PeriodLabel = range.Label,
+                Scope = $"{company.Name} · {company.City.Name}",
+                Summary = new List<string>
+                {
+                    $"Completed rides: {driverRows.Sum(r => r.CompletedRides)}",
+                    $"Revenue (completed and paid rides): {Money(driverRows.Sum(r => r.Revenue))}",
+                    $"Average rating: {Rating(companyRating?.Average, companyRating?.ReviewCount ?? 0)}"
+                },
+                Tables = new List<ReportTable>
+                {
+                    new ReportTable
+                    {
+                        Caption = "Per driver",
+                        Columns = new List<ReportColumn>
+                        {
+                            new ReportColumn("Driver", 4),
+                            new ReportColumn("Completed rides", 2, alignRight: true),
+                            new ReportColumn("Revenue", 2, alignRight: true),
+                            new ReportColumn("Average rating", 2, alignRight: true)
+                        },
+                        Rows = driverRows.Select(r => new List<string>
+                        {
+                            r.DriverName,
+                            r.CompletedRides.ToString(CultureInfo.InvariantCulture),
+                            Money(r.Revenue),
+                            Rating(r.AverageRating, r.ReviewCount)
+                        }).ToList(),
+                        EmptyMessage = "No driver completed a ride in the selected period."
+                    },
+                    new ReportTable
+                    {
+                        Caption = "Per vehicle",
+                        Columns = new List<ReportColumn>
+                        {
+                            new ReportColumn("Vehicle", 3),
+                            new ReportColumn("Plate", 2),
+                            new ReportColumn("Category", 2),
+                            new ReportColumn("Completed rides", 2, alignRight: true),
+                            new ReportColumn("Revenue", 2, alignRight: true)
+                        },
+                        Rows = vehicleRows.Select(r => new List<string>
+                        {
+                            r.Vehicle,
+                            r.Plate,
+                            r.Category,
+                            r.CompletedRides.ToString(CultureInfo.InvariantCulture),
+                            Money(r.Revenue)
+                        }).ToList(),
+                        EmptyMessage = "No vehicle completed a ride in the selected period."
+                    }
+                }
+            };
+
+            return new ReportFile(
+                $"company-business-{company.Id}-{range.FileStamp}.pdf",
+                _documentBuilder.Render(definition));
+        }
+
+        private async Task<TaxiCompany> ResolveReportedCompanyAsync(int? requestedCompanyId)
+        {
+            var userId = _userAccessor.GetUserId()
+                ?? throw new BusinessException("The caller could not be identified.");
+
+            if (!_userAccessor.IsInRole(Roles.Admin))
+            {
+                return await _dbContext.TaxiCompanies
+                    .AsNoTracking()
+                    .Include(t => t.City)
+                    .FirstOrDefaultAsync(t => t.UserId == userId)
+                    ?? throw new BusinessException("This account does not manage a taxi company.");
+            }
+
+            if (requestedCompanyId == null)
+            {
+                throw new BusinessException("Choose the taxi company to report on.");
+            }
+
+            return await _dbContext.TaxiCompanies
+                .AsNoTracking()
+                .Include(t => t.City)
+                .FirstOrDefaultAsync(t => t.Id == requestedCompanyId.Value)
+                ?? throw new KeyNotFoundException($"Taxi company with id {requestedCompanyId.Value} not found.");
         }
 
         protected static string Money(decimal amount) =>

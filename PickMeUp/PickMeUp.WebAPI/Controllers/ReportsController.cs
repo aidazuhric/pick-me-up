@@ -52,6 +52,23 @@ public class ReportsController : ControllerBase
         return Pdf(await _service.GenerateTopCompaniesAsync(search));
     }
 
+    /// <summary>
+    /// How the calling company's business went in the selected period: rides completed and revenue
+    /// broken down per driver and per vehicle, the average rating of the reviews written about the
+    /// company and its drivers, and the totals for the period. The company is always taken from the
+    /// signed-in account, so a company owner only ever sees its own figures. An administrator has no
+    /// company of their own and therefore names one with companyId; that parameter is ignored for
+    /// company owners. Revenue counts the fare of rides that are both Completed and settled by a
+    /// paid payment. Both dates are inclusive; the default period is the last 30 days.
+    /// </summary>
+    [Authorization(Roles.Company, Roles.Admin)]
+    [HttpGet("CompanyBusiness")]
+    [Produces("application/pdf")]
+    public async Task<IActionResult> CompanyBusiness([FromQuery] CompanyBusinessReportSearch search)
+    {
+        return Pdf(await _service.GenerateCompanyBusinessAsync(search));
+    }
+
     private IActionResult Pdf(ReportFile report)
     {
         Response.Headers[HeaderNames.ContentDisposition] =
