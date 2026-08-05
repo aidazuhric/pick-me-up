@@ -311,6 +311,30 @@ namespace PickMeUp.Services.Database
             modelBuilder.Entity<Notification>()
                 .HasIndex(n => new { n.UserId, n.IsRead, n.CreatedAt });
 
+            modelBuilder.Entity<InteractionHistory>()
+                .HasQueryFilter(i => !i.User.IsDeleted && !i.TaxiCompany.IsDeleted);
+
+            modelBuilder.Entity<InteractionHistory>()
+                .HasOne(i => i.User).WithMany().HasForeignKey(i => i.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<InteractionHistory>()
+                .HasOne(i => i.TaxiCompany).WithMany().HasForeignKey(i => i.TaxiCompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<InteractionHistory>()
+                .HasOne(i => i.Order).WithMany().HasForeignKey(i => i.OrderId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<InteractionHistory>()
+                .Property(i => i.Value).HasPrecision(18, 2);
+
+            modelBuilder.Entity<InteractionHistory>()
+                .HasIndex(i => new { i.UserId, i.TaxiCompanyId, i.SignalTypeId });
+
+            modelBuilder.Entity<InteractionHistory>()
+                .HasIndex(i => new { i.TaxiCompanyId, i.SignalTypeId });
+
             modelBuilder
                 .HasDbFunction(typeof(PostgresFunctions).GetMethod(nameof(PostgresFunctions.DateTrunc))!)
                 .HasName("date_trunc");

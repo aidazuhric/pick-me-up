@@ -157,6 +157,20 @@ namespace PickMeUp.Services.Migrations
                             TaxiCompanyId = 3,
                             VehicleCategoryId = 3,
                             Year = 2018
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            IsDeleted = false,
+                            Make = "Renault",
+                            Model = "Megane",
+                            Plate = "J12-A-678",
+                            Seats = 4,
+                            TaxiCompanyId = 4,
+                            VehicleCategoryId = 1,
+                            Year = 2021
                         });
                 });
 
@@ -231,6 +245,26 @@ namespace PickMeUp.Services.Migrations
                             CarId = 5,
                             CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
                             DriverId = 3,
+                            IsActive = true,
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 4,
+                            AssignedFrom = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CarId = 4,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            DriverId = 4,
+                            IsActive = true,
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 5,
+                            AssignedFrom = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CarId = 6,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            DriverId = 5,
                             IsActive = true,
                             IsDeleted = false
                         });
@@ -375,6 +409,376 @@ namespace PickMeUp.Services.Migrations
                             IsDeleted = false,
                             TaxiCompanyId = 3,
                             UserId = 8
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            HireDate = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            IsDeleted = false,
+                            TaxiCompanyId = 2,
+                            UserId = 12
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            HireDate = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            IsDeleted = false,
+                            TaxiCompanyId = 4,
+                            UserId = 13
+                        });
+                });
+
+            modelBuilder.Entity("PickMeUp.Services.Database.InteractionHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SignalTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TaxiCompanyId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Value")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("TaxiCompanyId", "SignalTypeId");
+
+                    b.HasIndex("UserId", "TaxiCompanyId", "SignalTypeId");
+
+                    b.ToTable("InteractionHistories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2026, 6, 11, 9, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 1,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2026, 6, 11, 9, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 1,
+                            SignalTypeId = 2,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2026, 6, 18, 9, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 2,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2026, 6, 18, 9, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 2,
+                            SignalTypeId = 2,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2026, 6, 25, 9, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 3,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAt = new DateTime(2026, 6, 25, 9, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 3,
+                            SignalTypeId = 2,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedAt = new DateTime(2026, 7, 2, 9, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 4,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CreatedAt = new DateTime(2026, 7, 2, 9, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 4,
+                            SignalTypeId = 2,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CreatedAt = new DateTime(2026, 7, 9, 9, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 5,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CreatedAt = new DateTime(2026, 7, 9, 9, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 5,
+                            SignalTypeId = 2,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CreatedAt = new DateTime(2026, 6, 14, 9, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 6,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 2,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CreatedAt = new DateTime(2026, 6, 14, 9, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 6,
+                            SignalTypeId = 2,
+                            TaxiCompanyId = 2,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CreatedAt = new DateTime(2026, 7, 16, 9, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 7,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 2,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CreatedAt = new DateTime(2026, 7, 16, 9, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 7,
+                            SignalTypeId = 2,
+                            TaxiCompanyId = 2,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 15,
+                            CreatedAt = new DateTime(2026, 6, 12, 9, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 8,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 3,
+                            UserId = 9,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 16,
+                            CreatedAt = new DateTime(2026, 6, 12, 9, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 8,
+                            SignalTypeId = 2,
+                            TaxiCompanyId = 3,
+                            UserId = 9,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 17,
+                            CreatedAt = new DateTime(2026, 6, 20, 9, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 9,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 3,
+                            UserId = 9,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 18,
+                            CreatedAt = new DateTime(2026, 6, 20, 9, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 9,
+                            SignalTypeId = 2,
+                            TaxiCompanyId = 3,
+                            UserId = 9,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 19,
+                            CreatedAt = new DateTime(2026, 7, 4, 9, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 10,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 3,
+                            UserId = 9,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 20,
+                            CreatedAt = new DateTime(2026, 7, 4, 9, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 10,
+                            SignalTypeId = 2,
+                            TaxiCompanyId = 3,
+                            UserId = 9,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 21,
+                            CreatedAt = new DateTime(2026, 7, 11, 9, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 11,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 3,
+                            UserId = 9,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 22,
+                            CreatedAt = new DateTime(2026, 7, 11, 9, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 11,
+                            SignalTypeId = 2,
+                            TaxiCompanyId = 3,
+                            UserId = 9,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 23,
+                            CreatedAt = new DateTime(2026, 6, 28, 9, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 12,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 4,
+                            UserId = 9,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 24,
+                            CreatedAt = new DateTime(2026, 6, 28, 9, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 12,
+                            SignalTypeId = 2,
+                            TaxiCompanyId = 4,
+                            UserId = 9,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 25,
+                            CreatedAt = new DateTime(2026, 6, 11, 10, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 1,
+                            SignalTypeId = 3,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 5m
+                        },
+                        new
+                        {
+                            Id = 26,
+                            CreatedAt = new DateTime(2026, 6, 18, 10, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 2,
+                            SignalTypeId = 3,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 5m
+                        },
+                        new
+                        {
+                            Id = 27,
+                            CreatedAt = new DateTime(2026, 6, 25, 10, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 3,
+                            SignalTypeId = 3,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 4m
+                        },
+                        new
+                        {
+                            Id = 28,
+                            CreatedAt = new DateTime(2026, 6, 14, 10, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 6,
+                            SignalTypeId = 3,
+                            TaxiCompanyId = 2,
+                            UserId = 4,
+                            Value = 2m
+                        },
+                        new
+                        {
+                            Id = 29,
+                            CreatedAt = new DateTime(2026, 6, 12, 10, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 8,
+                            SignalTypeId = 3,
+                            TaxiCompanyId = 3,
+                            UserId = 9,
+                            Value = 4m
+                        },
+                        new
+                        {
+                            Id = 30,
+                            CreatedAt = new DateTime(2026, 6, 20, 10, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 9,
+                            SignalTypeId = 3,
+                            TaxiCompanyId = 3,
+                            UserId = 9,
+                            Value = 5m
+                        },
+                        new
+                        {
+                            Id = 31,
+                            CreatedAt = new DateTime(2026, 6, 28, 10, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 12,
+                            SignalTypeId = 3,
+                            TaxiCompanyId = 4,
+                            UserId = 9,
+                            Value = 3m
                         });
                 });
 
@@ -583,6 +987,284 @@ namespace PickMeUp.Services.Migrations
                     b.HasIndex("OrderStatusId", "TaxiCompanyId");
 
                     b.ToTable("Orders");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AcceptedAt = new DateTime(2026, 6, 11, 9, 5, 0, 0, DateTimeKind.Utc),
+                            CarId = 1,
+                            CompletedAt = new DateTime(2026, 6, 11, 9, 35, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 6, 11, 9, 0, 0, 0, DateTimeKind.Utc),
+                            DestinationAddress = "Bulevar 22",
+                            DestinationLat = 43.350200000000001,
+                            DestinationLng = 17.814,
+                            DistanceKm = 3.2m,
+                            DriverId = 1,
+                            Fare = 6.34m,
+                            IsDeleted = false,
+                            OrderStatusId = 4,
+                            PassengerId = 4,
+                            PickedUpAt = new DateTime(2026, 6, 11, 9, 12, 0, 0, DateTimeKind.Utc),
+                            PickupAddress = "Kralja Tomislava 3",
+                            PickupLat = 43.343800000000002,
+                            PickupLng = 17.8078,
+                            TaxiCompanyId = 1,
+                            UpdatedAt = new DateTime(2026, 6, 11, 9, 35, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AcceptedAt = new DateTime(2026, 6, 18, 9, 5, 0, 0, DateTimeKind.Utc),
+                            CarId = 1,
+                            CompletedAt = new DateTime(2026, 6, 18, 9, 35, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 6, 18, 9, 0, 0, 0, DateTimeKind.Utc),
+                            DestinationAddress = "Rondo 1",
+                            DestinationLat = 43.3489,
+                            DestinationLng = 17.799499999999998,
+                            DistanceKm = 5.6m,
+                            DriverId = 1,
+                            Fare = 9.22m,
+                            IsDeleted = false,
+                            OrderStatusId = 4,
+                            PassengerId = 4,
+                            PickedUpAt = new DateTime(2026, 6, 18, 9, 12, 0, 0, DateTimeKind.Utc),
+                            PickupAddress = "Marsala Tita 40",
+                            PickupLat = 43.3401,
+                            PickupLng = 17.813500000000001,
+                            TaxiCompanyId = 1,
+                            UpdatedAt = new DateTime(2026, 6, 18, 9, 35, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AcceptedAt = new DateTime(2026, 6, 25, 9, 5, 0, 0, DateTimeKind.Utc),
+                            CarId = 2,
+                            CompletedAt = new DateTime(2026, 6, 25, 9, 35, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 6, 25, 9, 0, 0, 0, DateTimeKind.Utc),
+                            DestinationAddress = "Aerodrom Mostar",
+                            DestinationLat = 43.282899999999998,
+                            DestinationLng = 17.8459,
+                            DistanceKm = 8.4m,
+                            DriverId = 2,
+                            Fare = 12.58m,
+                            IsDeleted = false,
+                            OrderStatusId = 4,
+                            PassengerId = 4,
+                            PickedUpAt = new DateTime(2026, 6, 25, 9, 12, 0, 0, DateTimeKind.Utc),
+                            PickupAddress = "Splitska 5",
+                            PickupLat = 43.335000000000001,
+                            PickupLng = 17.802099999999999,
+                            TaxiCompanyId = 1,
+                            UpdatedAt = new DateTime(2026, 6, 25, 9, 35, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            AcceptedAt = new DateTime(2026, 7, 2, 9, 5, 0, 0, DateTimeKind.Utc),
+                            CarId = 1,
+                            CompletedAt = new DateTime(2026, 7, 2, 9, 35, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 7, 2, 9, 0, 0, 0, DateTimeKind.Utc),
+                            DestinationAddress = "Stari Most",
+                            DestinationLat = 43.337400000000002,
+                            DestinationLng = 17.815100000000001,
+                            DistanceKm = 4.1m,
+                            DriverId = 1,
+                            Fare = 7.42m,
+                            IsDeleted = false,
+                            OrderStatusId = 4,
+                            PassengerId = 4,
+                            PickedUpAt = new DateTime(2026, 7, 2, 9, 12, 0, 0, DateTimeKind.Utc),
+                            PickupAddress = "Bulevar 22",
+                            PickupLat = 43.350200000000001,
+                            PickupLng = 17.814,
+                            TaxiCompanyId = 1,
+                            UpdatedAt = new DateTime(2026, 7, 2, 9, 35, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 5,
+                            AcceptedAt = new DateTime(2026, 7, 9, 9, 5, 0, 0, DateTimeKind.Utc),
+                            CarId = 2,
+                            CompletedAt = new DateTime(2026, 7, 9, 9, 35, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 7, 9, 9, 0, 0, 0, DateTimeKind.Utc),
+                            DestinationAddress = "Kampus Sveucilista",
+                            DestinationLat = 43.341900000000003,
+                            DestinationLng = 17.804300000000001,
+                            DistanceKm = 6.9m,
+                            DriverId = 2,
+                            Fare = 10.78m,
+                            IsDeleted = false,
+                            OrderStatusId = 4,
+                            PassengerId = 4,
+                            PickedUpAt = new DateTime(2026, 7, 9, 9, 12, 0, 0, DateTimeKind.Utc),
+                            PickupAddress = "Kneza Domagoja 12",
+                            PickupLat = 43.347700000000003,
+                            PickupLng = 17.796099999999999,
+                            TaxiCompanyId = 1,
+                            UpdatedAt = new DateTime(2026, 7, 9, 9, 35, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 6,
+                            AcceptedAt = new DateTime(2026, 6, 14, 9, 5, 0, 0, DateTimeKind.Utc),
+                            CarId = 4,
+                            CompletedAt = new DateTime(2026, 6, 14, 9, 35, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 6, 14, 9, 0, 0, 0, DateTimeKind.Utc),
+                            DestinationAddress = "Zeljeznicka stanica",
+                            DestinationLat = 43.347999999999999,
+                            DestinationLng = 17.808499999999999,
+                            DistanceKm = 5.0m,
+                            DriverId = 4,
+                            Fare = 8.75m,
+                            IsDeleted = false,
+                            OrderStatusId = 4,
+                            PassengerId = 4,
+                            PickedUpAt = new DateTime(2026, 6, 14, 9, 12, 0, 0, DateTimeKind.Utc),
+                            PickupAddress = "Fejiceva 9",
+                            PickupLat = 43.338999999999999,
+                            PickupLng = 17.815799999999999,
+                            TaxiCompanyId = 2,
+                            UpdatedAt = new DateTime(2026, 6, 14, 9, 35, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 7,
+                            AcceptedAt = new DateTime(2026, 7, 16, 9, 5, 0, 0, DateTimeKind.Utc),
+                            CarId = 4,
+                            CompletedAt = new DateTime(2026, 7, 16, 9, 35, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 7, 16, 9, 0, 0, 0, DateTimeKind.Utc),
+                            DestinationAddress = "Blagaj",
+                            DestinationLat = 43.256999999999998,
+                            DestinationLng = 17.888999999999999,
+                            DistanceKm = 7.3m,
+                            DriverId = 4,
+                            Fare = 11.86m,
+                            IsDeleted = false,
+                            OrderStatusId = 4,
+                            PassengerId = 4,
+                            PickedUpAt = new DateTime(2026, 7, 16, 9, 12, 0, 0, DateTimeKind.Utc),
+                            PickupAddress = "Rondo 1",
+                            PickupLat = 43.3489,
+                            PickupLng = 17.799499999999998,
+                            TaxiCompanyId = 2,
+                            UpdatedAt = new DateTime(2026, 7, 16, 9, 35, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 8,
+                            AcceptedAt = new DateTime(2026, 6, 12, 9, 5, 0, 0, DateTimeKind.Utc),
+                            CarId = 5,
+                            CompletedAt = new DateTime(2026, 6, 12, 9, 35, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 6, 12, 9, 0, 0, 0, DateTimeKind.Utc),
+                            DestinationAddress = "Skenderija",
+                            DestinationLat = 43.856000000000002,
+                            DestinationLng = 18.411000000000001,
+                            DistanceKm = 4.5m,
+                            DriverId = 3,
+                            Fare = 7.95m,
+                            IsDeleted = false,
+                            OrderStatusId = 4,
+                            PassengerId = 9,
+                            PickedUpAt = new DateTime(2026, 6, 12, 9, 12, 0, 0, DateTimeKind.Utc),
+                            PickupAddress = "Ferhadija 10",
+                            PickupLat = 43.859000000000002,
+                            PickupLng = 18.420999999999999,
+                            TaxiCompanyId = 3,
+                            UpdatedAt = new DateTime(2026, 6, 12, 9, 35, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 9,
+                            AcceptedAt = new DateTime(2026, 6, 20, 9, 5, 0, 0, DateTimeKind.Utc),
+                            CarId = 5,
+                            CompletedAt = new DateTime(2026, 6, 20, 9, 35, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 6, 20, 9, 0, 0, 0, DateTimeKind.Utc),
+                            DestinationAddress = "Ilidza",
+                            DestinationLat = 43.828000000000003,
+                            DestinationLng = 18.309999999999999,
+                            DistanceKm = 9.2m,
+                            DriverId = 3,
+                            Fare = 13.12m,
+                            IsDeleted = false,
+                            OrderStatusId = 4,
+                            PassengerId = 9,
+                            PickedUpAt = new DateTime(2026, 6, 20, 9, 12, 0, 0, DateTimeKind.Utc),
+                            PickupAddress = "Bascarsija",
+                            PickupLat = 43.859499999999997,
+                            PickupLng = 18.431000000000001,
+                            TaxiCompanyId = 3,
+                            UpdatedAt = new DateTime(2026, 6, 20, 9, 35, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 10,
+                            AcceptedAt = new DateTime(2026, 7, 4, 9, 5, 0, 0, DateTimeKind.Utc),
+                            CarId = 5,
+                            CompletedAt = new DateTime(2026, 7, 4, 9, 35, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 7, 4, 9, 0, 0, 0, DateTimeKind.Utc),
+                            DestinationAddress = "Vogosca",
+                            DestinationLat = 43.899999999999999,
+                            DestinationLng = 18.343,
+                            DistanceKm = 6.1m,
+                            DriverId = 3,
+                            Fare = 9.71m,
+                            IsDeleted = false,
+                            OrderStatusId = 4,
+                            PassengerId = 9,
+                            PickedUpAt = new DateTime(2026, 7, 4, 9, 12, 0, 0, DateTimeKind.Utc),
+                            PickupAddress = "Marijin Dvor",
+                            PickupLat = 43.856000000000002,
+                            PickupLng = 18.402999999999999,
+                            TaxiCompanyId = 3,
+                            UpdatedAt = new DateTime(2026, 7, 4, 9, 35, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 11,
+                            AcceptedAt = new DateTime(2026, 7, 11, 9, 5, 0, 0, DateTimeKind.Utc),
+                            CarId = 5,
+                            CompletedAt = new DateTime(2026, 7, 11, 9, 35, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 7, 11, 9, 0, 0, 0, DateTimeKind.Utc),
+                            DestinationAddress = "Kosevo",
+                            DestinationLat = 43.868000000000002,
+                            DestinationLng = 18.413,
+                            DistanceKm = 3.8m,
+                            DriverId = 3,
+                            Fare = 7.18m,
+                            IsDeleted = false,
+                            OrderStatusId = 4,
+                            PassengerId = 9,
+                            PickedUpAt = new DateTime(2026, 7, 11, 9, 12, 0, 0, DateTimeKind.Utc),
+                            PickupAddress = "Grbavica",
+                            PickupLat = 43.847999999999999,
+                            PickupLng = 18.395,
+                            TaxiCompanyId = 3,
+                            UpdatedAt = new DateTime(2026, 7, 11, 9, 35, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 12,
+                            AcceptedAt = new DateTime(2026, 6, 28, 9, 5, 0, 0, DateTimeKind.Utc),
+                            CarId = 6,
+                            CompletedAt = new DateTime(2026, 6, 28, 9, 35, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 6, 28, 9, 0, 0, 0, DateTimeKind.Utc),
+                            DestinationAddress = "Dobrinja",
+                            DestinationLat = 43.823,
+                            DestinationLng = 18.338999999999999,
+                            DistanceKm = 5.4m,
+                            DriverId = 5,
+                            Fare = 9.01m,
+                            IsDeleted = false,
+                            OrderStatusId = 4,
+                            PassengerId = 9,
+                            PickedUpAt = new DateTime(2026, 6, 28, 9, 12, 0, 0, DateTimeKind.Utc),
+                            PickupAddress = "Alipasina 14",
+                            PickupLat = 43.861499999999999,
+                            PickupLng = 18.4055,
+                            TaxiCompanyId = 4,
+                            UpdatedAt = new DateTime(2026, 6, 28, 9, 35, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("PickMeUp.Services.Database.OrderRejection", b =>
@@ -723,6 +1405,476 @@ namespace PickMeUp.Services.Migrations
                     b.HasIndex("ToStatusId");
 
                     b.ToTable("OrderStatusHistories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ChangedAt = new DateTime(2026, 6, 11, 9, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 4,
+                            OrderId = 1,
+                            Reason = "Order placed",
+                            ToStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ChangedAt = new DateTime(2026, 6, 11, 9, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 3,
+                            FromStatusId = 1,
+                            OrderId = 1,
+                            Reason = "Accepted by driver",
+                            ToStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ChangedAt = new DateTime(2026, 6, 11, 9, 12, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 3,
+                            FromStatusId = 2,
+                            OrderId = 1,
+                            Reason = "Passenger picked up",
+                            ToStatusId = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            ChangedAt = new DateTime(2026, 6, 11, 9, 35, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 3,
+                            FromStatusId = 3,
+                            OrderId = 1,
+                            Reason = "Ride completed",
+                            ToStatusId = 4
+                        },
+                        new
+                        {
+                            Id = 5,
+                            ChangedAt = new DateTime(2026, 6, 18, 9, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 4,
+                            OrderId = 2,
+                            Reason = "Order placed",
+                            ToStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 6,
+                            ChangedAt = new DateTime(2026, 6, 18, 9, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 3,
+                            FromStatusId = 1,
+                            OrderId = 2,
+                            Reason = "Accepted by driver",
+                            ToStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 7,
+                            ChangedAt = new DateTime(2026, 6, 18, 9, 12, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 3,
+                            FromStatusId = 2,
+                            OrderId = 2,
+                            Reason = "Passenger picked up",
+                            ToStatusId = 3
+                        },
+                        new
+                        {
+                            Id = 8,
+                            ChangedAt = new DateTime(2026, 6, 18, 9, 35, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 3,
+                            FromStatusId = 3,
+                            OrderId = 2,
+                            Reason = "Ride completed",
+                            ToStatusId = 4
+                        },
+                        new
+                        {
+                            Id = 9,
+                            ChangedAt = new DateTime(2026, 6, 25, 9, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 4,
+                            OrderId = 3,
+                            Reason = "Order placed",
+                            ToStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 10,
+                            ChangedAt = new DateTime(2026, 6, 25, 9, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 7,
+                            FromStatusId = 1,
+                            OrderId = 3,
+                            Reason = "Accepted by driver",
+                            ToStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 11,
+                            ChangedAt = new DateTime(2026, 6, 25, 9, 12, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 7,
+                            FromStatusId = 2,
+                            OrderId = 3,
+                            Reason = "Passenger picked up",
+                            ToStatusId = 3
+                        },
+                        new
+                        {
+                            Id = 12,
+                            ChangedAt = new DateTime(2026, 6, 25, 9, 35, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 7,
+                            FromStatusId = 3,
+                            OrderId = 3,
+                            Reason = "Ride completed",
+                            ToStatusId = 4
+                        },
+                        new
+                        {
+                            Id = 13,
+                            ChangedAt = new DateTime(2026, 7, 2, 9, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 4,
+                            OrderId = 4,
+                            Reason = "Order placed",
+                            ToStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 14,
+                            ChangedAt = new DateTime(2026, 7, 2, 9, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 3,
+                            FromStatusId = 1,
+                            OrderId = 4,
+                            Reason = "Accepted by driver",
+                            ToStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 15,
+                            ChangedAt = new DateTime(2026, 7, 2, 9, 12, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 3,
+                            FromStatusId = 2,
+                            OrderId = 4,
+                            Reason = "Passenger picked up",
+                            ToStatusId = 3
+                        },
+                        new
+                        {
+                            Id = 16,
+                            ChangedAt = new DateTime(2026, 7, 2, 9, 35, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 3,
+                            FromStatusId = 3,
+                            OrderId = 4,
+                            Reason = "Ride completed",
+                            ToStatusId = 4
+                        },
+                        new
+                        {
+                            Id = 17,
+                            ChangedAt = new DateTime(2026, 7, 9, 9, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 4,
+                            OrderId = 5,
+                            Reason = "Order placed",
+                            ToStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 18,
+                            ChangedAt = new DateTime(2026, 7, 9, 9, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 7,
+                            FromStatusId = 1,
+                            OrderId = 5,
+                            Reason = "Accepted by driver",
+                            ToStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 19,
+                            ChangedAt = new DateTime(2026, 7, 9, 9, 12, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 7,
+                            FromStatusId = 2,
+                            OrderId = 5,
+                            Reason = "Passenger picked up",
+                            ToStatusId = 3
+                        },
+                        new
+                        {
+                            Id = 20,
+                            ChangedAt = new DateTime(2026, 7, 9, 9, 35, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 7,
+                            FromStatusId = 3,
+                            OrderId = 5,
+                            Reason = "Ride completed",
+                            ToStatusId = 4
+                        },
+                        new
+                        {
+                            Id = 21,
+                            ChangedAt = new DateTime(2026, 6, 14, 9, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 4,
+                            OrderId = 6,
+                            Reason = "Order placed",
+                            ToStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 22,
+                            ChangedAt = new DateTime(2026, 6, 14, 9, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 12,
+                            FromStatusId = 1,
+                            OrderId = 6,
+                            Reason = "Accepted by driver",
+                            ToStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 23,
+                            ChangedAt = new DateTime(2026, 6, 14, 9, 12, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 12,
+                            FromStatusId = 2,
+                            OrderId = 6,
+                            Reason = "Passenger picked up",
+                            ToStatusId = 3
+                        },
+                        new
+                        {
+                            Id = 24,
+                            ChangedAt = new DateTime(2026, 6, 14, 9, 35, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 12,
+                            FromStatusId = 3,
+                            OrderId = 6,
+                            Reason = "Ride completed",
+                            ToStatusId = 4
+                        },
+                        new
+                        {
+                            Id = 25,
+                            ChangedAt = new DateTime(2026, 7, 16, 9, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 4,
+                            OrderId = 7,
+                            Reason = "Order placed",
+                            ToStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 26,
+                            ChangedAt = new DateTime(2026, 7, 16, 9, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 12,
+                            FromStatusId = 1,
+                            OrderId = 7,
+                            Reason = "Accepted by driver",
+                            ToStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 27,
+                            ChangedAt = new DateTime(2026, 7, 16, 9, 12, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 12,
+                            FromStatusId = 2,
+                            OrderId = 7,
+                            Reason = "Passenger picked up",
+                            ToStatusId = 3
+                        },
+                        new
+                        {
+                            Id = 28,
+                            ChangedAt = new DateTime(2026, 7, 16, 9, 35, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 12,
+                            FromStatusId = 3,
+                            OrderId = 7,
+                            Reason = "Ride completed",
+                            ToStatusId = 4
+                        },
+                        new
+                        {
+                            Id = 29,
+                            ChangedAt = new DateTime(2026, 6, 12, 9, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 9,
+                            OrderId = 8,
+                            Reason = "Order placed",
+                            ToStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 30,
+                            ChangedAt = new DateTime(2026, 6, 12, 9, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 8,
+                            FromStatusId = 1,
+                            OrderId = 8,
+                            Reason = "Accepted by driver",
+                            ToStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 31,
+                            ChangedAt = new DateTime(2026, 6, 12, 9, 12, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 8,
+                            FromStatusId = 2,
+                            OrderId = 8,
+                            Reason = "Passenger picked up",
+                            ToStatusId = 3
+                        },
+                        new
+                        {
+                            Id = 32,
+                            ChangedAt = new DateTime(2026, 6, 12, 9, 35, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 8,
+                            FromStatusId = 3,
+                            OrderId = 8,
+                            Reason = "Ride completed",
+                            ToStatusId = 4
+                        },
+                        new
+                        {
+                            Id = 33,
+                            ChangedAt = new DateTime(2026, 6, 20, 9, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 9,
+                            OrderId = 9,
+                            Reason = "Order placed",
+                            ToStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 34,
+                            ChangedAt = new DateTime(2026, 6, 20, 9, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 8,
+                            FromStatusId = 1,
+                            OrderId = 9,
+                            Reason = "Accepted by driver",
+                            ToStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 35,
+                            ChangedAt = new DateTime(2026, 6, 20, 9, 12, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 8,
+                            FromStatusId = 2,
+                            OrderId = 9,
+                            Reason = "Passenger picked up",
+                            ToStatusId = 3
+                        },
+                        new
+                        {
+                            Id = 36,
+                            ChangedAt = new DateTime(2026, 6, 20, 9, 35, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 8,
+                            FromStatusId = 3,
+                            OrderId = 9,
+                            Reason = "Ride completed",
+                            ToStatusId = 4
+                        },
+                        new
+                        {
+                            Id = 37,
+                            ChangedAt = new DateTime(2026, 7, 4, 9, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 9,
+                            OrderId = 10,
+                            Reason = "Order placed",
+                            ToStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 38,
+                            ChangedAt = new DateTime(2026, 7, 4, 9, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 8,
+                            FromStatusId = 1,
+                            OrderId = 10,
+                            Reason = "Accepted by driver",
+                            ToStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 39,
+                            ChangedAt = new DateTime(2026, 7, 4, 9, 12, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 8,
+                            FromStatusId = 2,
+                            OrderId = 10,
+                            Reason = "Passenger picked up",
+                            ToStatusId = 3
+                        },
+                        new
+                        {
+                            Id = 40,
+                            ChangedAt = new DateTime(2026, 7, 4, 9, 35, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 8,
+                            FromStatusId = 3,
+                            OrderId = 10,
+                            Reason = "Ride completed",
+                            ToStatusId = 4
+                        },
+                        new
+                        {
+                            Id = 41,
+                            ChangedAt = new DateTime(2026, 7, 11, 9, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 9,
+                            OrderId = 11,
+                            Reason = "Order placed",
+                            ToStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 42,
+                            ChangedAt = new DateTime(2026, 7, 11, 9, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 8,
+                            FromStatusId = 1,
+                            OrderId = 11,
+                            Reason = "Accepted by driver",
+                            ToStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 43,
+                            ChangedAt = new DateTime(2026, 7, 11, 9, 12, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 8,
+                            FromStatusId = 2,
+                            OrderId = 11,
+                            Reason = "Passenger picked up",
+                            ToStatusId = 3
+                        },
+                        new
+                        {
+                            Id = 44,
+                            ChangedAt = new DateTime(2026, 7, 11, 9, 35, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 8,
+                            FromStatusId = 3,
+                            OrderId = 11,
+                            Reason = "Ride completed",
+                            ToStatusId = 4
+                        },
+                        new
+                        {
+                            Id = 45,
+                            ChangedAt = new DateTime(2026, 6, 28, 9, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 9,
+                            OrderId = 12,
+                            Reason = "Order placed",
+                            ToStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 46,
+                            ChangedAt = new DateTime(2026, 6, 28, 9, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 13,
+                            FromStatusId = 1,
+                            OrderId = 12,
+                            Reason = "Accepted by driver",
+                            ToStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 47,
+                            ChangedAt = new DateTime(2026, 6, 28, 9, 12, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 13,
+                            FromStatusId = 2,
+                            OrderId = 12,
+                            Reason = "Passenger picked up",
+                            ToStatusId = 3
+                        },
+                        new
+                        {
+                            Id = 48,
+                            ChangedAt = new DateTime(2026, 6, 28, 9, 35, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 13,
+                            FromStatusId = 3,
+                            OrderId = 12,
+                            Reason = "Ride completed",
+                            ToStatusId = 4
+                        });
                 });
 
             modelBuilder.Entity("PickMeUp.Services.Database.Payment", b =>
@@ -960,6 +2112,92 @@ namespace PickMeUp.Services.Migrations
                         .IsUnique();
 
                     b.ToTable("Reviews");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Comment = "Quick pickup and a friendly driver.",
+                            CreatedAt = new DateTime(2026, 6, 11, 10, 35, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            OrderId = 1,
+                            PassengerId = 4,
+                            Rating = 5,
+                            TargetCompanyId = 1,
+                            TargetDriverId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Comment = "Always on time, never had a problem.",
+                            CreatedAt = new DateTime(2026, 6, 18, 10, 35, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            OrderId = 2,
+                            PassengerId = 4,
+                            Rating = 5,
+                            TargetCompanyId = 1,
+                            TargetDriverId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Comment = "Comfortable ride, arrived a few minutes late.",
+                            CreatedAt = new DateTime(2026, 6, 25, 10, 35, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            OrderId = 3,
+                            PassengerId = 4,
+                            Rating = 4,
+                            TargetCompanyId = 1,
+                            TargetDriverId = 2
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Comment = "Waited far too long for the car to show up.",
+                            CreatedAt = new DateTime(2026, 6, 14, 10, 35, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            OrderId = 6,
+                            PassengerId = 4,
+                            Rating = 2,
+                            TargetCompanyId = 2,
+                            TargetDriverId = 4
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Comment = "Good driver and a clean car.",
+                            CreatedAt = new DateTime(2026, 6, 12, 10, 35, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            OrderId = 8,
+                            PassengerId = 9,
+                            Rating = 4,
+                            TargetCompanyId = 3,
+                            TargetDriverId = 3
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Comment = "Excellent from start to finish.",
+                            CreatedAt = new DateTime(2026, 6, 20, 10, 35, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            OrderId = 9,
+                            PassengerId = 9,
+                            Rating = 5,
+                            TargetCompanyId = 3,
+                            TargetDriverId = 3
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Comment = "Fine ride, but the fare felt high for the distance.",
+                            CreatedAt = new DateTime(2026, 6, 28, 10, 35, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            OrderId = 12,
+                            PassengerId = 9,
+                            Rating = 3,
+                            TargetCompanyId = 4,
+                            TargetDriverId = 5
+                        });
                 });
 
             modelBuilder.Entity("PickMeUp.Services.Database.Role", b =>
@@ -1438,6 +2676,22 @@ namespace PickMeUp.Services.Migrations
                             PricePerKm = 1.10m,
                             StartingPrice = 3.00m,
                             UserId = 6
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CityId = 2,
+                            ContactEmail = "info@bascarsijataxi.local",
+                            ContactPhone = "+38733555666",
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            HqAddress = "Mula Mustafe Baseskije 18",
+                            IsActive = true,
+                            IsDeleted = false,
+                            Name = "Bascarsija Taxi",
+                            OwnerName = "Kenan Bosna",
+                            PricePerKm = 1.15m,
+                            StartingPrice = 2.80m,
+                            UserId = 11
                         });
                 });
 
@@ -1608,6 +2862,76 @@ namespace PickMeUp.Services.Migrations
                             PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
                             PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
                             Username = "driver3"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "passenger2@pickmeup.local",
+                            FirstName = "Amar",
+                            IsActive = true,
+                            IsDeleted = false,
+                            LastName = "Selimovic",
+                            PasswordHash = "56VoVY84Uv3DwxLzx4fwlU3IzrM=",
+                            PasswordSalt = "Rk9wYmJ2MnhLd0RlTHRRUQ==",
+                            PhoneNumber = "+38761234567",
+                            Username = "passenger2"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "passenger3@pickmeup.local",
+                            FirstName = "Ines",
+                            IsActive = true,
+                            IsDeleted = false,
+                            LastName = "Maric",
+                            PasswordHash = "pG3YU6itVrSMloQBg/eTd0NOfNo=",
+                            PasswordSalt = "c1RtWnFYaDdOdkxrRWJVdA==",
+                            PhoneNumber = "+38761765432",
+                            Username = "passenger3"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "company4@pickmeup.local",
+                            FirstName = "Kenan",
+                            IsActive = true,
+                            IsDeleted = false,
+                            LastName = "Bosna",
+                            PasswordHash = "VryTRHSCv/ouQq2T4UhDu7VG8ow=",
+                            PasswordSalt = "WGpQdzRzTmhCcTJmVmRLYQ==",
+                            PhoneNumber = "+38733555666",
+                            Username = "company4"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "driver4@pickmeup.local",
+                            FirstName = "Tarik",
+                            IsActive = true,
+                            IsDeleted = false,
+                            LastName = "Zovko",
+                            PasswordHash = "NVrK8OXfEs43X/SeZ5ylkNrLeMg=",
+                            PasswordSalt = "THBjNXZLZ1J3TjhtWXNFag==",
+                            PhoneNumber = "+38736777888",
+                            Username = "driver4"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "driver5@pickmeup.local",
+                            FirstName = "Adna",
+                            IsActive = true,
+                            IsDeleted = false,
+                            LastName = "Hadzic",
+                            PasswordHash = "Yk+hY2PFplbc+iJLzo9GXPyQCXo=",
+                            PasswordSalt = "QjdrTndSdFhoTTJ2Q3BZZA==",
+                            PhoneNumber = "+38733999000",
+                            Username = "driver5"
                         });
                 });
 
@@ -1692,6 +3016,41 @@ namespace PickMeUp.Services.Migrations
                             DateAssigned = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
                             RoleId = 3,
                             UserId = 8
+                        },
+                        new
+                        {
+                            Id = 9,
+                            DateAssigned = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            RoleId = 4,
+                            UserId = 9
+                        },
+                        new
+                        {
+                            Id = 10,
+                            DateAssigned = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            RoleId = 4,
+                            UserId = 10
+                        },
+                        new
+                        {
+                            Id = 11,
+                            DateAssigned = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            RoleId = 2,
+                            UserId = 11
+                        },
+                        new
+                        {
+                            Id = 12,
+                            DateAssigned = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            RoleId = 3,
+                            UserId = 12
+                        },
+                        new
+                        {
+                            Id = 13,
+                            DateAssigned = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            RoleId = 3,
+                            UserId = 13
                         });
                 });
 
@@ -1804,6 +3163,32 @@ namespace PickMeUp.Services.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("TaxiCompany");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PickMeUp.Services.Database.InteractionHistory", b =>
+                {
+                    b.HasOne("PickMeUp.Services.Database.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("PickMeUp.Services.Database.TaxiCompany", "TaxiCompany")
+                        .WithMany()
+                        .HasForeignKey("TaxiCompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PickMeUp.Services.Database.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
 
                     b.Navigation("TaxiCompany");
 

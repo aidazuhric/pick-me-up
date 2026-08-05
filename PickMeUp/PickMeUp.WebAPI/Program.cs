@@ -8,6 +8,7 @@ using PickMeUp.Services.Messaging;
 using PickMeUp.Services.Notifications;
 using PickMeUp.Services.Orders;
 using PickMeUp.Services.Payments;
+using PickMeUp.Services.Recommendations;
 using PickMeUp.Services.Reports;
 using PickMeUp.Services.Storage;
 using PickMeUp.Services.Validators;
@@ -173,6 +174,7 @@ builder.Services.AddSingleton<IRabbitMqConnection, RabbitMqConnection>();
 builder.Services.AddScoped<IEventPublisher, RabbitMqEventPublisher>();
 builder.Services.AddScoped<INotificationPublisher, SignalRNotificationPublisher>();
 builder.Services.AddScoped<INotificationRecorder, NotificationRecorder>();
+builder.Services.AddScoped<IInteractionRecorder, InteractionRecorder>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IImageFileStore, ImageFileStore>();
 

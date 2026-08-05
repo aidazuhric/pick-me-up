@@ -5,6 +5,7 @@ using PickMeUp.Model.Requests;
 using PickMeUp.Model.Responses;
 using PickMeUp.Model.SearchObjects;
 using PickMeUp.Services.Database;
+using PickMeUp.Services.Recommendations;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +16,7 @@ namespace PickMeUp.Services
           IReviewService
     {
         private readonly IAuthenticatedUserAccessor _userAccessor;
+        private readonly IInteractionRecorder _interactions;
 
         private ReviewScope? _scope;
 
@@ -23,10 +25,12 @@ namespace PickMeUp.Services
             MapsterMapper.IMapper mapper,
             IValidator<ReviewInsertRequest> insertValidator,
             IValidator<ReviewUpdateRequest> updateValidator,
-            IAuthenticatedUserAccessor userAccessor)
+            IAuthenticatedUserAccessor userAccessor,
+            IInteractionRecorder interactions)
             : base(dbContext, mapper, insertValidator, updateValidator)
         {
             _userAccessor = userAccessor;
+            _interactions = interactions;
         }
 
         public override async Task<ReviewResponse> InsertAsync(ReviewInsertRequest request)
@@ -82,6 +86,12 @@ namespace PickMeUp.Services
             catch (DbUpdateException exception) when (exception.IsUniqueViolation())
             {
                 throw new BusinessException("You have already reviewed this ride.");
+            }
+
+            if (review.TargetCompanyId.HasValue)
+            {
+                await _interactions.RecordAsync(
+                    userId, review.TargetCompanyId.Value, InteractionSignalType.Reviewed, review.Rating, order.Id);
             }
 
             return await LoadResponseAsync(review.Id);

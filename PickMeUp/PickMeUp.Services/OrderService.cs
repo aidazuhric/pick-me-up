@@ -6,6 +6,7 @@ using PickMeUp.Model.Responses;
 using PickMeUp.Model.SearchObjects;
 using PickMeUp.Services.Database;
 using PickMeUp.Services.Orders;
+using PickMeUp.Services.Recommendations;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +19,7 @@ namespace PickMeUp.Services
         private readonly IFareCalculator _fareCalculator;
         private readonly IShiftService _shiftService;
         private readonly IOrderNotificationDispatcher _dispatcher;
+        private readonly IInteractionRecorder _interactions;
         private readonly IValidator<OrderInsertRequest> _insertValidator;
         private readonly IValidator<OrderCancelRequest> _cancelValidator;
 
@@ -31,6 +33,7 @@ namespace PickMeUp.Services
             IFareCalculator fareCalculator,
             IShiftService shiftService,
             IOrderNotificationDispatcher dispatcher,
+            IInteractionRecorder interactions,
             IValidator<OrderInsertRequest> insertValidator,
             IValidator<OrderCancelRequest> cancelValidator)
             : base(mapper, dbContext)
@@ -40,6 +43,7 @@ namespace PickMeUp.Services
             _fareCalculator = fareCalculator;
             _shiftService = shiftService;
             _dispatcher = dispatcher;
+            _interactions = interactions;
             _insertValidator = insertValidator;
             _cancelValidator = cancelValidator;
         }
@@ -88,6 +92,12 @@ namespace PickMeUp.Services
 
             await transaction.CommitAsync();
 
+            if (order.TaxiCompanyId.HasValue)
+            {
+                await _interactions.RecordAsync(
+                    userId, order.TaxiCompanyId.Value, InteractionSignalType.Ordered, 1m, order.Id);
+            }
+
             await _dispatcher.OrderCreatedAsync(order.Id);
 
             return await LoadResponseAsync(order.Id);
@@ -114,6 +124,8 @@ namespace PickMeUp.Services
             await using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
             var from = CurrentStatus(order);
+            var companyWasUnassigned = order.TaxiCompanyId == null;
+
             order.DriverId = driver.Id;
             order.CarId = carId;
             order.TaxiCompanyId ??= driver.TaxiCompanyId;
@@ -123,6 +135,12 @@ namespace PickMeUp.Services
             await RecordHistoryAsync(order.Id, from, target, driver.UserId, "Accepted by driver");
             await _dbContext.SaveChangesAsync();
             await transaction.CommitAsync();
+
+            if (companyWasUnassigned)
+            {
+                await _interactions.RecordAsync(
+                    order.PassengerId, order.TaxiCompanyId!.Value, InteractionSignalType.Ordered, 1m, order.Id);
+            }
 
             await _dispatcher.OrderStatusChangedAsync(order.Id, from.ToString(), target.ToString());
 
@@ -215,6 +233,12 @@ namespace PickMeUp.Services
 
             await _dbContext.SaveChangesAsync();
             await transaction.CommitAsync();
+
+            if (order.TaxiCompanyId.HasValue)
+            {
+                await _interactions.RecordAsync(
+                    order.PassengerId, order.TaxiCompanyId.Value, InteractionSignalType.Completed, 1m, order.Id);
+            }
 
             await _dispatcher.OrderStatusChangedAsync(order.Id, from.ToString(), target.ToString());
 
