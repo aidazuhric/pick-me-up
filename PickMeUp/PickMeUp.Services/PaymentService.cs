@@ -201,6 +201,20 @@ namespace PickMeUp.Services
             return await LoadResponseAsync(payment.Id);
         }
 
+        public async Task<PaymentResponse> GetByOrderAsync(int orderId)
+        {
+            await ResolveScopeAsync();
+
+            var query = await IncludeRelatedEntitiesAsync(null, _dbContext.Payments.AsNoTracking());
+
+            var payment = await query.FirstOrDefaultAsync(p => p.OrderId == orderId)
+                ?? throw new KeyNotFoundException($"No payment found for order {orderId}.");
+
+            EnsureVisible(payment, orderId);
+
+            return _mapper.Map<PaymentResponse>(payment);
+        }
+
         protected override Task<IQueryable<Payment>> IncludeRelatedEntitiesAsync(PaymentSearch? search, IQueryable<Payment> query)
         {
             IQueryable<Payment> result = query

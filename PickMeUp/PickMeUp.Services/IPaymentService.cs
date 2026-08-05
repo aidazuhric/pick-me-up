@@ -11,5 +11,7 @@ namespace PickMeUp.Services
         Task<bool> HandleWebhookAsync(string payload, string signatureHeader);
 
         Task<PaymentResponse> RefundAsync(int id, PaymentRefundRequest request);
+
+        Task<PaymentResponse> GetByOrderAsync(int orderId);
     }
 }

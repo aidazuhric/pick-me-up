@@ -30,6 +30,18 @@ public class PaymentsController : BaseReadController<PaymentResponse, PaymentSea
     }
 
     /// <summary>
+    /// Payment status and refund history for one ride. A company may read this only for its own
+    /// orders, and has no way to change the amount or the status — those are set by Stripe
+    /// confirmation alone.
+    /// </summary>
+    [Authorization(Roles.Admin, Roles.Company, Roles.Passenger)]
+    [HttpGet("ByOrder/{orderId}")]
+    public async Task<ActionResult<PaymentResponse>> GetByOrder(int orderId)
+    {
+        return await _service.GetByOrderAsync(orderId);
+    }
+
+    /// <summary>
     /// Starts payment for a completed ride. The amount is taken from the fare the server
     /// computed when the ride finished — the caller cannot supply or influence it.
     /// </summary>
