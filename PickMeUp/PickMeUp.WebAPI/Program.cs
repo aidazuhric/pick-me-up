@@ -9,6 +9,7 @@ using PickMeUp.Services.Orders;
 using PickMeUp.Services.Storage;
 using PickMeUp.Services.Validators;
 using PickMeUp.WebAPI.Filters;
+using PickMeUp.WebAPI.Hubs;
 using PickMeUp.WebAPI.Services;
 using PickMeUp.WebAPI.Services.AccessManager;
 using FluentValidation;
@@ -31,6 +32,7 @@ const string CorsPolicyName = "PickMeUpCors";
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
 builder.Services.AddMemoryCache();
+builder.Services.AddSignalR();
 builder.Services.AddScoped<IAuthenticatedUserAccessor, HttpAuthenticatedUserAccessor>();
 
 builder.Services.AddControllers(
@@ -43,7 +45,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(startupOptions.Api.CorsAllowedOrigins.ToArray())
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -129,6 +132,7 @@ builder.Services.AddSingleton<IOrderStateMachine, OrderStateMachine>();
 builder.Services.AddSingleton<IFareCalculator, FareCalculator>();
 builder.Services.AddSingleton<IRabbitMqConnection, RabbitMqConnection>();
 builder.Services.AddScoped<IEventPublisher, RabbitMqEventPublisher>();
+builder.Services.AddScoped<INotificationPublisher, SignalRNotificationPublisher>();
 builder.Services.AddScoped<IImageFileStore, ImageFileStore>();
 
 builder.Services.AddScoped<ICityService, CityService>();
@@ -185,6 +189,22 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         ClockSkew = TimeSpan.Zero
+    };
+
+    o.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+
+            if (!string.IsNullOrEmpty(accessToken) &&
+                context.HttpContext.Request.Path.StartsWithSegments("/hubs"))
+            {
+                context.Token = accessToken;
+            }
+
+            return Task.CompletedTask;
+        }
     };
 });
 builder.Services.AddAuthorization();
@@ -248,5 +268,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<NotificationHub>("/hubs/notifications");
 
 app.Run();
