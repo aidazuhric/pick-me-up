@@ -30,8 +30,9 @@ services:
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "check_port_connectivity"]
       interval: 10s
-      timeout: 10s
-      retries: 12
+      timeout: 30s
+      retries: 20
+      start_period: 90s
     networks:
       - pickmeup
 

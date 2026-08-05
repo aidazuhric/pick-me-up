@@ -1,4 +1,5 @@
 using PickMeUp.Model.Responses;
+using PickMeUp.Services.Notifications;
 using Microsoft.AspNetCore.SignalR;
 
 namespace PickMeUp.WebAPI.Hubs;

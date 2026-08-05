@@ -17,6 +17,7 @@ namespace PickMeUp.Services
         private readonly IOrderStateMachine _stateMachine;
         private readonly IFareCalculator _fareCalculator;
         private readonly IShiftService _shiftService;
+        private readonly IOrderNotificationDispatcher _dispatcher;
         private readonly IValidator<OrderInsertRequest> _insertValidator;
         private readonly IValidator<OrderCancelRequest> _cancelValidator;
 
@@ -29,6 +30,7 @@ namespace PickMeUp.Services
             IOrderStateMachine stateMachine,
             IFareCalculator fareCalculator,
             IShiftService shiftService,
+            IOrderNotificationDispatcher dispatcher,
             IValidator<OrderInsertRequest> insertValidator,
             IValidator<OrderCancelRequest> cancelValidator)
             : base(mapper, dbContext)
@@ -37,6 +39,7 @@ namespace PickMeUp.Services
             _stateMachine = stateMachine;
             _fareCalculator = fareCalculator;
             _shiftService = shiftService;
+            _dispatcher = dispatcher;
             _insertValidator = insertValidator;
             _cancelValidator = cancelValidator;
         }
@@ -85,6 +88,8 @@ namespace PickMeUp.Services
 
             await transaction.CommitAsync();
 
+            await _dispatcher.OrderCreatedAsync(order.Id);
+
             return await LoadResponseAsync(order.Id);
         }
 
@@ -119,6 +124,8 @@ namespace PickMeUp.Services
             await _dbContext.SaveChangesAsync();
             await transaction.CommitAsync();
 
+            await _dispatcher.OrderStatusChangedAsync(order.Id, from.ToString(), target.ToString());
+
             return await LoadResponseAsync(order.Id);
         }
 
@@ -151,6 +158,8 @@ namespace PickMeUp.Services
 
             await _dbContext.SaveChangesAsync();
 
+            await _dispatcher.OrderBecameAvailableAsync(id, driver.Id);
+
             return await LoadResponseAsync(id);
         }
 
@@ -173,6 +182,8 @@ namespace PickMeUp.Services
             await RecordHistoryAsync(order.Id, from, target, driver.UserId, "Passenger picked up");
             await _dbContext.SaveChangesAsync();
             await transaction.CommitAsync();
+
+            await _dispatcher.OrderStatusChangedAsync(order.Id, from.ToString(), target.ToString());
 
             return await LoadResponseAsync(order.Id);
         }
@@ -205,6 +216,8 @@ namespace PickMeUp.Services
             await _dbContext.SaveChangesAsync();
             await transaction.CommitAsync();
 
+            await _dispatcher.OrderStatusChangedAsync(order.Id, from.ToString(), target.ToString());
+
             return await LoadResponseAsync(order.Id);
         }
 
@@ -230,6 +243,8 @@ namespace PickMeUp.Services
             await RecordHistoryAsync(order.Id, from, target, userId, request.Reason);
             await _dbContext.SaveChangesAsync();
             await transaction.CommitAsync();
+
+            await _dispatcher.OrderCancelledAsync(order.Id, request.Reason, userId);
 
             return await LoadResponseAsync(order.Id);
         }

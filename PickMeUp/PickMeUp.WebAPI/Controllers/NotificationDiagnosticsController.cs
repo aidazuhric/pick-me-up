@@ -1,6 +1,7 @@
 using PickMeUp.Model.Constants;
 using PickMeUp.Model.Responses;
 using PickMeUp.WebAPI.Filters;
+using PickMeUp.Services.Notifications;
 using PickMeUp.WebAPI.Hubs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
