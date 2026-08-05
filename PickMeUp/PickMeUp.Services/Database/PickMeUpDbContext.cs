@@ -29,6 +29,8 @@ namespace PickMeUp.Services.Database
         public DbSet<Payment> Payments { get; set; }
         public DbSet<PaymentRefund> PaymentRefunds { get; set; }
         public DbSet<Review> Reviews { get; set; }
+        public DbSet<SupportTicket> SupportTickets { get; set; }
+        public DbSet<SupportTicketReply> SupportTicketReplies { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

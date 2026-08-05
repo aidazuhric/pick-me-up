@@ -263,6 +263,39 @@ namespace PickMeUp.Services.Database
 
             modelBuilder.Entity<Review>()
                 .HasIndex(r => new { r.OrderId, r.TargetDriverId }).IsUnique();
+
+            modelBuilder.Entity<SupportTicket>()
+                .HasQueryFilter(t => !t.IsDeleted);
+
+            modelBuilder.Entity<SupportTicket>()
+                .HasOne(t => t.Submitter).WithMany().HasForeignKey(t => t.SubmitterId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<SupportTicket>()
+                .HasOne(t => t.TargetUser).WithMany().HasForeignKey(t => t.TargetUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<SupportTicket>()
+                .HasOne(t => t.ResolvedByUser).WithMany().HasForeignKey(t => t.ResolvedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<SupportTicket>()
+                .HasOne(t => t.SupportTicketStatus).WithMany().HasForeignKey(t => t.SupportTicketStatusId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<SupportTicket>()
+                .HasIndex(t => new { t.SupportTicketStatusId, t.CreatedAt });
+
+            modelBuilder.Entity<SupportTicketReply>()
+                .HasOne(r => r.SupportTicket).WithMany(t => t.Replies).HasForeignKey(r => r.SupportTicketId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<SupportTicketReply>()
+                .HasOne(r => r.Author).WithMany().HasForeignKey(r => r.AuthorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<SupportTicketReply>()
+                .HasQueryFilter(r => !r.SupportTicket.IsDeleted);
         }
     }
 }

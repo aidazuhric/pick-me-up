@@ -982,6 +982,168 @@ namespace PickMeUp.Services.Migrations
                     b.ToTable("ShiftBreaks");
                 });
 
+            modelBuilder.Entity("PickMeUp.Services.Database.SupportTicket", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("ResolvedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("ResolvedByUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<int>("SubmitterId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SupportTicketStatusId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("TargetUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ResolvedByUserId");
+
+                    b.HasIndex("SubmitterId");
+
+                    b.HasIndex("TargetUserId");
+
+                    b.HasIndex("SupportTicketStatusId", "CreatedAt");
+
+                    b.ToTable("SupportTickets");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Body = "Twice this week the app returned me to the login screen while my ride was still in progress.",
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            Subject = "The app signs me out during a ride",
+                            SubmitterId = 4,
+                            SupportTicketStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Body = "Starting a shift fails with an error even though a car is assigned to me.",
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            Subject = "I cannot start my shift",
+                            SubmitterId = 3,
+                            SupportTicketStatusId = 2,
+                            UpdatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Body = "The driver drove across town for a trip that normally takes ten minutes and the fare was far higher than usual.",
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            ResolvedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            ResolvedByUserId = 1,
+                            Subject = "Driver took a much longer route",
+                            SubmitterId = 4,
+                            SupportTicketStatusId = 3,
+                            TargetUserId = 3,
+                            UpdatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Body = "We uploaded a logo from the desktop app but passengers still see an empty placeholder.",
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            Subject = "Our company logo does not show in the app",
+                            SubmitterId = 2,
+                            SupportTicketStatusId = 1
+                        });
+                });
+
+            modelBuilder.Entity("PickMeUp.Services.Database.SupportTicketReply", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AuthorId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("SupportTicketId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("SupportTicketId");
+
+                    b.ToTable("SupportTicketReplies");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AuthorId = 1,
+                            Body = "Thanks for reporting this. We are checking your car assignment now.",
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SupportTicketId = 2
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AuthorId = 1,
+                            Body = "We have pulled the route for this ride and are reviewing it with the company.",
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SupportTicketId = 3
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AuthorId = 1,
+                            Body = "The difference has been refunded and the company has been notified.",
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            SupportTicketId = 3
+                        });
+                });
+
             modelBuilder.Entity("PickMeUp.Services.Database.SupportTicketStatus", b =>
                 {
                     b.Property<int>("Id")
@@ -1725,6 +1887,58 @@ namespace PickMeUp.Services.Migrations
                     b.Navigation("Shift");
                 });
 
+            modelBuilder.Entity("PickMeUp.Services.Database.SupportTicket", b =>
+                {
+                    b.HasOne("PickMeUp.Services.Database.User", "ResolvedByUser")
+                        .WithMany()
+                        .HasForeignKey("ResolvedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("PickMeUp.Services.Database.User", "Submitter")
+                        .WithMany()
+                        .HasForeignKey("SubmitterId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PickMeUp.Services.Database.SupportTicketStatus", "SupportTicketStatus")
+                        .WithMany()
+                        .HasForeignKey("SupportTicketStatusId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PickMeUp.Services.Database.User", "TargetUser")
+                        .WithMany()
+                        .HasForeignKey("TargetUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ResolvedByUser");
+
+                    b.Navigation("Submitter");
+
+                    b.Navigation("SupportTicketStatus");
+
+                    b.Navigation("TargetUser");
+                });
+
+            modelBuilder.Entity("PickMeUp.Services.Database.SupportTicketReply", b =>
+                {
+                    b.HasOne("PickMeUp.Services.Database.User", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PickMeUp.Services.Database.SupportTicket", "SupportTicket")
+                        .WithMany("Replies")
+                        .HasForeignKey("SupportTicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("SupportTicket");
+                });
+
             modelBuilder.Entity("PickMeUp.Services.Database.TaxiCompany", b =>
                 {
                     b.HasOne("PickMeUp.Services.Database.City", "City")
@@ -1783,6 +1997,11 @@ namespace PickMeUp.Services.Migrations
             modelBuilder.Entity("PickMeUp.Services.Database.Shift", b =>
                 {
                     b.Navigation("Breaks");
+                });
+
+            modelBuilder.Entity("PickMeUp.Services.Database.SupportTicket", b =>
+                {
+                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("PickMeUp.Services.Database.User", b =>

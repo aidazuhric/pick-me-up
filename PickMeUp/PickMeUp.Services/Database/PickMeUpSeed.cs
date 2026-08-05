@@ -22,6 +22,8 @@ namespace PickMeUp.Services.Database
             SeedDrivers(modelBuilder);
             SeedCars(modelBuilder);
             SeedCarAssignments(modelBuilder);
+            SeedSupportTickets(modelBuilder);
+            SeedSupportTicketReplies(modelBuilder);
         }
 
         private void SeedCities(ModelBuilder modelBuilder)
@@ -405,6 +407,81 @@ namespace PickMeUp.Services.Database
                 new { Id = 1, CarId = 1, DriverId = 1, AssignedFrom = SeedTimestamp, AssignedTo = (DateTime?)null, IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null },
                 new { Id = 2, CarId = 2, DriverId = 2, AssignedFrom = SeedTimestamp, AssignedTo = (DateTime?)null, IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null },
                 new { Id = 3, CarId = 5, DriverId = 3, AssignedFrom = SeedTimestamp, AssignedTo = (DateTime?)null, IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null }
+            );
+        }
+
+        private void SeedSupportTickets(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<SupportTicket>().HasData(
+                new
+                {
+                    Id = 1,
+                    SubmitterId = 4,
+                    Subject = "The app signs me out during a ride",
+                    Body = "Twice this week the app returned me to the login screen while my ride was still in progress.",
+                    SupportTicketStatusId = (int)SupportTicketStatusEnum.Open,
+                    TargetUserId = (int?)null,
+                    CreatedAt = SeedTimestamp,
+                    UpdatedAt = (DateTime?)null,
+                    ResolvedAt = (DateTime?)null,
+                    ResolvedByUserId = (int?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 2,
+                    SubmitterId = 3,
+                    Subject = "I cannot start my shift",
+                    Body = "Starting a shift fails with an error even though a car is assigned to me.",
+                    SupportTicketStatusId = (int)SupportTicketStatusEnum.InProgress,
+                    TargetUserId = (int?)null,
+                    CreatedAt = SeedTimestamp,
+                    UpdatedAt = (DateTime?)SeedTimestamp,
+                    ResolvedAt = (DateTime?)null,
+                    ResolvedByUserId = (int?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 3,
+                    SubmitterId = 4,
+                    Subject = "Driver took a much longer route",
+                    Body = "The driver drove across town for a trip that normally takes ten minutes and the fare was far higher than usual.",
+                    SupportTicketStatusId = (int)SupportTicketStatusEnum.Resolved,
+                    TargetUserId = (int?)3,
+                    CreatedAt = SeedTimestamp,
+                    UpdatedAt = (DateTime?)SeedTimestamp,
+                    ResolvedAt = (DateTime?)SeedTimestamp,
+                    ResolvedByUserId = (int?)1,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 4,
+                    SubmitterId = 2,
+                    Subject = "Our company logo does not show in the app",
+                    Body = "We uploaded a logo from the desktop app but passengers still see an empty placeholder.",
+                    SupportTicketStatusId = (int)SupportTicketStatusEnum.Open,
+                    TargetUserId = (int?)null,
+                    CreatedAt = SeedTimestamp,
+                    UpdatedAt = (DateTime?)null,
+                    ResolvedAt = (DateTime?)null,
+                    ResolvedByUserId = (int?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
+                }
+            );
+        }
+
+        private void SeedSupportTicketReplies(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<SupportTicketReply>().HasData(
+                new { Id = 1, SupportTicketId = 2, AuthorId = 1, Body = "Thanks for reporting this. We are checking your car assignment now.", CreatedAt = SeedTimestamp },
+                new { Id = 2, SupportTicketId = 3, AuthorId = 1, Body = "We have pulled the route for this ride and are reviewing it with the company.", CreatedAt = SeedTimestamp },
+                new { Id = 3, SupportTicketId = 3, AuthorId = 1, Body = "The difference has been refunded and the company has been notified.", CreatedAt = SeedTimestamp }
             );
         }
     }

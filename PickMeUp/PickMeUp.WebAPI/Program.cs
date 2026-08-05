@@ -22,6 +22,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 using System.Text;
+using System.Text.Json.Serialization;
 
 EnvironmentConfigurationExtensions.LoadEnvFile();
 
@@ -39,7 +40,8 @@ builder.Services.AddScoped<IAuthenticatedUserAccessor, HttpAuthenticatedUserAcce
 
 builder.Services.AddControllers(
    options => options.Filters.Add<ExceptionFilter>()
-);
+).AddJsonOptions(options =>
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 builder.Services.AddCors(options =>
 {
@@ -81,6 +83,14 @@ TypeAdapterConfig<Car, CarResponse>.NewConfig()
     .Map(dest => dest.CompanyName, src => src.TaxiCompany.Name)
     .Map(dest => dest.PhotoImageUrl, src => src.PhotoImagePath);
 TypeAdapterConfig<CarUpdateRequest, Car>.NewConfig().IgnoreNullValues(true);
+TypeAdapterConfig<SupportTicketReply, SupportTicketReplyResponse>.NewConfig()
+    .Map(dest => dest.AuthorName, src => src.Author.FirstName + " " + src.Author.LastName);
+TypeAdapterConfig<SupportTicket, SupportTicketResponse>.NewConfig()
+    .Map(dest => dest.SubmitterName, src => src.Submitter.FirstName + " " + src.Submitter.LastName)
+    .Map(dest => dest.Status, src => src.SupportTicketStatus.Name)
+    .Map(dest => dest.TargetUserName, src => src.TargetUser != null ? src.TargetUser.FirstName + " " + src.TargetUser.LastName : null)
+    .Map(dest => dest.ResolvedByName, src => src.ResolvedByUser != null ? src.ResolvedByUser.FirstName + " " + src.ResolvedByUser.LastName : null)
+    .Map(dest => dest.Replies, src => src.Replies.OrderBy(r => r.CreatedAt).ToList());
 TypeAdapterConfig<Review, ReviewResponse>.NewConfig()
     .Map(dest => dest.AuthorName, src => src.Passenger.FirstName + " " + src.Passenger.LastName)
     .Map(dest => dest.CompanyName, src => src.TargetCompany != null ? src.TargetCompany.Name : null)
@@ -143,6 +153,7 @@ builder.Services.AddScoped<IShiftService, ShiftService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderNotificationDispatcher, OrderNotificationDispatcher>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<ISupportTicketService, SupportTicketService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IPaymentNotificationDispatcher, PaymentNotificationDispatcher>();
 if (builder.Environment.IsDevelopment() && string.IsNullOrWhiteSpace(EnvironmentReader.Optional("STRIPE_SECRET_KEY")))
@@ -176,6 +187,8 @@ builder.Services.AddScoped<IValidator<UserInsertRequest>, UserInsertValidator>()
 builder.Services.AddScoped<IValidator<UserUpdateRequest>, UserUpdateValidator>();
 builder.Services.AddScoped<IValidator<DriverInsertRequest>, DriverInsertValidator>();
 builder.Services.AddScoped<IValidator<DriverUpdateRequest>, DriverUpdateValidator>();
+builder.Services.AddScoped<IValidator<SupportTicketInsertRequest>, SupportTicketInsertValidator>();
+builder.Services.AddScoped<IValidator<SupportTicketReplyRequest>, SupportTicketReplyValidator>();
 builder.Services.AddScoped<IValidator<ReviewInsertRequest>, ReviewInsertValidator>();
 builder.Services.AddScoped<IValidator<ReviewUpdateRequest>, ReviewUpdateValidator>();
 builder.Services.AddScoped<IValidator<OrderInsertRequest>, OrderInsertValidator>();
