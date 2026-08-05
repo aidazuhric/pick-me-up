@@ -1,3 +1,4 @@
+using PickMeUp.Model.Constants;
 using PickMeUp.Model.Messaging;
 using PickMeUp.Model.Responses;
 using PickMeUp.Services.Database;
@@ -10,26 +11,22 @@ namespace PickMeUp.Services.Orders
 {
     public class OrderNotificationDispatcher : IOrderNotificationDispatcher
     {
-        private const string AvailabilityCategory = "order-available";
-        private const string StatusCategory = "order-status";
-        private const string CancellationCategory = "order-cancelled";
-
         private readonly PickMeUpDbContext _dbContext;
         private readonly IEventPublisher _eventPublisher;
-        private readonly INotificationPublisher _notificationPublisher;
+        private readonly INotificationRecorder _notifications;
         private readonly IShiftService _shiftService;
         private readonly ILogger<OrderNotificationDispatcher> _logger;
 
         public OrderNotificationDispatcher(
             PickMeUpDbContext dbContext,
             IEventPublisher eventPublisher,
-            INotificationPublisher notificationPublisher,
+            INotificationRecorder notifications,
             IShiftService shiftService,
             ILogger<OrderNotificationDispatcher> logger)
         {
             _dbContext = dbContext;
             _eventPublisher = eventPublisher;
-            _notificationPublisher = notificationPublisher;
+            _notifications = notifications;
             _shiftService = shiftService;
             _logger = logger;
         }
@@ -87,14 +84,14 @@ namespace PickMeUp.Services.Orders
                 RecipientName = FullName(order.Passenger)
             });
 
-            await PushAsync(order.PassengerId, new NotificationMessage
+            await DeliverAsync(order.PassengerId, new NotificationMessage
             {
                 Title = $"Ride #{order.Id} is now {toStatus}",
                 Body = driverName == null
                     ? $"Your ride moved from {fromStatus} to {toStatus}."
                     : $"Your ride moved from {fromStatus} to {toStatus}. Driver: {driverName}.",
                 OrderId = order.Id,
-                Category = StatusCategory
+                Category = NotificationCategories.OrderStatus
             });
         }
 
@@ -127,12 +124,12 @@ namespace PickMeUp.Services.Orders
 
             if (recipientUserId != null)
             {
-                await PushAsync(recipientUserId.Value, new NotificationMessage
+                await DeliverAsync(recipientUserId.Value, new NotificationMessage
                 {
                     Title = $"Ride #{order.Id} was cancelled",
                     Body = $"Reason: {reason}",
                     OrderId = order.Id,
-                    Category = CancellationCategory
+                    Category = NotificationCategories.OrderCancelled
                 });
             }
         }
@@ -157,18 +154,18 @@ namespace PickMeUp.Services.Orders
                     return;
                 }
 
-                await _notificationPublisher.PushToUsersAsync(recipients, new NotificationMessage
+                await _notifications.DeliverAsync(recipients, new NotificationMessage
                 {
                     Title = "New ride available",
                     Body = $"Pick-up at {order.PickupAddress}.",
                     OrderId = order.Id,
-                    Category = AvailabilityCategory
+                    Category = NotificationCategories.OrderAvailable
                 });
             }
             catch (Exception exception)
             {
                 _logger.LogError(exception,
-                    "Could not push availability for order {OrderId}. The order is unaffected.", order.Id);
+                    "Could not deliver availability for order {OrderId}. The order is unaffected.", order.Id);
             }
         }
 
@@ -186,16 +183,16 @@ namespace PickMeUp.Services.Orders
             }
         }
 
-        private async Task PushAsync(int userId, NotificationMessage message)
+        private async Task DeliverAsync(int userId, NotificationMessage message)
         {
             try
             {
-                await _notificationPublisher.PushToUserAsync(userId, message);
+                await _notifications.DeliverAsync(userId, message);
             }
             catch (Exception exception)
             {
                 _logger.LogError(exception,
-                    "Could not push notification for order {OrderId} to user {UserId}. The order is unaffected.",
+                    "Could not deliver notification for order {OrderId} to user {UserId}. The order is unaffected.",
                     message.OrderId, userId);
             }
         }

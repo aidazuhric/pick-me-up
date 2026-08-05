@@ -1,3 +1,4 @@
+using PickMeUp.Model.Constants;
 using PickMeUp.Model.Enums;
 using RoleNames = PickMeUp.Model.Constants.Roles;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,7 @@ namespace PickMeUp.Services.Database
             SeedCarAssignments(modelBuilder);
             SeedSupportTickets(modelBuilder);
             SeedSupportTicketReplies(modelBuilder);
+            SeedNotifications(modelBuilder);
         }
 
         private void SeedCities(ModelBuilder modelBuilder)
@@ -482,6 +484,17 @@ namespace PickMeUp.Services.Database
                 new { Id = 1, SupportTicketId = 2, AuthorId = 1, Body = "Thanks for reporting this. We are checking your car assignment now.", CreatedAt = SeedTimestamp },
                 new { Id = 2, SupportTicketId = 3, AuthorId = 1, Body = "We have pulled the route for this ride and are reviewing it with the company.", CreatedAt = SeedTimestamp },
                 new { Id = 3, SupportTicketId = 3, AuthorId = 1, Body = "The difference has been refunded and the company has been notified.", CreatedAt = SeedTimestamp }
+            );
+        }
+
+        private void SeedNotifications(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Notification>().HasData(
+                new { Id = 1, UserId = 4, Title = "Welcome to PickMeUp", Body = "Order your first ride straight from the home screen.", Category = NotificationCategories.OrderStatus, OrderId = (int?)null, IsRead = false, ReadAt = (DateTime?)null, CreatedAt = SeedTimestamp, IsDeleted = false, DeletedAt = (DateTime?)null },
+                new { Id = 2, UserId = 4, Title = "Payment method saved", Body = "Your card is ready, so paying for a ride now takes one tap.", Category = NotificationCategories.Payment, OrderId = (int?)null, IsRead = true, ReadAt = (DateTime?)SeedTimestamp, CreatedAt = SeedTimestamp, IsDeleted = false, DeletedAt = (DateTime?)null },
+                new { Id = 3, UserId = 4, Title = "A ride was cancelled", Body = "Reason: the driver could not reach the pick-up point.", Category = NotificationCategories.OrderCancelled, OrderId = (int?)null, IsRead = true, ReadAt = (DateTime?)SeedTimestamp, CreatedAt = SeedTimestamp, IsDeleted = false, DeletedAt = (DateTime?)null },
+                new { Id = 4, UserId = 3, Title = "New ride available", Body = "Pick-up at Kralja Tomislava 1.", Category = NotificationCategories.OrderAvailable, OrderId = (int?)null, IsRead = false, ReadAt = (DateTime?)null, CreatedAt = SeedTimestamp, IsDeleted = false, DeletedAt = (DateTime?)null },
+                new { Id = 5, UserId = 3, Title = "Your shift summary is ready", Body = "You completed four rides on your last shift.", Category = NotificationCategories.OrderStatus, OrderId = (int?)null, IsRead = false, ReadAt = (DateTime?)null, CreatedAt = SeedTimestamp, IsDeleted = false, DeletedAt = (DateTime?)null }
             );
         }
     }

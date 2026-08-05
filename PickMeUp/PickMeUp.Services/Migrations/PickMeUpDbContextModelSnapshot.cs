@@ -378,6 +378,118 @@ namespace PickMeUp.Services.Migrations
                         });
                 });
 
+            modelBuilder.Entity("PickMeUp.Services.Database.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("UserId", "IsRead", "CreatedAt");
+
+                    b.ToTable("Notifications");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Body = "Order your first ride straight from the home screen.",
+                            Category = "order-status",
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            IsRead = false,
+                            Title = "Welcome to PickMeUp",
+                            UserId = 4
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Body = "Your card is ready, so paying for a ride now takes one tap.",
+                            Category = "payment",
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            IsRead = true,
+                            ReadAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Title = "Payment method saved",
+                            UserId = 4
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Body = "Reason: the driver could not reach the pick-up point.",
+                            Category = "order-cancelled",
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            IsRead = true,
+                            ReadAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Title = "A ride was cancelled",
+                            UserId = 4
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Body = "Pick-up at Kralja Tomislava 1.",
+                            Category = "order-available",
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            IsRead = false,
+                            Title = "New ride available",
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Body = "You completed four rides on your last shift.",
+                            Category = "order-status",
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            IsRead = false,
+                            Title = "Your shift summary is ready",
+                            UserId = 3
+                        });
+                });
+
             modelBuilder.Entity("PickMeUp.Services.Database.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -1694,6 +1806,24 @@ namespace PickMeUp.Services.Migrations
                         .IsRequired();
 
                     b.Navigation("TaxiCompany");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PickMeUp.Services.Database.Notification", b =>
+                {
+                    b.HasOne("PickMeUp.Services.Database.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("PickMeUp.Services.Database.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
 
                     b.Navigation("User");
                 });

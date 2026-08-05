@@ -1,3 +1,4 @@
+using PickMeUp.Model.Constants;
 using PickMeUp.Model.Messaging;
 using PickMeUp.Model.Responses;
 using PickMeUp.Services.Database;
@@ -10,22 +11,20 @@ namespace PickMeUp.Services.Payments
 {
     public class PaymentNotificationDispatcher : IPaymentNotificationDispatcher
     {
-        private const string PaymentCategory = "payment";
-
         private readonly PickMeUpDbContext _dbContext;
         private readonly IEventPublisher _eventPublisher;
-        private readonly INotificationPublisher _notificationPublisher;
+        private readonly INotificationRecorder _notifications;
         private readonly ILogger<PaymentNotificationDispatcher> _logger;
 
         public PaymentNotificationDispatcher(
             PickMeUpDbContext dbContext,
             IEventPublisher eventPublisher,
-            INotificationPublisher notificationPublisher,
+            INotificationRecorder notifications,
             ILogger<PaymentNotificationDispatcher> logger)
         {
             _dbContext = dbContext;
             _eventPublisher = eventPublisher;
-            _notificationPublisher = notificationPublisher;
+            _notifications = notifications;
             _logger = logger;
         }
 
@@ -47,12 +46,12 @@ namespace PickMeUp.Services.Payments
                 RecipientName = FullName(payment.Order.Passenger)
             });
 
-            await PushAsync(payment.Order.PassengerId, new NotificationMessage
+            await DeliverAsync(payment.Order.PassengerId, new NotificationMessage
             {
                 Title = $"Payment received for ride #{payment.OrderId}",
                 Body = $"We received {payment.AmountCharged} {payment.Currency}.",
                 OrderId = payment.OrderId,
-                Category = PaymentCategory
+                Category = NotificationCategories.Payment
             });
         }
 
@@ -74,12 +73,12 @@ namespace PickMeUp.Services.Payments
                 RecipientName = FullName(payment.Order.Passenger)
             });
 
-            await PushAsync(payment.Order.PassengerId, new NotificationMessage
+            await DeliverAsync(payment.Order.PassengerId, new NotificationMessage
             {
                 Title = $"Refund issued for ride #{payment.OrderId}",
                 Body = $"{refundedAmount} {payment.Currency} has been refunded.",
                 OrderId = payment.OrderId,
-                Category = PaymentCategory
+                Category = NotificationCategories.Payment
             });
         }
 
@@ -97,16 +96,16 @@ namespace PickMeUp.Services.Payments
             }
         }
 
-        private async Task PushAsync(int userId, NotificationMessage message)
+        private async Task DeliverAsync(int userId, NotificationMessage message)
         {
             try
             {
-                await _notificationPublisher.PushToUserAsync(userId, message);
+                await _notifications.DeliverAsync(userId, message);
             }
             catch (Exception exception)
             {
                 _logger.LogError(exception,
-                    "Could not push payment notification for order {OrderId} to user {UserId}.",
+                    "Could not deliver payment notification for order {OrderId} to user {UserId}.",
                     message.OrderId, userId);
             }
         }

@@ -33,6 +33,7 @@ public class SignalRNotificationPublisher : INotificationPublisher
         await _hubContext.Clients.Group(group)
             .SendAsync(NotificationHub.ReceiveNotification, message, cancellationToken);
 
-        _logger.LogInformation("Pushed notification to {Group}: {Title}", group, message.Title);
+        _logger.LogInformation("Pushed notification {NotificationId} to {Group}: {Title}",
+            message.NotificationId, group, message.Title);
     }
 }
