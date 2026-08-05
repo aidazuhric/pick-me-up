@@ -139,38 +139,57 @@ class CrudDataTableState<T> extends State<CrudDataTable<T>> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
-          children: [
-            Text(widget.title, style: theme.textTheme.headlineSmall),
-            const Spacer(),
-            SizedBox(
-              width: 260,
-              child: TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: widget.searchHint,
-                  prefixIcon: const Icon(Icons.search),
-                  isDense: true,
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final controls = [
+              SizedBox(
+                width: constraints.maxWidth < 700 ? 200 : 260,
+                child: TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: widget.searchHint,
+                    prefixIcon: const Icon(Icons.search),
+                    isDense: true,
+                  ),
+                  onSubmitted: (_) => refresh(toFirstPage: true),
                 ),
-                onSubmitted: (_) => refresh(toFirstPage: true),
               ),
-            ),
-            const SizedBox(width: 12),
-            OutlinedButton.icon(
-              onPressed: () => refresh(toFirstPage: true),
-              icon: const Icon(Icons.filter_alt_outlined, size: 18),
-              label: const Text('Search'),
-            ),
-            const SizedBox(width: 12),
-            _SortMenu<T>(
-              columns: widget.columns,
-              current: _sortBy,
-              onChanged: (value) {
-                _sortBy = value;
-                refresh(toFirstPage: true);
-              },
-            ),
-          ],
+              OutlinedButton.icon(
+                onPressed: () => refresh(toFirstPage: true),
+                icon: const Icon(Icons.filter_alt_outlined, size: 18),
+                label: const Text('Search'),
+              ),
+              _SortMenu<T>(
+                columns: widget.columns,
+                current: _sortBy,
+                onChanged: (value) {
+                  _sortBy = value;
+                  refresh(toFirstPage: true);
+                },
+              ),
+            ];
+
+            final title = Text(widget.title, style: theme.textTheme.headlineSmall);
+
+            if (constraints.maxWidth < 900) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  title,
+                  const SizedBox(height: 12),
+                  Wrap(spacing: 12, runSpacing: 12, children: controls),
+                ],
+              );
+            }
+
+            return Row(
+              children: [
+                Flexible(child: title),
+                const Spacer(),
+                for (final control in controls) ...[control, const SizedBox(width: 12)],
+              ],
+            );
+          },
         ),
         const SizedBox(height: 16),
         Expanded(child: _buildBody(theme)),
