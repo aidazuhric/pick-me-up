@@ -215,6 +215,31 @@ namespace PickMeUp.Services
             return _mapper.Map<PaymentResponse>(payment);
         }
 
+        public async Task<List<PayableOrderResponse>> GetPayableOrdersAsync()
+        {
+            var userId = RequireUserId();
+
+            return await _dbContext.Orders
+                .AsNoTracking()
+                .Where(o => o.PassengerId == userId)
+                .Where(o => o.OrderStatusId == (int)OrderStatusEnum.Completed)
+                .Where(o => o.Fare != null)
+                .Where(o => !_dbContext.Payments.Any(p => p.OrderId == o.Id && (p.IsPaid || p.StripePaymentIntentId != null)))
+                .OrderByDescending(o => o.CompletedAt)
+                .Select(o => new PayableOrderResponse
+                {
+                    OrderId = o.Id,
+                    CompanyName = o.TaxiCompany == null ? null : o.TaxiCompany.Name,
+                    DriverName = o.Driver == null ? null : o.Driver.User.FirstName + " " + o.Driver.User.LastName,
+                    PickupAddress = o.PickupAddress,
+                    DestinationAddress = o.DestinationAddress,
+                    DistanceKm = o.DistanceKm,
+                    Fare = o.Fare!.Value,
+                    CompletedAt = o.CompletedAt
+                })
+                .ToListAsync();
+        }
+
         protected override Task<IQueryable<Payment>> IncludeRelatedEntitiesAsync(PaymentSearch? search, IQueryable<Payment> query)
         {
             IQueryable<Payment> result = query

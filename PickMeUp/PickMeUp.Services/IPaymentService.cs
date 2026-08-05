@@ -13,5 +13,7 @@ namespace PickMeUp.Services
         Task<PaymentResponse> RefundAsync(int id, PaymentRefundRequest request);
 
         Task<PaymentResponse> GetByOrderAsync(int orderId);
+
+        Task<List<PayableOrderResponse>> GetPayableOrdersAsync();
     }
 }

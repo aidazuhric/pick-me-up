@@ -30,6 +30,18 @@ public class PaymentsController : BaseReadController<PaymentResponse, PaymentSea
     }
 
     /// <summary>
+    /// The caller's completed rides that still await payment. The mobile client uses this to
+    /// decide which rides show a pay button; a ride disappears from the list once its payment
+    /// is under way or settled.
+    /// </summary>
+    [Authorization(Roles.Passenger)]
+    [HttpGet("Payable")]
+    public async Task<ActionResult<List<PayableOrderResponse>>> Payable()
+    {
+        return await _service.GetPayableOrdersAsync();
+    }
+
+    /// <summary>
     /// Payment status and refund history for one ride. A company may read this only for its own
     /// orders, and has no way to change the amount or the status — those are set by Stripe
     /// confirmation alone.
