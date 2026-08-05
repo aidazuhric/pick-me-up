@@ -296,6 +296,10 @@ namespace PickMeUp.Services.Database
 
             modelBuilder.Entity<SupportTicketReply>()
                 .HasQueryFilter(r => !r.SupportTicket.IsDeleted);
+
+            modelBuilder
+                .HasDbFunction(typeof(PostgresFunctions).GetMethod(nameof(PostgresFunctions.DateTrunc))!)
+                .HasName("date_trunc");
         }
     }
 }

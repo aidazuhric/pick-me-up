@@ -8,6 +8,7 @@ using PickMeUp.Services.Messaging;
 using PickMeUp.Services.Notifications;
 using PickMeUp.Services.Orders;
 using PickMeUp.Services.Payments;
+using PickMeUp.Services.Reports;
 using PickMeUp.Services.Storage;
 using PickMeUp.Services.Validators;
 using PickMeUp.WebAPI.Filters;
@@ -156,6 +157,8 @@ builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<ISupportTicketService, SupportTicketService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IPaymentNotificationDispatcher, PaymentNotificationDispatcher>();
+builder.Services.AddSingleton<IReportDocumentBuilder, ReportDocumentBuilder>();
+builder.Services.AddScoped<IReportService, ReportService>();
 if (builder.Environment.IsDevelopment() && string.IsNullOrWhiteSpace(EnvironmentReader.Optional("STRIPE_SECRET_KEY")))
 {
     builder.Services.AddSingleton<IStripeGateway, DevelopmentStripeGateway>();
