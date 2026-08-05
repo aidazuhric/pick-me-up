@@ -17,12 +17,14 @@ class CrudColumn<T> {
     required this.value,
     this.sortKey,
     this.isImage = false,
+    this.maxWidth,
   });
 
   final String label;
   final String Function(T item) value;
   final String? sortKey;
   final bool isImage;
+  final double? maxWidth;
 }
 
 class RowGuard {
@@ -271,7 +273,8 @@ class CrudDataTableState<T> extends State<CrudDataTable<T>> {
           headingTextStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
           columns: [
             if (widget.imageUrlOf != null) const DataColumn(label: Text('')),
-            for (final column in widget.columns) DataColumn(label: Text(column.label)),
+            for (final column in widget.columns)
+              DataColumn(label: _CellText(column: column, value: column.label)),
             const DataColumn(label: Text('')),
           ],
           rows: [
@@ -279,7 +282,8 @@ class CrudDataTableState<T> extends State<CrudDataTable<T>> {
               DataRow(
                 cells: [
                   if (widget.imageUrlOf != null) DataCell(_thumbnail(widget.imageUrlOf!(item))),
-                  for (final column in widget.columns) DataCell(Text(column.value(item))),
+                  for (final column in widget.columns)
+                    DataCell(_CellText(column: column, value: column.value(item))),
                   DataCell(_rowActions(item)),
                 ],
               ),
@@ -335,6 +339,24 @@ class CrudDataTableState<T> extends State<CrudDataTable<T>> {
           ),
       ],
     );
+  }
+}
+
+class _CellText<T> extends StatelessWidget {
+  const _CellText({required this.column, required this.value});
+
+  final CrudColumn<T> column;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Text(value, softWrap: true, maxLines: 2, overflow: TextOverflow.ellipsis);
+
+    if (column.maxWidth == null) {
+      return text;
+    }
+
+    return SizedBox(width: column.maxWidth, child: text);
   }
 }
 

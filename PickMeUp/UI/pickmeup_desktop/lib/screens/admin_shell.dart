@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../layouts/nav_destination.dart';
 import '../layouts/role_side_nav.dart';
 import 'placeholder_screen.dart';
+import 'reference/reference_data_hub.dart';
 import 'shell_gallery_screen.dart';
 import 'taxi_company_list_screen.dart';
 
@@ -38,10 +39,7 @@ class AdminShell extends StatelessWidget {
         NavDestination(
           label: 'Reference data',
           icon: Icons.list_alt,
-          builder: (_) => const PlaceholderScreen(
-            title: 'Reference data',
-            arrivesWith: 'the reference tables',
-          ),
+          builder: (_) => const ReferenceDataHub(),
         ),
         NavDestination(
           label: 'PDF reports',
