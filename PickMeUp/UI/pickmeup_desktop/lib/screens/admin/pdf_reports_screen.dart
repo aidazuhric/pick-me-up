@@ -1,14 +1,13 @@
 import 'dart:typed_data';
 
-import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
-import 'package:printing/printing.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../providers/report_provider.dart';
 import '../../utils/api_error_handler.dart';
 import '../../widgets/app_messages.dart';
+import '../../widgets/pdf_report_view.dart';
 
 enum _ReportKind { ordersByPeriod, topCompanies }
 
@@ -71,50 +70,6 @@ class _PdfReportsScreenState extends State<PdfReportsScreen> {
     }
   }
 
-  Future<void> _download() async {
-    final bytes = _document;
-    if (bytes == null) return;
-
-    try {
-      final location = await getSaveLocation(
-        suggestedName: _fileName,
-        acceptedTypeGroups: const [
-          XTypeGroup(label: 'PDF', extensions: ['pdf']),
-        ],
-      );
-
-      if (location == null) return;
-
-      final file = XFile.fromData(
-        bytes,
-        mimeType: 'application/pdf',
-        name: _fileName,
-      );
-      await file.saveTo(location.path);
-
-      if (!mounted) return;
-      AppMessages.success(context, 'Saved to ${location.path}.');
-    } catch (e) {
-      if (!mounted) return;
-      ApiErrorHandler.surface(context, e);
-    }
-  }
-
-  Future<void> _print() async {
-    final bytes = _document;
-    if (bytes == null) return;
-
-    try {
-      await Printing.layoutPdf(
-        name: _fileName ?? 'report.pdf',
-        onLayout: (_) async => bytes,
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ApiErrorHandler.surface(context, e);
-    }
-  }
-
   Future<void> _pickDate({required bool isFrom}) async {
     final picked = await showDatePicker(
       context: context,
@@ -173,7 +128,13 @@ class _PdfReportsScreenState extends State<PdfReportsScreen> {
             children: [
               SizedBox(width: 380, child: _buildControls(context)),
               const SizedBox(width: AppSpacing.lg),
-              Expanded(child: _buildPreview(context)),
+              Expanded(
+                child: PdfReportView(
+                  document: _document,
+                  emptyMessage:
+                      'Choose a report and a period, then press GENERATE.',
+                ),
+              ),
             ],
           ),
         ),
@@ -279,25 +240,7 @@ class _PdfReportsScreenState extends State<PdfReportsScreen> {
                   label: const Text('GENERATE'),
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: _document == null ? null : _download,
-                        icon: const Icon(Icons.download_outlined, size: 16),
-                        label: const Text('Download'),
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: _document == null ? null : _print,
-                        icon: const Icon(Icons.print_outlined, size: 16),
-                        label: const Text('Print'),
-                      ),
-                    ),
-                  ],
-                ),
+                PdfReportActions(document: _document, fileName: _fileName),
               ],
             ),
           ),
@@ -306,50 +249,6 @@ class _PdfReportsScreenState extends State<PdfReportsScreen> {
     );
   }
 
-  Widget _buildPreview(BuildContext context) {
-    final theme = Theme.of(context);
-    final document = _document;
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: AppColors.sectionTint,
-        border: Border.all(color: AppColors.border),
-        borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-      ),
-      child: document == null
-          ? Center(
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.picture_as_pdf_outlined,
-                        size: 36, color: AppColors.textMuted),
-                    const SizedBox(height: AppSpacing.sm),
-                    Text(
-                      'Choose a report and a period, then press GENERATE.',
-                      style: theme.textTheme.bodyMedium,
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-            )
-          : ClipRRect(
-              borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-              child: PdfPreview(
-                build: (_) async => document,
-                allowPrinting: false,
-                allowSharing: false,
-                canChangePageFormat: false,
-                canChangeOrientation: false,
-                canDebug: false,
-                useActions: false,
-                padding: const EdgeInsets.all(AppSpacing.md),
-              ),
-            ),
-    );
-  }
 }
 
 class _ReportChoice extends StatelessWidget {

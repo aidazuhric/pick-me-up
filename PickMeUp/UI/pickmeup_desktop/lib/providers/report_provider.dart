@@ -9,6 +9,7 @@ import '../utils/api_client_exception.dart';
 class ReportProvider {
   static const String _ordersByPeriod = 'Reports/OrdersByPeriod';
   static const String _topCompanies = 'Reports/TopCompanies';
+  static const String _companyBusiness = 'Reports/CompanyBusiness';
 
   Future<Uint8List> ordersByPeriod({
     required DateTime from,
@@ -27,6 +28,13 @@ class ReportProvider {
     required DateTime to,
   }) {
     return _download(_topCompanies, {'from': _date(from), 'to': _date(to)});
+  }
+
+  Future<Uint8List> companyBusiness({
+    required DateTime from,
+    required DateTime to,
+  }) {
+    return _download(_companyBusiness, {'from': _date(from), 'to': _date(to)});
   }
 
   Future<Uint8List> _download(String path, Map<String, String> query) async {

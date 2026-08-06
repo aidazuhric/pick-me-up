@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../layouts/nav_destination.dart';
 import '../layouts/role_side_nav.dart';
+import 'company/business_report_screen.dart';
 import 'company/car_assignment_list_screen.dart';
 import 'company/order_list_screen.dart';
 import 'company/payment_overview_screen.dart';
@@ -71,10 +72,7 @@ class CompanyShell extends StatelessWidget {
         NavDestination(
           label: 'Business report',
           icon: Icons.picture_as_pdf,
-          builder: (_) => const PlaceholderScreen(
-            title: 'Business report',
-            arrivesWith: 'the reporting endpoints',
-          ),
+          builder: (_) => const BusinessReportScreen(),
         ),
         NavDestination(
           label: 'Online support',
