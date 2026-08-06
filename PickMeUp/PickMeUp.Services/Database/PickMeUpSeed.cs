@@ -29,6 +29,8 @@ namespace PickMeUp.Services.Database
             SeedOrderStatusHistories(modelBuilder);
             SeedReviews(modelBuilder);
             SeedInteractionHistories(modelBuilder);
+            SeedPayments(modelBuilder);
+            SeedPaymentRefunds(modelBuilder);
             SeedNotifications(modelBuilder);
         }
 
@@ -960,6 +962,162 @@ namespace PickMeUp.Services.Database
                     UpdatedAt = (DateTime?)new DateTime(2026, 6, 28, 9, 35, 0, DateTimeKind.Utc),
                     IsDeleted = false,
                     DeletedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 13,
+                    PassengerId = 4,
+                    TaxiCompanyId = (int?)1,
+                    DriverId = (int?)null,
+                    CarId = (int?)null,
+                    PickupLat = 43.3489,
+                    PickupLng = 17.7995,
+                    PickupAddress = "Rondo 1",
+                    DestinationLat = (double?)43.3419,
+                    DestinationLng = (double?)17.8043,
+                    DestinationAddress = (string?)"Kampus Sveucilista",
+                    DistanceKm = (decimal?)5.50m,
+                    Fare = (decimal?)null,
+                    OrderStatusId = (int)OrderStatusEnum.Pending,
+                    CreatedAt = new DateTime(2026, 8, 3, 8, 30, 0, DateTimeKind.Utc),
+                    AcceptedAt = (DateTime?)null,
+                    PickedUpAt = (DateTime?)null,
+                    CompletedAt = (DateTime?)null,
+                    CancelledAt = (DateTime?)null,
+                    CancellationReason = (string?)null,
+                    UpdatedAt = (DateTime?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 14,
+                    PassengerId = 9,
+                    TaxiCompanyId = (int?)3,
+                    DriverId = (int?)null,
+                    CarId = (int?)null,
+                    PickupLat = 43.859,
+                    PickupLng = 18.421,
+                    PickupAddress = "Ferhadija 10",
+                    DestinationLat = (double?)43.856,
+                    DestinationLng = (double?)18.403,
+                    DestinationAddress = (string?)"Marijin Dvor",
+                    DistanceKm = (decimal?)3.90m,
+                    Fare = (decimal?)null,
+                    OrderStatusId = (int)OrderStatusEnum.Pending,
+                    CreatedAt = new DateTime(2026, 8, 4, 17, 10, 0, DateTimeKind.Utc),
+                    AcceptedAt = (DateTime?)null,
+                    PickedUpAt = (DateTime?)null,
+                    CompletedAt = (DateTime?)null,
+                    CancelledAt = (DateTime?)null,
+                    CancellationReason = (string?)null,
+                    UpdatedAt = (DateTime?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 15,
+                    PassengerId = 4,
+                    TaxiCompanyId = (int?)1,
+                    DriverId = (int?)1,
+                    CarId = (int?)1,
+                    PickupLat = 43.335,
+                    PickupLng = 17.8021,
+                    PickupAddress = "Splitska 5",
+                    DestinationLat = (double?)43.3374,
+                    DestinationLng = (double?)17.8151,
+                    DestinationAddress = (string?)"Stari Most",
+                    DistanceKm = (decimal?)6.70m,
+                    Fare = (decimal?)null,
+                    OrderStatusId = (int)OrderStatusEnum.Confirmed,
+                    CreatedAt = new DateTime(2026, 8, 5, 7, 45, 0, DateTimeKind.Utc),
+                    AcceptedAt = (DateTime?)new DateTime(2026, 8, 5, 7, 50, 0, DateTimeKind.Utc),
+                    PickedUpAt = (DateTime?)null,
+                    CompletedAt = (DateTime?)null,
+                    CancelledAt = (DateTime?)null,
+                    CancellationReason = (string?)null,
+                    UpdatedAt = (DateTime?)new DateTime(2026, 8, 5, 7, 50, 0, DateTimeKind.Utc),
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 16,
+                    PassengerId = 9,
+                    TaxiCompanyId = (int?)3,
+                    DriverId = (int?)3,
+                    CarId = (int?)5,
+                    PickupLat = 43.8595,
+                    PickupLng = 18.431,
+                    PickupAddress = "Bascarsija",
+                    DestinationLat = (double?)43.828,
+                    DestinationLng = (double?)18.31,
+                    DestinationAddress = (string?)"Ilidza",
+                    DistanceKm = (decimal?)8.20m,
+                    Fare = (decimal?)null,
+                    OrderStatusId = (int)OrderStatusEnum.InProgress,
+                    CreatedAt = new DateTime(2026, 8, 5, 18, 5, 0, DateTimeKind.Utc),
+                    AcceptedAt = (DateTime?)new DateTime(2026, 8, 5, 18, 9, 0, DateTimeKind.Utc),
+                    PickedUpAt = (DateTime?)new DateTime(2026, 8, 5, 18, 16, 0, DateTimeKind.Utc),
+                    CompletedAt = (DateTime?)null,
+                    CancelledAt = (DateTime?)null,
+                    CancellationReason = (string?)null,
+                    UpdatedAt = (DateTime?)new DateTime(2026, 8, 5, 18, 16, 0, DateTimeKind.Utc),
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 17,
+                    PassengerId = 4,
+                    TaxiCompanyId = (int?)1,
+                    DriverId = (int?)null,
+                    CarId = (int?)null,
+                    PickupLat = 43.3401,
+                    PickupLng = 17.8135,
+                    PickupAddress = "Marsala Tita 40",
+                    DestinationLat = (double?)43.348,
+                    DestinationLng = (double?)17.8085,
+                    DestinationAddress = (string?)"Zeljeznicka stanica",
+                    DistanceKm = (decimal?)4.40m,
+                    Fare = (decimal?)null,
+                    OrderStatusId = (int)OrderStatusEnum.Cancelled,
+                    CreatedAt = new DateTime(2026, 7, 20, 12, 0, 0, DateTimeKind.Utc),
+                    AcceptedAt = (DateTime?)null,
+                    PickedUpAt = (DateTime?)null,
+                    CompletedAt = (DateTime?)null,
+                    CancelledAt = (DateTime?)new DateTime(2026, 7, 20, 12, 6, 0, DateTimeKind.Utc),
+                    CancellationReason = (string?)"Passenger found another ride before a driver accepted.",
+                    UpdatedAt = (DateTime?)new DateTime(2026, 7, 20, 12, 6, 0, DateTimeKind.Utc),
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 18,
+                    PassengerId = 9,
+                    TaxiCompanyId = (int?)3,
+                    DriverId = (int?)3,
+                    CarId = (int?)5,
+                    PickupLat = 43.848,
+                    PickupLng = 18.395,
+                    PickupAddress = "Grbavica",
+                    DestinationLat = (double?)43.9,
+                    DestinationLng = (double?)18.343,
+                    DestinationAddress = (string?)"Vogosca",
+                    DistanceKm = (decimal?)6.10m,
+                    Fare = (decimal?)null,
+                    OrderStatusId = (int)OrderStatusEnum.Cancelled,
+                    CreatedAt = new DateTime(2026, 7, 22, 9, 15, 0, DateTimeKind.Utc),
+                    AcceptedAt = (DateTime?)new DateTime(2026, 7, 22, 9, 19, 0, DateTimeKind.Utc),
+                    PickedUpAt = (DateTime?)null,
+                    CompletedAt = (DateTime?)null,
+                    CancelledAt = (DateTime?)new DateTime(2026, 7, 22, 9, 31, 0, DateTimeKind.Utc),
+                    CancellationReason = (string?)"Driver could not reach the pick-up point because of a closed road.",
+                    UpdatedAt = (DateTime?)new DateTime(2026, 7, 22, 9, 31, 0, DateTimeKind.Utc),
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
                 }
             );
         }
@@ -1014,7 +1172,19 @@ namespace PickMeUp.Services.Database
                 new { Id = 45, OrderId = 12, FromStatusId = (int?)null, ToStatusId = (int)OrderStatusEnum.Pending, ChangedByUserId = 9, ChangedAt = new DateTime(2026, 6, 28, 9, 0, 0, DateTimeKind.Utc), Reason = (string?)"Order placed" },
                 new { Id = 46, OrderId = 12, FromStatusId = (int?)(int)OrderStatusEnum.Pending, ToStatusId = (int)OrderStatusEnum.Confirmed, ChangedByUserId = 13, ChangedAt = new DateTime(2026, 6, 28, 9, 5, 0, DateTimeKind.Utc), Reason = (string?)"Accepted by driver" },
                 new { Id = 47, OrderId = 12, FromStatusId = (int?)(int)OrderStatusEnum.Confirmed, ToStatusId = (int)OrderStatusEnum.InProgress, ChangedByUserId = 13, ChangedAt = new DateTime(2026, 6, 28, 9, 12, 0, DateTimeKind.Utc), Reason = (string?)"Passenger picked up" },
-                new { Id = 48, OrderId = 12, FromStatusId = (int?)(int)OrderStatusEnum.InProgress, ToStatusId = (int)OrderStatusEnum.Completed, ChangedByUserId = 13, ChangedAt = new DateTime(2026, 6, 28, 9, 35, 0, DateTimeKind.Utc), Reason = (string?)"Ride completed" }
+                new { Id = 48, OrderId = 12, FromStatusId = (int?)(int)OrderStatusEnum.InProgress, ToStatusId = (int)OrderStatusEnum.Completed, ChangedByUserId = 13, ChangedAt = new DateTime(2026, 6, 28, 9, 35, 0, DateTimeKind.Utc), Reason = (string?)"Ride completed" },
+                new { Id = 49, OrderId = 13, FromStatusId = (int?)null, ToStatusId = (int)OrderStatusEnum.Pending, ChangedByUserId = 4, ChangedAt = new DateTime(2026, 8, 3, 8, 30, 0, DateTimeKind.Utc), Reason = (string?)"Order placed" },
+                new { Id = 50, OrderId = 14, FromStatusId = (int?)null, ToStatusId = (int)OrderStatusEnum.Pending, ChangedByUserId = 9, ChangedAt = new DateTime(2026, 8, 4, 17, 10, 0, DateTimeKind.Utc), Reason = (string?)"Order placed" },
+                new { Id = 51, OrderId = 15, FromStatusId = (int?)null, ToStatusId = (int)OrderStatusEnum.Pending, ChangedByUserId = 4, ChangedAt = new DateTime(2026, 8, 5, 7, 45, 0, DateTimeKind.Utc), Reason = (string?)"Order placed" },
+                new { Id = 52, OrderId = 15, FromStatusId = (int?)(int)OrderStatusEnum.Pending, ToStatusId = (int)OrderStatusEnum.Confirmed, ChangedByUserId = 3, ChangedAt = new DateTime(2026, 8, 5, 7, 50, 0, DateTimeKind.Utc), Reason = (string?)"Accepted by driver" },
+                new { Id = 53, OrderId = 16, FromStatusId = (int?)null, ToStatusId = (int)OrderStatusEnum.Pending, ChangedByUserId = 9, ChangedAt = new DateTime(2026, 8, 5, 18, 5, 0, DateTimeKind.Utc), Reason = (string?)"Order placed" },
+                new { Id = 54, OrderId = 16, FromStatusId = (int?)(int)OrderStatusEnum.Pending, ToStatusId = (int)OrderStatusEnum.Confirmed, ChangedByUserId = 8, ChangedAt = new DateTime(2026, 8, 5, 18, 9, 0, DateTimeKind.Utc), Reason = (string?)"Accepted by driver" },
+                new { Id = 55, OrderId = 16, FromStatusId = (int?)(int)OrderStatusEnum.Confirmed, ToStatusId = (int)OrderStatusEnum.InProgress, ChangedByUserId = 8, ChangedAt = new DateTime(2026, 8, 5, 18, 16, 0, DateTimeKind.Utc), Reason = (string?)"Passenger picked up" },
+                new { Id = 56, OrderId = 17, FromStatusId = (int?)null, ToStatusId = (int)OrderStatusEnum.Pending, ChangedByUserId = 4, ChangedAt = new DateTime(2026, 7, 20, 12, 0, 0, DateTimeKind.Utc), Reason = (string?)"Order placed" },
+                new { Id = 57, OrderId = 17, FromStatusId = (int?)(int)OrderStatusEnum.Pending, ToStatusId = (int)OrderStatusEnum.Cancelled, ChangedByUserId = 4, ChangedAt = new DateTime(2026, 7, 20, 12, 6, 0, DateTimeKind.Utc), Reason = (string?)"Passenger found another ride before a driver accepted." },
+                new { Id = 58, OrderId = 18, FromStatusId = (int?)null, ToStatusId = (int)OrderStatusEnum.Pending, ChangedByUserId = 9, ChangedAt = new DateTime(2026, 7, 22, 9, 15, 0, DateTimeKind.Utc), Reason = (string?)"Order placed" },
+                new { Id = 59, OrderId = 18, FromStatusId = (int?)(int)OrderStatusEnum.Pending, ToStatusId = (int)OrderStatusEnum.Confirmed, ChangedByUserId = 8, ChangedAt = new DateTime(2026, 7, 22, 9, 19, 0, DateTimeKind.Utc), Reason = (string?)"Accepted by driver" },
+                new { Id = 60, OrderId = 18, FromStatusId = (int?)(int)OrderStatusEnum.Confirmed, ToStatusId = (int)OrderStatusEnum.Cancelled, ChangedByUserId = 8, ChangedAt = new DateTime(2026, 7, 22, 9, 31, 0, DateTimeKind.Utc), Reason = (string?)"Driver could not reach the pick-up point because of a closed road." }
             );
         }
 
@@ -1155,7 +1325,192 @@ namespace PickMeUp.Services.Database
                 new { Id = 28, UserId = 4, TaxiCompanyId = 2, SignalTypeId = (int)InteractionSignalType.Reviewed, Value = 2m, OrderId = (int?)6, CreatedAt = new DateTime(2026, 6, 14, 10, 35, 0, DateTimeKind.Utc) },
                 new { Id = 29, UserId = 9, TaxiCompanyId = 3, SignalTypeId = (int)InteractionSignalType.Reviewed, Value = 4m, OrderId = (int?)8, CreatedAt = new DateTime(2026, 6, 12, 10, 35, 0, DateTimeKind.Utc) },
                 new { Id = 30, UserId = 9, TaxiCompanyId = 3, SignalTypeId = (int)InteractionSignalType.Reviewed, Value = 5m, OrderId = (int?)9, CreatedAt = new DateTime(2026, 6, 20, 10, 35, 0, DateTimeKind.Utc) },
-                new { Id = 31, UserId = 9, TaxiCompanyId = 4, SignalTypeId = (int)InteractionSignalType.Reviewed, Value = 3m, OrderId = (int?)12, CreatedAt = new DateTime(2026, 6, 28, 10, 35, 0, DateTimeKind.Utc) }
+                new { Id = 31, UserId = 9, TaxiCompanyId = 4, SignalTypeId = (int)InteractionSignalType.Reviewed, Value = 3m, OrderId = (int?)12, CreatedAt = new DateTime(2026, 6, 28, 10, 35, 0, DateTimeKind.Utc) },
+                new { Id = 32, UserId = 4, TaxiCompanyId = 1, SignalTypeId = (int)InteractionSignalType.Ordered, Value = 1m, OrderId = (int?)13, CreatedAt = new DateTime(2026, 8, 3, 8, 30, 0, DateTimeKind.Utc) },
+                new { Id = 33, UserId = 9, TaxiCompanyId = 3, SignalTypeId = (int)InteractionSignalType.Ordered, Value = 1m, OrderId = (int?)14, CreatedAt = new DateTime(2026, 8, 4, 17, 10, 0, DateTimeKind.Utc) },
+                new { Id = 34, UserId = 4, TaxiCompanyId = 1, SignalTypeId = (int)InteractionSignalType.Ordered, Value = 1m, OrderId = (int?)15, CreatedAt = new DateTime(2026, 8, 5, 7, 45, 0, DateTimeKind.Utc) },
+                new { Id = 35, UserId = 9, TaxiCompanyId = 3, SignalTypeId = (int)InteractionSignalType.Ordered, Value = 1m, OrderId = (int?)16, CreatedAt = new DateTime(2026, 8, 5, 18, 5, 0, DateTimeKind.Utc) },
+                new { Id = 36, UserId = 4, TaxiCompanyId = 1, SignalTypeId = (int)InteractionSignalType.Ordered, Value = 1m, OrderId = (int?)17, CreatedAt = new DateTime(2026, 7, 20, 12, 0, 0, DateTimeKind.Utc) },
+                new { Id = 37, UserId = 9, TaxiCompanyId = 3, SignalTypeId = (int)InteractionSignalType.Ordered, Value = 1m, OrderId = (int?)18, CreatedAt = new DateTime(2026, 7, 22, 9, 15, 0, DateTimeKind.Utc) }
+            );
+        }
+
+        private void SeedPayments(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Payment>().HasData(
+                new
+                {
+                    Id = 1,
+                    OrderId = 1,
+                    AmountCharged = 6.34m,
+                    Currency = "BAM",
+                    PaymentStatusId = (int)PaymentStatusEnum.Paid,
+                    StripePaymentIntentId = (string?)"pi_seed_001",
+                    IsPaid = true,
+                    CreatedAt = new DateTime(2026, 6, 11, 9, 40, 0, DateTimeKind.Utc),
+                    PaidAt = (DateTime?)new DateTime(2026, 6, 11, 10, 5, 0, DateTimeKind.Utc),
+                    UpdatedAt = (DateTime?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 2,
+                    OrderId = 2,
+                    AmountCharged = 9.22m,
+                    Currency = "BAM",
+                    PaymentStatusId = (int)PaymentStatusEnum.Paid,
+                    StripePaymentIntentId = (string?)"pi_seed_002",
+                    IsPaid = true,
+                    CreatedAt = new DateTime(2026, 6, 18, 9, 40, 0, DateTimeKind.Utc),
+                    PaidAt = (DateTime?)new DateTime(2026, 6, 18, 10, 5, 0, DateTimeKind.Utc),
+                    UpdatedAt = (DateTime?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 3,
+                    OrderId = 3,
+                    AmountCharged = 12.58m,
+                    Currency = "BAM",
+                    PaymentStatusId = (int)PaymentStatusEnum.Paid,
+                    StripePaymentIntentId = (string?)"pi_seed_003",
+                    IsPaid = true,
+                    CreatedAt = new DateTime(2026, 6, 25, 9, 40, 0, DateTimeKind.Utc),
+                    PaidAt = (DateTime?)new DateTime(2026, 6, 25, 10, 5, 0, DateTimeKind.Utc),
+                    UpdatedAt = (DateTime?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 4,
+                    OrderId = 4,
+                    AmountCharged = 7.42m,
+                    Currency = "BAM",
+                    PaymentStatusId = (int)PaymentStatusEnum.Paid,
+                    StripePaymentIntentId = (string?)"pi_seed_004",
+                    IsPaid = true,
+                    CreatedAt = new DateTime(2026, 7, 2, 9, 40, 0, DateTimeKind.Utc),
+                    PaidAt = (DateTime?)new DateTime(2026, 7, 2, 10, 5, 0, DateTimeKind.Utc),
+                    UpdatedAt = (DateTime?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 5,
+                    OrderId = 5,
+                    AmountCharged = 10.78m,
+                    Currency = "BAM",
+                    PaymentStatusId = (int)PaymentStatusEnum.Unpaid,
+                    StripePaymentIntentId = (string?)"pi_seed_005",
+                    IsPaid = false,
+                    CreatedAt = new DateTime(2026, 7, 9, 9, 40, 0, DateTimeKind.Utc),
+                    PaidAt = (DateTime?)null,
+                    UpdatedAt = (DateTime?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 6,
+                    OrderId = 6,
+                    AmountCharged = 8.75m,
+                    Currency = "BAM",
+                    PaymentStatusId = (int)PaymentStatusEnum.Paid,
+                    StripePaymentIntentId = (string?)"pi_seed_006",
+                    IsPaid = true,
+                    CreatedAt = new DateTime(2026, 6, 14, 9, 40, 0, DateTimeKind.Utc),
+                    PaidAt = (DateTime?)new DateTime(2026, 6, 14, 10, 5, 0, DateTimeKind.Utc),
+                    UpdatedAt = (DateTime?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 7,
+                    OrderId = 8,
+                    AmountCharged = 7.95m,
+                    Currency = "BAM",
+                    PaymentStatusId = (int)PaymentStatusEnum.Paid,
+                    StripePaymentIntentId = (string?)"pi_seed_008",
+                    IsPaid = true,
+                    CreatedAt = new DateTime(2026, 6, 12, 9, 40, 0, DateTimeKind.Utc),
+                    PaidAt = (DateTime?)new DateTime(2026, 6, 12, 10, 5, 0, DateTimeKind.Utc),
+                    UpdatedAt = (DateTime?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 8,
+                    OrderId = 9,
+                    AmountCharged = 13.12m,
+                    Currency = "BAM",
+                    PaymentStatusId = (int)PaymentStatusEnum.Paid,
+                    StripePaymentIntentId = (string?)"pi_seed_009",
+                    IsPaid = true,
+                    CreatedAt = new DateTime(2026, 6, 20, 9, 40, 0, DateTimeKind.Utc),
+                    PaidAt = (DateTime?)new DateTime(2026, 6, 20, 10, 5, 0, DateTimeKind.Utc),
+                    UpdatedAt = (DateTime?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 9,
+                    OrderId = 10,
+                    AmountCharged = 9.71m,
+                    Currency = "BAM",
+                    PaymentStatusId = (int)PaymentStatusEnum.Paid,
+                    StripePaymentIntentId = (string?)"pi_seed_010",
+                    IsPaid = true,
+                    CreatedAt = new DateTime(2026, 7, 4, 9, 40, 0, DateTimeKind.Utc),
+                    PaidAt = (DateTime?)new DateTime(2026, 7, 4, 10, 5, 0, DateTimeKind.Utc),
+                    UpdatedAt = (DateTime?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 10,
+                    OrderId = 11,
+                    AmountCharged = 7.18m,
+                    Currency = "BAM",
+                    PaymentStatusId = (int)PaymentStatusEnum.PartiallyRefunded,
+                    StripePaymentIntentId = (string?)"pi_seed_011",
+                    IsPaid = true,
+                    CreatedAt = new DateTime(2026, 7, 11, 9, 40, 0, DateTimeKind.Utc),
+                    PaidAt = (DateTime?)new DateTime(2026, 7, 11, 10, 5, 0, DateTimeKind.Utc),
+                    UpdatedAt = (DateTime?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 11,
+                    OrderId = 12,
+                    AmountCharged = 9.01m,
+                    Currency = "BAM",
+                    PaymentStatusId = (int)PaymentStatusEnum.Refunded,
+                    StripePaymentIntentId = (string?)"pi_seed_012",
+                    IsPaid = true,
+                    CreatedAt = new DateTime(2026, 6, 28, 9, 40, 0, DateTimeKind.Utc),
+                    PaidAt = (DateTime?)new DateTime(2026, 6, 28, 10, 5, 0, DateTimeKind.Utc),
+                    UpdatedAt = (DateTime?)null,
+                    IsDeleted = false,
+                    DeletedAt = (DateTime?)null
+                }
+            );
+        }
+
+        private void SeedPaymentRefunds(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<PaymentRefund>().HasData(
+                new { Id = 1, PaymentId = 10, RefundedAmount = 2.18m, StripeRefundId = (string?)"re_seed_010", Reason = (string?)"Waiting time was charged in error and returned to the passenger.", RefundedAt = new DateTime(2026, 7, 12, 8, 20, 0, DateTimeKind.Utc) },
+                new { Id = 2, PaymentId = 11, RefundedAmount = 9.01m, StripeRefundId = (string?)"re_seed_011", Reason = (string?)"The ride was billed twice, so the duplicate charge was returned in full.", RefundedAt = new DateTime(2026, 6, 29, 8, 20, 0, DateTimeKind.Utc) }
             );
         }
     }

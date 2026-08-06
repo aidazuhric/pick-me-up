@@ -779,6 +779,66 @@ namespace PickMeUp.Services.Migrations
                             TaxiCompanyId = 4,
                             UserId = 9,
                             Value = 3m
+                        },
+                        new
+                        {
+                            Id = 32,
+                            CreatedAt = new DateTime(2026, 8, 3, 8, 30, 0, 0, DateTimeKind.Utc),
+                            OrderId = 13,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 33,
+                            CreatedAt = new DateTime(2026, 8, 4, 17, 10, 0, 0, DateTimeKind.Utc),
+                            OrderId = 14,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 3,
+                            UserId = 9,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 34,
+                            CreatedAt = new DateTime(2026, 8, 5, 7, 45, 0, 0, DateTimeKind.Utc),
+                            OrderId = 15,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 35,
+                            CreatedAt = new DateTime(2026, 8, 5, 18, 5, 0, 0, DateTimeKind.Utc),
+                            OrderId = 16,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 3,
+                            UserId = 9,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 36,
+                            CreatedAt = new DateTime(2026, 7, 20, 12, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 17,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 37,
+                            CreatedAt = new DateTime(2026, 7, 22, 9, 15, 0, 0, DateTimeKind.Utc),
+                            OrderId = 18,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 3,
+                            UserId = 9,
+                            Value = 1m
                         });
                 });
 
@@ -1264,6 +1324,120 @@ namespace PickMeUp.Services.Migrations
                             PickupLng = 18.4055,
                             TaxiCompanyId = 4,
                             UpdatedAt = new DateTime(2026, 6, 28, 9, 35, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CreatedAt = new DateTime(2026, 8, 3, 8, 30, 0, 0, DateTimeKind.Utc),
+                            DestinationAddress = "Kampus Sveucilista",
+                            DestinationLat = 43.341900000000003,
+                            DestinationLng = 17.804300000000001,
+                            DistanceKm = 5.50m,
+                            IsDeleted = false,
+                            OrderStatusId = 1,
+                            PassengerId = 4,
+                            PickupAddress = "Rondo 1",
+                            PickupLat = 43.3489,
+                            PickupLng = 17.799499999999998,
+                            TaxiCompanyId = 1
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CreatedAt = new DateTime(2026, 8, 4, 17, 10, 0, 0, DateTimeKind.Utc),
+                            DestinationAddress = "Marijin Dvor",
+                            DestinationLat = 43.856000000000002,
+                            DestinationLng = 18.402999999999999,
+                            DistanceKm = 3.90m,
+                            IsDeleted = false,
+                            OrderStatusId = 1,
+                            PassengerId = 9,
+                            PickupAddress = "Ferhadija 10",
+                            PickupLat = 43.859000000000002,
+                            PickupLng = 18.420999999999999,
+                            TaxiCompanyId = 3
+                        },
+                        new
+                        {
+                            Id = 15,
+                            AcceptedAt = new DateTime(2026, 8, 5, 7, 50, 0, 0, DateTimeKind.Utc),
+                            CarId = 1,
+                            CreatedAt = new DateTime(2026, 8, 5, 7, 45, 0, 0, DateTimeKind.Utc),
+                            DestinationAddress = "Stari Most",
+                            DestinationLat = 43.337400000000002,
+                            DestinationLng = 17.815100000000001,
+                            DistanceKm = 6.70m,
+                            DriverId = 1,
+                            IsDeleted = false,
+                            OrderStatusId = 2,
+                            PassengerId = 4,
+                            PickupAddress = "Splitska 5",
+                            PickupLat = 43.335000000000001,
+                            PickupLng = 17.802099999999999,
+                            TaxiCompanyId = 1,
+                            UpdatedAt = new DateTime(2026, 8, 5, 7, 50, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 16,
+                            AcceptedAt = new DateTime(2026, 8, 5, 18, 9, 0, 0, DateTimeKind.Utc),
+                            CarId = 5,
+                            CreatedAt = new DateTime(2026, 8, 5, 18, 5, 0, 0, DateTimeKind.Utc),
+                            DestinationAddress = "Ilidza",
+                            DestinationLat = 43.828000000000003,
+                            DestinationLng = 18.309999999999999,
+                            DistanceKm = 8.20m,
+                            DriverId = 3,
+                            IsDeleted = false,
+                            OrderStatusId = 3,
+                            PassengerId = 9,
+                            PickedUpAt = new DateTime(2026, 8, 5, 18, 16, 0, 0, DateTimeKind.Utc),
+                            PickupAddress = "Bascarsija",
+                            PickupLat = 43.859499999999997,
+                            PickupLng = 18.431000000000001,
+                            TaxiCompanyId = 3,
+                            UpdatedAt = new DateTime(2026, 8, 5, 18, 16, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 17,
+                            CancellationReason = "Passenger found another ride before a driver accepted.",
+                            CancelledAt = new DateTime(2026, 7, 20, 12, 6, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 7, 20, 12, 0, 0, 0, DateTimeKind.Utc),
+                            DestinationAddress = "Zeljeznicka stanica",
+                            DestinationLat = 43.347999999999999,
+                            DestinationLng = 17.808499999999999,
+                            DistanceKm = 4.40m,
+                            IsDeleted = false,
+                            OrderStatusId = 5,
+                            PassengerId = 4,
+                            PickupAddress = "Marsala Tita 40",
+                            PickupLat = 43.3401,
+                            PickupLng = 17.813500000000001,
+                            TaxiCompanyId = 1,
+                            UpdatedAt = new DateTime(2026, 7, 20, 12, 6, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 18,
+                            AcceptedAt = new DateTime(2026, 7, 22, 9, 19, 0, 0, DateTimeKind.Utc),
+                            CancellationReason = "Driver could not reach the pick-up point because of a closed road.",
+                            CancelledAt = new DateTime(2026, 7, 22, 9, 31, 0, 0, DateTimeKind.Utc),
+                            CarId = 5,
+                            CreatedAt = new DateTime(2026, 7, 22, 9, 15, 0, 0, DateTimeKind.Utc),
+                            DestinationAddress = "Vogosca",
+                            DestinationLat = 43.899999999999999,
+                            DestinationLng = 18.343,
+                            DistanceKm = 6.10m,
+                            DriverId = 3,
+                            IsDeleted = false,
+                            OrderStatusId = 5,
+                            PassengerId = 9,
+                            PickupAddress = "Grbavica",
+                            PickupLat = 43.847999999999999,
+                            PickupLng = 18.395,
+                            TaxiCompanyId = 3,
+                            UpdatedAt = new DateTime(2026, 7, 22, 9, 31, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
@@ -1874,6 +2048,120 @@ namespace PickMeUp.Services.Migrations
                             OrderId = 12,
                             Reason = "Ride completed",
                             ToStatusId = 4
+                        },
+                        new
+                        {
+                            Id = 49,
+                            ChangedAt = new DateTime(2026, 8, 3, 8, 30, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 4,
+                            OrderId = 13,
+                            Reason = "Order placed",
+                            ToStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 50,
+                            ChangedAt = new DateTime(2026, 8, 4, 17, 10, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 9,
+                            OrderId = 14,
+                            Reason = "Order placed",
+                            ToStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 51,
+                            ChangedAt = new DateTime(2026, 8, 5, 7, 45, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 4,
+                            OrderId = 15,
+                            Reason = "Order placed",
+                            ToStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 52,
+                            ChangedAt = new DateTime(2026, 8, 5, 7, 50, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 3,
+                            FromStatusId = 1,
+                            OrderId = 15,
+                            Reason = "Accepted by driver",
+                            ToStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 53,
+                            ChangedAt = new DateTime(2026, 8, 5, 18, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 9,
+                            OrderId = 16,
+                            Reason = "Order placed",
+                            ToStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 54,
+                            ChangedAt = new DateTime(2026, 8, 5, 18, 9, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 8,
+                            FromStatusId = 1,
+                            OrderId = 16,
+                            Reason = "Accepted by driver",
+                            ToStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 55,
+                            ChangedAt = new DateTime(2026, 8, 5, 18, 16, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 8,
+                            FromStatusId = 2,
+                            OrderId = 16,
+                            Reason = "Passenger picked up",
+                            ToStatusId = 3
+                        },
+                        new
+                        {
+                            Id = 56,
+                            ChangedAt = new DateTime(2026, 7, 20, 12, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 4,
+                            OrderId = 17,
+                            Reason = "Order placed",
+                            ToStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 57,
+                            ChangedAt = new DateTime(2026, 7, 20, 12, 6, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 4,
+                            FromStatusId = 1,
+                            OrderId = 17,
+                            Reason = "Passenger found another ride before a driver accepted.",
+                            ToStatusId = 5
+                        },
+                        new
+                        {
+                            Id = 58,
+                            ChangedAt = new DateTime(2026, 7, 22, 9, 15, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 9,
+                            OrderId = 18,
+                            Reason = "Order placed",
+                            ToStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 59,
+                            ChangedAt = new DateTime(2026, 7, 22, 9, 19, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 8,
+                            FromStatusId = 1,
+                            OrderId = 18,
+                            Reason = "Accepted by driver",
+                            ToStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 60,
+                            ChangedAt = new DateTime(2026, 7, 22, 9, 31, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 8,
+                            FromStatusId = 2,
+                            OrderId = 18,
+                            Reason = "Driver could not reach the pick-up point because of a closed road.",
+                            ToStatusId = 5
                         });
                 });
 
@@ -1932,6 +2220,150 @@ namespace PickMeUp.Services.Migrations
                         .IsUnique();
 
                     b.ToTable("Payments");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AmountCharged = 6.34m,
+                            CreatedAt = new DateTime(2026, 6, 11, 9, 40, 0, 0, DateTimeKind.Utc),
+                            Currency = "BAM",
+                            IsDeleted = false,
+                            IsPaid = true,
+                            OrderId = 1,
+                            PaidAt = new DateTime(2026, 6, 11, 10, 5, 0, 0, DateTimeKind.Utc),
+                            PaymentStatusId = 2,
+                            StripePaymentIntentId = "pi_seed_001"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AmountCharged = 9.22m,
+                            CreatedAt = new DateTime(2026, 6, 18, 9, 40, 0, 0, DateTimeKind.Utc),
+                            Currency = "BAM",
+                            IsDeleted = false,
+                            IsPaid = true,
+                            OrderId = 2,
+                            PaidAt = new DateTime(2026, 6, 18, 10, 5, 0, 0, DateTimeKind.Utc),
+                            PaymentStatusId = 2,
+                            StripePaymentIntentId = "pi_seed_002"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AmountCharged = 12.58m,
+                            CreatedAt = new DateTime(2026, 6, 25, 9, 40, 0, 0, DateTimeKind.Utc),
+                            Currency = "BAM",
+                            IsDeleted = false,
+                            IsPaid = true,
+                            OrderId = 3,
+                            PaidAt = new DateTime(2026, 6, 25, 10, 5, 0, 0, DateTimeKind.Utc),
+                            PaymentStatusId = 2,
+                            StripePaymentIntentId = "pi_seed_003"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            AmountCharged = 7.42m,
+                            CreatedAt = new DateTime(2026, 7, 2, 9, 40, 0, 0, DateTimeKind.Utc),
+                            Currency = "BAM",
+                            IsDeleted = false,
+                            IsPaid = true,
+                            OrderId = 4,
+                            PaidAt = new DateTime(2026, 7, 2, 10, 5, 0, 0, DateTimeKind.Utc),
+                            PaymentStatusId = 2,
+                            StripePaymentIntentId = "pi_seed_004"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            AmountCharged = 10.78m,
+                            CreatedAt = new DateTime(2026, 7, 9, 9, 40, 0, 0, DateTimeKind.Utc),
+                            Currency = "BAM",
+                            IsDeleted = false,
+                            IsPaid = false,
+                            OrderId = 5,
+                            PaymentStatusId = 1,
+                            StripePaymentIntentId = "pi_seed_005"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            AmountCharged = 8.75m,
+                            CreatedAt = new DateTime(2026, 6, 14, 9, 40, 0, 0, DateTimeKind.Utc),
+                            Currency = "BAM",
+                            IsDeleted = false,
+                            IsPaid = true,
+                            OrderId = 6,
+                            PaidAt = new DateTime(2026, 6, 14, 10, 5, 0, 0, DateTimeKind.Utc),
+                            PaymentStatusId = 2,
+                            StripePaymentIntentId = "pi_seed_006"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            AmountCharged = 7.95m,
+                            CreatedAt = new DateTime(2026, 6, 12, 9, 40, 0, 0, DateTimeKind.Utc),
+                            Currency = "BAM",
+                            IsDeleted = false,
+                            IsPaid = true,
+                            OrderId = 8,
+                            PaidAt = new DateTime(2026, 6, 12, 10, 5, 0, 0, DateTimeKind.Utc),
+                            PaymentStatusId = 2,
+                            StripePaymentIntentId = "pi_seed_008"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            AmountCharged = 13.12m,
+                            CreatedAt = new DateTime(2026, 6, 20, 9, 40, 0, 0, DateTimeKind.Utc),
+                            Currency = "BAM",
+                            IsDeleted = false,
+                            IsPaid = true,
+                            OrderId = 9,
+                            PaidAt = new DateTime(2026, 6, 20, 10, 5, 0, 0, DateTimeKind.Utc),
+                            PaymentStatusId = 2,
+                            StripePaymentIntentId = "pi_seed_009"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            AmountCharged = 9.71m,
+                            CreatedAt = new DateTime(2026, 7, 4, 9, 40, 0, 0, DateTimeKind.Utc),
+                            Currency = "BAM",
+                            IsDeleted = false,
+                            IsPaid = true,
+                            OrderId = 10,
+                            PaidAt = new DateTime(2026, 7, 4, 10, 5, 0, 0, DateTimeKind.Utc),
+                            PaymentStatusId = 2,
+                            StripePaymentIntentId = "pi_seed_010"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            AmountCharged = 7.18m,
+                            CreatedAt = new DateTime(2026, 7, 11, 9, 40, 0, 0, DateTimeKind.Utc),
+                            Currency = "BAM",
+                            IsDeleted = false,
+                            IsPaid = true,
+                            OrderId = 11,
+                            PaidAt = new DateTime(2026, 7, 11, 10, 5, 0, 0, DateTimeKind.Utc),
+                            PaymentStatusId = 3,
+                            StripePaymentIntentId = "pi_seed_011"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            AmountCharged = 9.01m,
+                            CreatedAt = new DateTime(2026, 6, 28, 9, 40, 0, 0, DateTimeKind.Utc),
+                            Currency = "BAM",
+                            IsDeleted = false,
+                            IsPaid = true,
+                            OrderId = 12,
+                            PaidAt = new DateTime(2026, 6, 28, 10, 5, 0, 0, DateTimeKind.Utc),
+                            PaymentStatusId = 4,
+                            StripePaymentIntentId = "pi_seed_012"
+                        });
                 });
 
             modelBuilder.Entity("PickMeUp.Services.Database.PaymentRefund", b =>
@@ -1965,6 +2397,26 @@ namespace PickMeUp.Services.Migrations
                     b.HasIndex("PaymentId");
 
                     b.ToTable("PaymentRefunds");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            PaymentId = 10,
+                            Reason = "Waiting time was charged in error and returned to the passenger.",
+                            RefundedAmount = 2.18m,
+                            RefundedAt = new DateTime(2026, 7, 12, 8, 20, 0, 0, DateTimeKind.Utc),
+                            StripeRefundId = "re_seed_010"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            PaymentId = 11,
+                            Reason = "The ride was billed twice, so the duplicate charge was returned in full.",
+                            RefundedAmount = 9.01m,
+                            RefundedAt = new DateTime(2026, 6, 29, 8, 20, 0, 0, DateTimeKind.Utc),
+                            StripeRefundId = "re_seed_011"
+                        });
                 });
 
             modelBuilder.Entity("PickMeUp.Services.Database.PaymentStatus", b =>
