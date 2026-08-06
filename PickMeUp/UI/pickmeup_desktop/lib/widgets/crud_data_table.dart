@@ -37,6 +37,22 @@ class RowGuard {
   static const RowGuard allowed = RowGuard(isAllowed: true, reason: '');
 }
 
+class RowAction<T> {
+  const RowAction({
+    required this.tooltip,
+    required this.icon,
+    required this.onPressed,
+    this.guard,
+    this.color = AppColors.primaryIndigo,
+  });
+
+  final String tooltip;
+  final IconData icon;
+  final Future<bool> Function(T item) onPressed;
+  final RowGuard Function(T item)? guard;
+  final Color color;
+}
+
 class CrudDataTable<T> extends StatefulWidget {
   const CrudDataTable({
     super.key,
@@ -54,6 +70,7 @@ class CrudDataTable<T> extends StatefulWidget {
     this.filters = const [],
     this.editTooltip = 'Edit',
     this.editIcon = Icons.edit_outlined,
+    this.rowActions = const [],
   });
 
   final String title;
@@ -70,6 +87,7 @@ class CrudDataTable<T> extends StatefulWidget {
   final List<Widget> filters;
   final String editTooltip;
   final IconData editIcon;
+  final List<RowAction<T>> rowActions;
 
   @override
   State<CrudDataTable<T>> createState() => CrudDataTableState<T>();
@@ -388,7 +406,7 @@ class CrudDataTableState<T> extends State<CrudDataTable<T>> {
                 const DataColumn(label: SizedBox(width: 36)),
               for (final column in widget.columns)
                 DataColumn(label: _CellText(column: column, value: column.label)),
-              if (widget.onEdit != null || widget.onDelete != null)
+              if (_hasRowActions)
                 const DataColumn(label: SizedBox.shrink()),
             ],
             rows: [
@@ -405,8 +423,7 @@ class CrudDataTableState<T> extends State<CrudDataTable<T>> {
                     for (final column in widget.columns)
                       DataCell(
                           _CellText(column: column, value: column.value(item))),
-                    if (widget.onEdit != null || widget.onDelete != null)
-                      DataCell(_rowActions(item)),
+                    if (_hasRowActions) DataCell(_buildRowActions(item)),
                   ],
                 ),
             ],
@@ -429,12 +446,33 @@ class CrudDataTableState<T> extends State<CrudDataTable<T>> {
     return CircleAvatar(radius: 16, backgroundImage: NetworkImage(url));
   }
 
-  Widget _rowActions(T item) {
+  bool get _hasRowActions =>
+      widget.onEdit != null ||
+      widget.onDelete != null ||
+      widget.rowActions.isNotEmpty;
+
+  Widget _buildRowActions(T item) {
     final guard = widget.deleteGuard?.call(item) ?? RowGuard.allowed;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
+        for (final action in widget.rowActions)
+          DisabledAction(
+            isEnabled: action.guard?.call(item).isAllowed ?? true,
+            reason: action.guard?.call(item).reason ?? '',
+            child: IconButton(
+              tooltip: action.tooltip,
+              visualDensity: VisualDensity.compact,
+              icon: Icon(action.icon, color: action.color, size: 19),
+              onPressed: () async {
+                final changed = await action.onPressed(item);
+                if (changed) {
+                  await refresh();
+                }
+              },
+            ),
+          ),
         if (widget.onEdit != null)
           IconButton(
             tooltip: widget.editTooltip,

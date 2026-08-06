@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../layouts/nav_destination.dart';
 import '../layouts/role_side_nav.dart';
+import 'company/car_assignment_list_screen.dart';
+import 'company/car_list_screen.dart';
+import 'company/company_profile_screen.dart';
+import 'company/driver_list_screen.dart';
 import 'placeholder_screen.dart';
 
 class CompanyShell extends StatelessWidget {
@@ -15,34 +19,22 @@ class CompanyShell extends StatelessWidget {
         NavDestination(
           label: 'Company profile',
           icon: Icons.badge,
-          builder: (_) => const PlaceholderScreen(
-            title: 'Company profile',
-            arrivesWith: 'the TaxiCompany entity',
-          ),
+          builder: (_) => const CompanyProfileScreen(),
         ),
         NavDestination(
           label: 'Drivers',
           icon: Icons.person_pin,
-          builder: (_) => const PlaceholderScreen(
-            title: 'Drivers',
-            arrivesWith: 'the Driver entity',
-          ),
+          builder: (_) => const DriverListScreen(),
         ),
         NavDestination(
           label: 'Vehicles',
           icon: Icons.directions_car,
-          builder: (_) => const PlaceholderScreen(
-            title: 'Vehicles',
-            arrivesWith: 'the Car entity',
-          ),
+          builder: (_) => const CarListScreen(),
         ),
         NavDestination(
           label: 'Assignments',
           icon: Icons.link,
-          builder: (_) => const PlaceholderScreen(
-            title: 'Car assignments',
-            arrivesWith: 'the CarAssignment entity',
-          ),
+          builder: (_) => const CarAssignmentListScreen(),
         ),
         NavDestination(
           label: 'Orders',
