@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../layouts/nav_destination.dart';
 import '../layouts/role_side_nav.dart';
+import 'admin/admin_settings_screen.dart';
+import 'admin/support_ticket_list_screen.dart';
+import 'admin/user_list_screen.dart';
 import 'placeholder_screen.dart';
 import 'reference/reference_data_hub.dart';
 import 'shell_gallery_screen.dart';
@@ -23,18 +26,12 @@ class AdminShell extends StatelessWidget {
         NavDestination(
           label: 'Users',
           icon: Icons.people,
-          builder: (_) => const PlaceholderScreen(
-            title: 'Users',
-            arrivesWith: 'the user management endpoints',
-          ),
+          builder: (_) => const UserListScreen(),
         ),
         NavDestination(
           label: 'Reports & bugs',
           icon: Icons.support_agent,
-          builder: (_) => const PlaceholderScreen(
-            title: 'Reports & bugs',
-            arrivesWith: 'the SupportTicket entity',
-          ),
+          builder: (_) => const SupportTicketListScreen(),
         ),
         NavDestination(
           label: 'Reference data',
@@ -57,10 +54,7 @@ class AdminShell extends StatelessWidget {
         NavDestination(
           label: 'Settings',
           icon: Icons.settings,
-          builder: (_) => const PlaceholderScreen(
-            title: 'Settings',
-            arrivesWith: 'two-factor authentication',
-          ),
+          builder: (_) => const AdminSettingsScreen(),
         ),
       ],
     );

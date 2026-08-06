@@ -51,6 +51,9 @@ class CrudDataTable<T> extends StatefulWidget {
     this.searchHint = 'Search',
     this.createLabel = 'ADD NEW',
     this.imageUrlOf,
+    this.filters = const [],
+    this.editTooltip = 'Edit',
+    this.editIcon = Icons.edit_outlined,
   });
 
   final String title;
@@ -64,6 +67,9 @@ class CrudDataTable<T> extends StatefulWidget {
   final String searchHint;
   final String createLabel;
   final String? Function(T item)? imageUrlOf;
+  final List<Widget> filters;
+  final String editTooltip;
+  final IconData editIcon;
 
   @override
   State<CrudDataTable<T>> createState() => CrudDataTableState<T>();
@@ -221,21 +227,27 @@ class CrudDataTableState<T> extends State<CrudDataTable<T>> {
                   spacing: AppSpacing.sm,
                   runSpacing: AppSpacing.sm,
                   crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [search, searchButton, sortMenu],
+                  children: [search, ...widget.filters, searchButton, sortMenu],
                 ),
               ],
             );
           }
 
           return Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Flexible(child: heading),
-              const Spacer(),
-              search,
-              const SizedBox(width: AppSpacing.sm),
-              searchButton,
-              const SizedBox(width: AppSpacing.sm),
-              sortMenu,
+              Expanded(flex: 2, child: heading),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                flex: 5,
+                child: Wrap(
+                  alignment: WrapAlignment.end,
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [search, ...widget.filters, searchButton, sortMenu],
+                ),
+              ),
             ],
           );
         },
@@ -425,9 +437,9 @@ class CrudDataTableState<T> extends State<CrudDataTable<T>> {
       children: [
         if (widget.onEdit != null)
           IconButton(
-            tooltip: 'Edit',
+            tooltip: widget.editTooltip,
             visualDensity: VisualDensity.compact,
-            icon: const Icon(Icons.edit_outlined,
+            icon: Icon(widget.editIcon,
                 color: AppColors.editGreen, size: 19),
             onPressed: () async {
               final changed = await widget.onEdit!.call(item);
