@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../models/taxi_company.dart';
-import '../../providers/car_provider.dart';
-import '../../providers/driver_provider.dart';
+import '../../providers/city_provider.dart';
 import '../../providers/taxi_company_provider.dart';
 import '../../utils/api_error_handler.dart';
+import 'company_profile_form.dart';
 
 class CompanyProfileScreen extends StatefulWidget {
   const CompanyProfileScreen({super.key});
@@ -17,8 +17,7 @@ class CompanyProfileScreen extends StatefulWidget {
 
 class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
   final _companyProvider = TaxiCompanyProvider();
-  final _carProvider = CarProvider();
-  final _driverProvider = DriverProvider();
+  final _cityProvider = CityProvider();
 
   TaxiCompany? _company;
   bool _isLoading = true;
@@ -37,22 +36,11 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
     });
 
     try {
-      final name = await _resolveOwnCompanyName();
-
-      if (name == null) {
-        if (!mounted) return;
-        setState(() {
-          _company = null;
-          _isLoading = false;
-        });
-        return;
-      }
-
-      final result = await _companyProvider.get(filter: {'Name': name, 'PageSize': 1});
+      final company = await _companyProvider.getMine();
 
       if (!mounted) return;
       setState(() {
-        _company = (result.items ?? const []).isEmpty ? null : result.items!.first;
+        _company = company;
         _isLoading = false;
       });
     } catch (e) {
@@ -65,20 +53,20 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
     }
   }
 
-  Future<String?> _resolveOwnCompanyName() async {
-    final cars = await _carProvider.get(filter: {'PageSize': 1});
-    final fromCars = (cars.items ?? const []);
-    if (fromCars.isNotEmpty && fromCars.first.companyName != null) {
-      return fromCars.first.companyName;
-    }
+  Future<void> _edit() async {
+    final company = _company;
+    if (company == null) return;
 
-    final drivers = await _driverProvider.get(filter: {'PageSize': 1});
-    final fromDrivers = (drivers.items ?? const []);
-    if (fromDrivers.isNotEmpty && fromDrivers.first.companyName != null) {
-      return fromDrivers.first.companyName;
-    }
+    final saved = await CompanyProfileForm.show(
+      context,
+      company: company,
+      provider: _companyProvider,
+      cityProvider: _cityProvider,
+    );
 
-    return null;
+    if (saved) {
+      await _load();
+    }
   }
 
   @override
@@ -88,11 +76,28 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text('Company profile', style: theme.textTheme.headlineSmall),
-        const SizedBox(height: AppSpacing.xs),
-        Text(
-          'How your company appears to passengers, and the pricing the fare engine uses.',
-          style: theme.textTheme.bodySmall,
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Company profile', style: theme.textTheme.headlineSmall),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    'How your company appears to passengers, and the pricing the fare engine uses.',
+                    style: theme.textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+            if (_company != null)
+              FilledButton.icon(
+                onPressed: _edit,
+                icon: const Icon(Icons.edit_outlined, size: 18),
+                label: const Text('EDIT PROFILE'),
+              ),
+          ],
         ),
         const SizedBox(height: AppSpacing.lg),
         Expanded(child: _buildBody(theme)),
@@ -136,7 +141,7 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
               const Icon(Icons.badge_outlined, size: 32, color: AppColors.textMuted),
               const SizedBox(height: AppSpacing.sm),
               Text(
-                'Your profile could not be identified yet. It appears once your company has at least one vehicle or driver.',
+                'This account is not linked to a taxi company yet.',
                 style: theme.textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
@@ -190,7 +195,7 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
               const SizedBox(height: AppSpacing.md),
               _Notice(
                 text:
-                    'Changes to the profile and the pricing are made by an administrator. A company cannot delete itself.',
+                    'Only an administrator can remove a company from the platform, so there is no delete action here.',
               ),
             ],
           ),
