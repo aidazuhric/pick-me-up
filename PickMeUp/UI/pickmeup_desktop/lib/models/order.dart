@@ -31,6 +31,10 @@ class Order {
   String? companyName;
   String? driverName;
   String? carPlate;
+  double? pickupLat;
+  double? pickupLng;
+  double? destinationLat;
+  double? destinationLng;
   String? pickupAddress;
   String? destinationAddress;
   double? distanceKm;
@@ -49,6 +53,10 @@ class Order {
     this.companyName,
     this.driverName,
     this.carPlate,
+    this.pickupLat,
+    this.pickupLng,
+    this.destinationLat,
+    this.destinationLng,
     this.pickupAddress,
     this.destinationAddress,
     this.distanceKm,

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../layouts/nav_destination.dart';
 import '../layouts/role_side_nav.dart';
 import 'company/business_report_screen.dart';
+import 'company/fleet_map_screen.dart';
 import 'company/car_assignment_list_screen.dart';
 import 'company/order_list_screen.dart';
 import 'company/payment_overview_screen.dart';
@@ -59,10 +60,7 @@ class CompanyShell extends StatelessWidget {
         NavDestination(
           label: 'Fleet map',
           icon: Icons.map,
-          builder: (_) => const PlaceholderScreen(
-            title: 'Fleet tracking',
-            arrivesWith: 'live vehicle positions',
-          ),
+          builder: (_) => const FleetMapScreen(),
         ),
         NavDestination(
           label: 'Payments',
