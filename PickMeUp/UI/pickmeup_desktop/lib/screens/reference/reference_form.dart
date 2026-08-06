@@ -5,6 +5,7 @@ import '../../providers/reference_provider.dart';
 import '../../utils/api_error_handler.dart';
 import '../../utils/validators.dart';
 import '../../widgets/app_messages.dart';
+import '../../core/theme/app_spacing.dart';
 import '../../widgets/labeled_form.dart';
 import 'reference_table.dart';
 
@@ -32,10 +33,10 @@ class ReferenceForm extends StatefulWidget {
       builder: (_) => Dialog(
         insetPadding: const EdgeInsets.symmetric(horizontal: 80, vertical: 40),
         child: Padding(
-          padding: const EdgeInsets.all(28),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           child: SizedBox(
-            width: 720,
-            height: table.hasSortOrder ? 460 : 400,
+            width: 680,
+            height: table.hasSortOrder ? 470 : 400,
             child: ReferenceForm(
               table: table,
               provider: provider,

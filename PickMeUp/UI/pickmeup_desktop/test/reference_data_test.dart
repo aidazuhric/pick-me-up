@@ -51,7 +51,7 @@ void main() {
     expect(find.text('Mostar'), findsOneWidget);
     expect(find.text('Sarajevo'), findsOneWidget);
     expect(find.text('88000'), findsOneWidget);
-    expect(find.text('5 total'), findsOneWidget);
+    expect(find.text('5 records'), findsOneWidget);
 
     for (final table in referenceTables.skip(1)) {
       await tester.tap(find.widgetWithText(ChoiceChip, table.title));
@@ -87,7 +87,7 @@ void main() {
     await tester.pump();
     expect(find.text('City name must be at most 100 characters.'), findsOneWidget);
 
-    await tester.tap(find.text('Back'));
+    await tester.tap(find.byTooltip('Back'));
     await _settle(tester);
     expect(find.text('New city'), findsNothing);
   });

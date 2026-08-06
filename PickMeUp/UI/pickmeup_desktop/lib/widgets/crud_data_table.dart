@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/theme/app_colors.dart';
+import '../core/theme/app_spacing.dart';
 import '../models/search_result.dart';
 import 'disabled_action.dart';
 
@@ -42,15 +43,18 @@ class CrudDataTable<T> extends StatefulWidget {
     required this.title,
     required this.columns,
     required this.loadPage,
+    this.subtitle,
     this.onCreate,
     this.onEdit,
     this.onDelete,
     this.deleteGuard,
     this.searchHint = 'Search',
+    this.createLabel = 'ADD NEW',
     this.imageUrlOf,
   });
 
   final String title;
+  final String? subtitle;
   final List<CrudColumn<T>> columns;
   final PageLoader<T> loadPage;
   final Future<bool> Function()? onCreate;
@@ -58,6 +62,7 @@ class CrudDataTable<T> extends StatefulWidget {
   final Future<bool> Function(T item)? onDelete;
   final RowGuard Function(T item)? deleteGuard;
   final String searchHint;
+  final String createLabel;
   final String? Function(T item)? imageUrlOf;
 
   @override
@@ -102,7 +107,9 @@ class CrudDataTableState<T> extends State<CrudDataTable<T>> {
       final result = await widget.loadPage(
         _page,
         pageSize,
-        _searchController.text.trim().isEmpty ? null : _searchController.text.trim(),
+        _searchController.text.trim().isEmpty
+            ? null
+            : _searchController.text.trim(),
         _sortBy,
       );
 
@@ -123,7 +130,8 @@ class CrudDataTableState<T> extends State<CrudDataTable<T>> {
     }
   }
 
-  int get _lastPage => _totalCount == 0 ? 1 : ((_totalCount + pageSize - 1) ~/ pageSize);
+  int get _lastPage =>
+      _totalCount == 0 ? 1 : ((_totalCount + pageSize - 1) ~/ pageSize);
 
   Future<void> _handleCreate() async {
     final created = await widget.onCreate!.call();
@@ -136,158 +144,261 @@ class CrudDataTableState<T> extends State<CrudDataTable<T>> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final controls = [
-              SizedBox(
-                width: constraints.maxWidth < 700 ? 200 : 260,
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: widget.searchHint,
-                    prefixIcon: const Icon(Icons.search),
-                    isDense: true,
-                  ),
-                  onSubmitted: (_) => refresh(toFirstPage: true),
-                ),
-              ),
-              OutlinedButton.icon(
-                onPressed: () => refresh(toFirstPage: true),
-                icon: const Icon(Icons.filter_alt_outlined, size: 18),
-                label: const Text('Search'),
-              ),
-              _SortMenu<T>(
-                columns: widget.columns,
-                current: _sortBy,
-                onChanged: (value) {
-                  _sortBy = value;
-                  refresh(toFirstPage: true);
-                },
-              ),
-            ];
-
-            final title = Text(widget.title, style: theme.textTheme.headlineSmall);
-
-            if (constraints.maxWidth < 900) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  title,
-                  const SizedBox(height: 12),
-                  Wrap(spacing: 12, runSpacing: 12, children: controls),
-                ],
-              );
-            }
-
-            return Row(
-              children: [
-                Flexible(child: title),
-                const Spacer(),
-                for (final control in controls) ...[control, const SizedBox(width: 12)],
-              ],
-            );
-          },
-        ),
-        const SizedBox(height: 16),
-        Expanded(child: _buildBody(theme)),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Text('$_totalCount total', style: theme.textTheme.bodySmall),
-            const Spacer(),
-            IconButton(
-              tooltip: 'Previous page',
-              onPressed: _page > 1
-                  ? () {
-                      _page--;
-                      refresh();
-                    }
-                  : null,
-              icon: const Icon(Icons.chevron_left),
-            ),
-            Text('$_page / $_lastPage'),
-            IconButton(
-              tooltip: 'Next page',
-              onPressed: _page < _lastPage
-                  ? () {
-                      _page++;
-                      refresh();
-                    }
-                  : null,
-              icon: const Icon(Icons.chevron_right),
-            ),
-            const SizedBox(width: 16),
-            if (widget.onCreate != null)
-              FilledButton.icon(
-                onPressed: _handleCreate,
-                icon: const Icon(Icons.add),
-                label: const Text('ADD NEW'),
-              ),
-          ],
-        ),
-      ],
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildToolbar(context),
+          const Divider(height: 1),
+          Expanded(child: _buildBody(context)),
+          const Divider(height: 1),
+          _buildFooter(context),
+        ],
+      ),
     );
   }
 
-  Widget _buildBody(ThemeData theme) {
+  Widget _buildToolbar(BuildContext context) {
+    final theme = Theme.of(context);
+
+    final heading = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(widget.title, style: theme.textTheme.titleMedium),
+        if (widget.subtitle != null) ...[
+          const SizedBox(height: 2),
+          Text(widget.subtitle!, style: theme.textTheme.bodySmall),
+        ],
+      ],
+    );
+
+    final search = SizedBox(
+      width: AppSpacing.toolbarFieldWidth,
+      child: TextField(
+        controller: _searchController,
+        style: theme.textTheme.bodyMedium,
+        decoration: InputDecoration(
+          hintText: widget.searchHint,
+          prefixIcon: const Icon(Icons.search, size: 18),
+          prefixIconConstraints: const BoxConstraints(minWidth: 38),
+        ),
+        onSubmitted: (_) => refresh(toFirstPage: true),
+      ),
+    );
+
+    final searchButton = OutlinedButton.icon(
+      onPressed: () => refresh(toFirstPage: true),
+      icon: const Icon(Icons.filter_alt_outlined, size: 16),
+      label: const Text('Search'),
+    );
+
+    final sortMenu = _SortMenu<T>(
+      columns: widget.columns,
+      current: _sortBy,
+      onChanged: (value) {
+        _sortBy = value;
+        refresh(toFirstPage: true);
+      },
+    );
+
+    return Padding(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          if (constraints.maxWidth < 860) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                heading,
+                const SizedBox(height: AppSpacing.md),
+                Wrap(
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [search, searchButton, sortMenu],
+                ),
+              ],
+            );
+          }
+
+          return Row(
+            children: [
+              Flexible(child: heading),
+              const Spacer(),
+              search,
+              const SizedBox(width: AppSpacing.sm),
+              searchButton,
+              const SizedBox(width: AppSpacing.sm),
+              sortMenu,
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildFooter(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
+      child: Row(
+        children: [
+          Text(
+            _totalCount == 1 ? '1 record' : '$_totalCount records',
+            style: theme.textTheme.bodySmall,
+          ),
+          const Spacer(),
+          IconButton(
+            tooltip: 'Previous page',
+            visualDensity: VisualDensity.compact,
+            onPressed: _page > 1
+                ? () {
+                    _page--;
+                    refresh();
+                  }
+                : null,
+            icon: const Icon(Icons.chevron_left, size: 20),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+            child: Text('$_page / $_lastPage', style: theme.textTheme.bodySmall),
+          ),
+          IconButton(
+            tooltip: 'Next page',
+            visualDensity: VisualDensity.compact,
+            onPressed: _page < _lastPage
+                ? () {
+                    _page++;
+                    refresh();
+                  }
+                : null,
+            icon: const Icon(Icons.chevron_right, size: 20),
+          ),
+          if (widget.onCreate != null) ...[
+            const SizedBox(width: AppSpacing.md),
+            FilledButton.icon(
+              onPressed: _handleCreate,
+              icon: const Icon(Icons.add, size: 18),
+              label: Text(widget.createLabel),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBody(BuildContext context) {
+    final theme = Theme.of(context);
+
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(
+        child: SizedBox(
+          height: 28,
+          width: 28,
+          child: CircularProgressIndicator(strokeWidth: 2.5),
+        ),
+      );
     }
 
     if (_error != null) {
       return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.error_outline, color: theme.colorScheme.error, size: 40),
-            const SizedBox(height: 12),
-            Text(_error!, textAlign: TextAlign.center),
-            const SizedBox(height: 12),
-            OutlinedButton(onPressed: () => refresh(), child: const Text('Try again')),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.error_outline,
+                  color: theme.colorScheme.error, size: 32),
+              const SizedBox(height: AppSpacing.sm),
+              Text(_error!,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium),
+              const SizedBox(height: AppSpacing.md),
+              OutlinedButton(
+                onPressed: () => refresh(),
+                child: const Text('Try again'),
+              ),
+            ],
+          ),
         ),
       );
     }
 
     if (_items.isEmpty) {
+      final isSearching = _searchController.text.trim().isNotEmpty;
+
       return Center(
-        child: Text(
-          _searchController.text.trim().isEmpty
-              ? 'Nothing here yet. Use ADD NEW to create the first one.'
-              : 'No matches for "${_searchController.text.trim()}".',
-          style: theme.textTheme.bodyMedium,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                isSearching ? Icons.search_off : Icons.inbox_outlined,
+                size: 32,
+                color: AppColors.textMuted,
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                isSearching
+                    ? 'No matches for "${_searchController.text.trim()}".'
+                    : 'Nothing here yet. Use ${widget.createLabel} to create the first one.',
+                style: theme.textTheme.bodyMedium,
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       );
     }
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
+    return Scrollbar(
       child: SingleChildScrollView(
-        child: DataTable(
-          headingRowColor: WidgetStatePropertyAll(AppColors.primaryIndigo),
-          headingTextStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-          columns: [
-            if (widget.imageUrlOf != null) const DataColumn(label: Text('')),
-            for (final column in widget.columns)
-              DataColumn(label: _CellText(column: column, value: column.label)),
-            const DataColumn(label: Text('')),
-          ],
-          rows: [
-            for (final item in _items)
-              DataRow(
-                cells: [
-                  if (widget.imageUrlOf != null) DataCell(_thumbnail(widget.imageUrlOf!(item))),
-                  for (final column in widget.columns)
-                    DataCell(_CellText(column: column, value: column.value(item))),
-                  DataCell(_rowActions(item)),
-                ],
-              ),
-          ],
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: DataTable(
+            showCheckboxColumn: false,
+            border: const TableBorder(
+              horizontalInside: BorderSide(color: AppColors.border),
+            ),
+            columns: [
+              if (widget.imageUrlOf != null)
+                const DataColumn(label: SizedBox(width: 36)),
+              for (final column in widget.columns)
+                DataColumn(label: _CellText(column: column, value: column.label)),
+              if (widget.onEdit != null || widget.onDelete != null)
+                const DataColumn(label: SizedBox.shrink()),
+            ],
+            rows: [
+              for (final item in _items)
+                DataRow(
+                  color: WidgetStateProperty.resolveWith(
+                    (states) => states.contains(WidgetState.hovered)
+                        ? AppColors.rowHover
+                        : null,
+                  ),
+                  cells: [
+                    if (widget.imageUrlOf != null)
+                      DataCell(_thumbnail(widget.imageUrlOf!(item))),
+                    for (final column in widget.columns)
+                      DataCell(
+                          _CellText(column: column, value: column.value(item))),
+                    if (widget.onEdit != null || widget.onDelete != null)
+                      DataCell(_rowActions(item)),
+                  ],
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -298,7 +409,8 @@ class CrudDataTableState<T> extends State<CrudDataTable<T>> {
       return const CircleAvatar(
         radius: 16,
         backgroundColor: AppColors.inputFill,
-        child: Icon(Icons.image_not_supported_outlined, size: 16),
+        child: Icon(Icons.image_not_supported_outlined,
+            size: 15, color: AppColors.textMuted),
       );
     }
 
@@ -314,7 +426,9 @@ class CrudDataTableState<T> extends State<CrudDataTable<T>> {
         if (widget.onEdit != null)
           IconButton(
             tooltip: 'Edit',
-            icon: const Icon(Icons.edit, color: AppColors.editGreen),
+            visualDensity: VisualDensity.compact,
+            icon: const Icon(Icons.edit_outlined,
+                color: AppColors.editGreen, size: 19),
             onPressed: () async {
               final changed = await widget.onEdit!.call(item);
               if (changed) {
@@ -328,7 +442,9 @@ class CrudDataTableState<T> extends State<CrudDataTable<T>> {
             reason: guard.reason,
             child: IconButton(
               tooltip: 'Delete',
-              icon: const Icon(Icons.delete_outline, color: AppColors.danger),
+              visualDensity: VisualDensity.compact,
+              icon: const Icon(Icons.delete_outline,
+                  color: AppColors.danger, size: 19),
               onPressed: () async {
                 final deleted = await widget.onDelete!.call(item);
                 if (deleted) {
@@ -350,7 +466,12 @@ class _CellText<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final text = Text(value, softWrap: true, maxLines: 2, overflow: TextOverflow.ellipsis);
+    final text = Text(
+      value,
+      softWrap: true,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+    );
 
     if (column.maxWidth == null) {
       return text;
@@ -361,7 +482,11 @@ class _CellText<T> extends StatelessWidget {
 }
 
 class _SortMenu<T> extends StatelessWidget {
-  const _SortMenu({required this.columns, required this.current, required this.onChanged});
+  const _SortMenu({
+    required this.columns,
+    required this.current,
+    required this.onChanged,
+  });
 
   final List<CrudColumn<T>> columns;
   final String? current;
@@ -377,6 +502,7 @@ class _SortMenu<T> extends StatelessWidget {
 
     return PopupMenuButton<String?>(
       tooltip: 'Sort',
+      position: PopupMenuPosition.under,
       onSelected: onChanged,
       itemBuilder: (context) => [
         const PopupMenuItem<String?>(value: null, child: Text('Default order')),
@@ -393,8 +519,8 @@ class _SortMenu<T> extends StatelessWidget {
       ],
       child: OutlinedButton.icon(
         onPressed: null,
-        icon: const Icon(Icons.sort, size: 18),
-        label: Text(current == null ? 'Sort' : 'Sort: $current'),
+        icon: const Icon(Icons.sort, size: 16),
+        label: Text(current == null ? 'Sort' : 'Sorted: $current'),
       ),
     );
   }

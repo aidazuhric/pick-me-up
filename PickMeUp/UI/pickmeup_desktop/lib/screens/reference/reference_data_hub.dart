@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_spacing.dart';
 import 'reference_data_screen.dart';
 import 'reference_table.dart';
 
@@ -23,19 +24,19 @@ class _ReferenceDataHubState extends State<ReferenceDataHub> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text('Reference data', style: theme.textTheme.headlineSmall),
-        const SizedBox(height: 4),
+        const SizedBox(height: AppSpacing.xs),
         Text(
           'The lookup lists the rest of the platform chooses from.',
-          style: theme.textTheme.bodyMedium?.copyWith(color: Colors.black54),
+          style: theme.textTheme.bodySmall,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.md),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
             children: [
               for (var index = 0; index < referenceTables.length; index++)
                 Padding(
-                  padding: const EdgeInsets.only(right: 10),
+                  padding: const EdgeInsets.only(right: AppSpacing.sm),
                   child: _TableChip(
                     table: referenceTables[index],
                     isSelected: index == _selectedIndex,
@@ -45,7 +46,7 @@ class _ReferenceDataHubState extends State<ReferenceDataHub> {
             ],
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: AppSpacing.md),
         Expanded(
           child: ReferenceDataScreen(
             key: ValueKey(selected.endpoint),
@@ -80,8 +81,9 @@ class _TableChip extends StatelessWidget {
       ),
       label: Text(table.title),
       labelStyle: TextStyle(
-        color: isSelected ? Colors.white : Colors.black87,
-        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+        fontSize: 13,
+        color: isSelected ? Colors.white : AppColors.textPrimary,
+        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
       ),
       selectedColor: AppColors.primaryIndigo,
       backgroundColor: Colors.white,
@@ -89,7 +91,10 @@ class _TableChip extends StatelessWidget {
       side: BorderSide(
         color: isSelected ? AppColors.primaryIndigo : AppColors.divider,
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.sm,
+      ),
     );
   }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../core/theme/app_colors.dart';
+import '../core/theme/app_spacing.dart';
 import 'app_messages.dart';
 
 typedef OptionLoader<T> = Future<List<T>> Function();
@@ -73,8 +75,12 @@ class DbDropdownState<T> extends State<DbDropdown<T>> {
 
     if (_isLoading) {
       return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 14),
-        child: SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+        padding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
+        child: SizedBox(
+          height: 18,
+          width: 18,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
       );
     }
 
@@ -82,7 +88,11 @@ class DbDropdownState<T> extends State<DbDropdown<T>> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(_error!, style: TextStyle(color: theme.colorScheme.error)),
+          Text(
+            _error!,
+            style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.error),
+          ),
+          const SizedBox(height: AppSpacing.xs),
           TextButton(onPressed: reload, child: const Text('Try again')),
         ],
       );
@@ -92,7 +102,10 @@ class DbDropdownState<T> extends State<DbDropdown<T>> {
       return Row(
         children: [
           Expanded(
-            child: Text(widget.emptyMessage, style: TextStyle(color: theme.colorScheme.error)),
+            child: Text(
+              widget.emptyMessage,
+              style: theme.textTheme.bodySmall?.copyWith(color: AppColors.danger),
+            ),
           ),
           if (widget.onCreateNew != null)
             TextButton.icon(
@@ -109,6 +122,9 @@ class DbDropdownState<T> extends State<DbDropdown<T>> {
         Expanded(
           child: DropdownButtonFormField<int>(
             initialValue: widget.value,
+            isDense: true,
+            style: theme.textTheme.bodyMedium,
+            icon: const Icon(Icons.expand_more, size: 20),
             decoration: InputDecoration(hintText: widget.hintText),
             items: [
               for (final option in _options)
@@ -122,12 +138,15 @@ class DbDropdownState<T> extends State<DbDropdown<T>> {
             autovalidateMode: AutovalidateMode.onUserInteraction,
           ),
         ),
-        if (widget.onCreateNew != null)
+        if (widget.onCreateNew != null) ...[
+          const SizedBox(width: AppSpacing.xs),
           IconButton(
             tooltip: 'Add a new one',
+            visualDensity: VisualDensity.compact,
             onPressed: _createNew,
-            icon: const Icon(Icons.add_circle_outline),
+            icon: const Icon(Icons.add_circle_outline, size: 20),
           ),
+        ],
       ],
     );
   }

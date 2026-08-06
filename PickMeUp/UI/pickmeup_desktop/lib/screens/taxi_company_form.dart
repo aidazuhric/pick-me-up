@@ -8,6 +8,7 @@ import '../utils/api_error_handler.dart';
 import '../utils/validators.dart';
 import '../widgets/app_messages.dart';
 import '../widgets/db_dropdown.dart';
+import '../core/theme/app_spacing.dart';
 import '../widgets/labeled_form.dart';
 
 class TaxiCompanyForm extends StatefulWidget {
@@ -27,9 +28,9 @@ class TaxiCompanyForm extends StatefulWidget {
       builder: (_) => Dialog(
         insetPadding: const EdgeInsets.symmetric(horizontal: 80, vertical: 40),
         child: Padding(
-          padding: const EdgeInsets.all(28),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           child: SizedBox(
-            width: 820,
+            width: 760,
             child: TaxiCompanyForm(
               cityProvider: cityProvider,
               companyProvider: companyProvider,
@@ -125,7 +126,7 @@ class _TaxiCompanyFormState extends State<TaxiCompanyForm> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 620,
+      height: 640,
       child: LabeledForm(
         title: 'New taxi company',
         formKey: _formKey,
