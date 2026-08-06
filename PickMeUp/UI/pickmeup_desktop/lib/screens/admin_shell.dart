@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import '../layouts/nav_destination.dart';
 import '../layouts/role_side_nav.dart';
 import 'admin/admin_settings_screen.dart';
+import 'admin/pdf_reports_screen.dart';
 import 'admin/support_ticket_list_screen.dart';
 import 'admin/user_list_screen.dart';
-import 'placeholder_screen.dart';
 import 'reference/reference_data_hub.dart';
 import 'shell_gallery_screen.dart';
 import 'taxi_company_list_screen.dart';
@@ -41,10 +41,7 @@ class AdminShell extends StatelessWidget {
         NavDestination(
           label: 'PDF reports',
           icon: Icons.picture_as_pdf,
-          builder: (_) => const PlaceholderScreen(
-            title: 'PDF reports',
-            arrivesWith: 'the reporting endpoints',
-          ),
+          builder: (_) => const PdfReportsScreen(),
         ),
         NavDestination(
           label: 'Shared shells',
