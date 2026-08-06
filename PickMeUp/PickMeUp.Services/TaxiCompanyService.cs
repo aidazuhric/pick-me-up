@@ -20,6 +20,7 @@ namespace PickMeUp.Services
 
         private readonly ICryptoService _cryptoService;
         private readonly IImageFileStore _imageFileStore;
+        private readonly IAuthenticatedUserAccessor _userAccessor;
 
         public TaxiCompanyService(
             PickMeUpDbContext dbContext,
@@ -27,11 +28,47 @@ namespace PickMeUp.Services
             IValidator<TaxiCompanyInsertRequest> insertValidator,
             IValidator<TaxiCompanyUpdateRequest> updateValidator,
             ICryptoService cryptoService,
-            IImageFileStore imageFileStore)
+            IImageFileStore imageFileStore,
+            IAuthenticatedUserAccessor userAccessor)
             : base(dbContext, mapper, insertValidator, updateValidator)
         {
             _cryptoService = cryptoService;
             _imageFileStore = imageFileStore;
+            _userAccessor = userAccessor;
+        }
+
+        public async Task<TaxiCompanyResponse> GetOwnAsync()
+        {
+            var company = await LoadOwnCompanyAsync();
+
+            return _mapper.Map<TaxiCompanyResponse>(company);
+        }
+
+        public async Task<TaxiCompanyResponse> UpdateOwnAsync(TaxiCompanyUpdateRequest request)
+        {
+            request.IsActive = null;
+
+            var company = await LoadOwnCompanyAsync();
+
+            return await UpdateAsync(company.Id, request);
+        }
+
+        public async Task<string> StoreOwnLogoAsync(Stream content, string fileName, string contentType)
+        {
+            var company = await LoadOwnCompanyAsync();
+
+            return await StoreLogoAsync(company.Id, content, fileName, contentType);
+        }
+
+        private async Task<TaxiCompany> LoadOwnCompanyAsync()
+        {
+            var userId = _userAccessor.GetUserId()
+                ?? throw new BusinessException("The caller could not be identified.");
+
+            return await _dbContext.TaxiCompanies
+                .Include(t => t.City)
+                .FirstOrDefaultAsync(t => t.UserId == userId)
+                ?? throw new BusinessException("This account does not manage a taxi company.");
         }
 
         protected override Task<IQueryable<TaxiCompany>> IncludeRelatedEntitiesAsync(

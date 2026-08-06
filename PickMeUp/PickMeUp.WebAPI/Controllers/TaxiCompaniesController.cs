@@ -41,6 +41,50 @@ public class TaxiCompaniesController
     }
 
     /// <summary>
+    /// The signed-in company's own profile, resolved from the token. A company never passes an
+    /// id, so it cannot read another company's row through this endpoint; administrators manage
+    /// companies through the by-id endpoints instead.
+    /// </summary>
+    [Authorization(Roles.Company)]
+    [HttpGet("Mine")]
+    public async Task<ActionResult<TaxiCompanyResponse>> GetMine()
+    {
+        return await _service.GetOwnAsync();
+    }
+
+    /// <summary>
+    /// Updates the signed-in company's own profile, including its price list. The company is
+    /// taken from the token, so one company cannot edit another's. Whether the company is listed
+    /// to passengers stays an administrator's decision and is ignored here.
+    /// </summary>
+    [Authorization(Roles.Company)]
+    [HttpPut("Mine")]
+    public async Task<ActionResult<TaxiCompanyResponse>> UpdateMine(
+        [FromBody] TaxiCompanyUpdateRequest request)
+    {
+        return await _service.UpdateOwnAsync(request);
+    }
+
+    /// <summary>
+    /// Replaces the signed-in company's own logo, with the same MIME and magic-byte checks as the
+    /// administrator upload.
+    /// </summary>
+    [Authorization(Roles.Company)]
+    [HttpPost("Mine/Logo")]
+    public async Task<IActionResult> UploadOwnLogo(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest(new { message = "Choose an image file to upload." });
+        }
+
+        await using var stream = file.OpenReadStream();
+        await _service.StoreOwnLogoAsync(stream, file.FileName, file.ContentType);
+
+        return NoContent();
+    }
+
+    /// <summary>
     /// Replaces the company logo. The upload is accepted only when the declared MIME type and
     /// the file's own magic bytes agree on JPEG or PNG.
     /// </summary>
