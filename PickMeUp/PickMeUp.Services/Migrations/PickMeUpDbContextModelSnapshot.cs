@@ -2258,7 +2258,7 @@ namespace PickMeUp.Services.Migrations
                             IsPaid = true,
                             OrderId = 3,
                             PaidAt = new DateTime(2026, 6, 25, 10, 5, 0, 0, DateTimeKind.Utc),
-                            PaymentStatusId = 2,
+                            PaymentStatusId = 3,
                             StripePaymentIntentId = "pi_seed_003"
                         },
                         new
@@ -2271,7 +2271,7 @@ namespace PickMeUp.Services.Migrations
                             IsPaid = true,
                             OrderId = 4,
                             PaidAt = new DateTime(2026, 7, 2, 10, 5, 0, 0, DateTimeKind.Utc),
-                            PaymentStatusId = 2,
+                            PaymentStatusId = 4,
                             StripePaymentIntentId = "pi_seed_004"
                         },
                         new
@@ -2416,6 +2416,24 @@ namespace PickMeUp.Services.Migrations
                             RefundedAmount = 9.01m,
                             RefundedAt = new DateTime(2026, 6, 29, 8, 20, 0, 0, DateTimeKind.Utc),
                             StripeRefundId = "re_seed_011"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            PaymentId = 3,
+                            Reason = "The passenger was charged for a longer route than the one driven.",
+                            RefundedAmount = 3.58m,
+                            RefundedAt = new DateTime(2026, 6, 26, 9, 15, 0, 0, DateTimeKind.Utc),
+                            StripeRefundId = "re_seed_003"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            PaymentId = 4,
+                            Reason = "The ride was cut short by a breakdown, so the full fare was returned.",
+                            RefundedAmount = 7.42m,
+                            RefundedAt = new DateTime(2026, 7, 3, 8, 40, 0, 0, DateTimeKind.Utc),
+                            StripeRefundId = "re_seed_004"
                         });
                 });
 
@@ -2752,6 +2770,149 @@ namespace PickMeUp.Services.Migrations
                     b.HasIndex("DriverId", "EndedAt");
 
                     b.ToTable("Shifts");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2026, 6, 11, 7, 30, 0, 0, DateTimeKind.Utc),
+                            DriverId = 1,
+                            EndedAt = new DateTime(2026, 6, 11, 15, 30, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            OrdersHandled = 1,
+                            StartedAt = new DateTime(2026, 6, 11, 7, 30, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 6, 11, 15, 30, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2026, 6, 18, 7, 30, 0, 0, DateTimeKind.Utc),
+                            DriverId = 1,
+                            EndedAt = new DateTime(2026, 6, 18, 15, 30, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            OrdersHandled = 1,
+                            StartedAt = new DateTime(2026, 6, 18, 7, 30, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 6, 18, 15, 30, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2026, 7, 2, 7, 30, 0, 0, DateTimeKind.Utc),
+                            DriverId = 1,
+                            EndedAt = new DateTime(2026, 7, 2, 16, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            OrdersHandled = 1,
+                            StartedAt = new DateTime(2026, 7, 2, 7, 30, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 7, 2, 16, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2026, 6, 25, 8, 0, 0, 0, DateTimeKind.Utc),
+                            DriverId = 2,
+                            EndedAt = new DateTime(2026, 6, 25, 16, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            OrdersHandled = 1,
+                            StartedAt = new DateTime(2026, 6, 25, 8, 0, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 6, 25, 16, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2026, 7, 9, 8, 0, 0, 0, DateTimeKind.Utc),
+                            DriverId = 2,
+                            EndedAt = new DateTime(2026, 7, 9, 16, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            OrdersHandled = 1,
+                            StartedAt = new DateTime(2026, 7, 9, 8, 0, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 7, 9, 16, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAt = new DateTime(2026, 6, 14, 9, 0, 0, 0, DateTimeKind.Utc),
+                            DriverId = 4,
+                            EndedAt = new DateTime(2026, 6, 14, 17, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            OrdersHandled = 1,
+                            StartedAt = new DateTime(2026, 6, 14, 9, 0, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 6, 14, 17, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedAt = new DateTime(2026, 7, 16, 9, 0, 0, 0, DateTimeKind.Utc),
+                            DriverId = 4,
+                            EndedAt = new DateTime(2026, 7, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            OrdersHandled = 1,
+                            StartedAt = new DateTime(2026, 7, 16, 9, 0, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 7, 16, 17, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CreatedAt = new DateTime(2026, 6, 12, 7, 0, 0, 0, DateTimeKind.Utc),
+                            DriverId = 3,
+                            EndedAt = new DateTime(2026, 6, 12, 15, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            OrdersHandled = 1,
+                            StartedAt = new DateTime(2026, 6, 12, 7, 0, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 6, 12, 15, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CreatedAt = new DateTime(2026, 6, 20, 7, 0, 0, 0, DateTimeKind.Utc),
+                            DriverId = 3,
+                            EndedAt = new DateTime(2026, 6, 20, 15, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            OrdersHandled = 1,
+                            StartedAt = new DateTime(2026, 6, 20, 7, 0, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 6, 20, 15, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CreatedAt = new DateTime(2026, 7, 4, 7, 0, 0, 0, DateTimeKind.Utc),
+                            DriverId = 3,
+                            EndedAt = new DateTime(2026, 7, 4, 15, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            OrdersHandled = 1,
+                            StartedAt = new DateTime(2026, 7, 4, 7, 0, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 7, 4, 15, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CreatedAt = new DateTime(2026, 7, 11, 7, 0, 0, 0, DateTimeKind.Utc),
+                            DriverId = 3,
+                            EndedAt = new DateTime(2026, 7, 11, 15, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            OrdersHandled = 1,
+                            StartedAt = new DateTime(2026, 7, 11, 7, 0, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 7, 11, 15, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CreatedAt = new DateTime(2026, 6, 28, 8, 30, 0, 0, DateTimeKind.Utc),
+                            DriverId = 5,
+                            EndedAt = new DateTime(2026, 6, 28, 16, 30, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            OrdersHandled = 1,
+                            StartedAt = new DateTime(2026, 6, 28, 8, 30, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 6, 28, 16, 30, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CreatedAt = new DateTime(2026, 8, 6, 6, 45, 0, 0, DateTimeKind.Utc),
+                            DriverId = 1,
+                            IsDeleted = false,
+                            OrdersHandled = 0,
+                            StartedAt = new DateTime(2026, 8, 6, 6, 45, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("PickMeUp.Services.Database.ShiftBreak", b =>
@@ -2782,6 +2943,35 @@ namespace PickMeUp.Services.Migrations
                     b.HasIndex("ShiftId", "EndedAt");
 
                     b.ToTable("ShiftBreaks");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2026, 6, 18, 11, 0, 0, 0, DateTimeKind.Utc),
+                            EndedAt = new DateTime(2026, 6, 18, 11, 30, 0, 0, DateTimeKind.Utc),
+                            ShiftId = 2,
+                            StartedAt = new DateTime(2026, 6, 18, 11, 0, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 6, 18, 11, 30, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2026, 6, 25, 12, 0, 0, 0, DateTimeKind.Utc),
+                            EndedAt = new DateTime(2026, 6, 25, 12, 45, 0, 0, DateTimeKind.Utc),
+                            ShiftId = 4,
+                            StartedAt = new DateTime(2026, 6, 25, 12, 0, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 6, 25, 12, 45, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2026, 6, 12, 10, 30, 0, 0, DateTimeKind.Utc),
+                            EndedAt = new DateTime(2026, 6, 12, 11, 0, 0, 0, DateTimeKind.Utc),
+                            ShiftId = 8,
+                            StartedAt = new DateTime(2026, 6, 12, 10, 30, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 6, 12, 11, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("PickMeUp.Services.Database.SupportTicket", b =>
