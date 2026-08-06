@@ -169,8 +169,8 @@ namespace PickMeUp.Services
                                   CityName = company.City.Name,
                                   CompletedRides = ride.CompletedRides,
                                   Revenue = ride.Revenue,
-                                  AverageRating = rating == null ? null : (double?)rating.Average,
-                                  ReviewCount = rating == null ? 0 : rating.ReviewCount
+                                  AverageRating = (double?)rating.Average,
+                                  ReviewCount = (int?)rating.ReviewCount ?? 0
                               })
                              .Take(TopCompanyCount)
                              .ToListAsync();
@@ -271,8 +271,8 @@ namespace PickMeUp.Services
                                         DriverName = driver.User.FirstName + " " + driver.User.LastName,
                                         CompletedRides = row.CompletedRides,
                                         Revenue = row.Revenue,
-                                        AverageRating = rating == null ? null : (double?)rating.Average,
-                                        ReviewCount = rating == null ? 0 : rating.ReviewCount
+                                        AverageRating = (double?)rating.Average,
+                                        ReviewCount = (int?)rating.ReviewCount ?? 0
                                     })
                                    .ToListAsync();
 
