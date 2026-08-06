@@ -382,7 +382,9 @@ class CrudDataTableState<T> extends State<CrudDataTable<T>> {
               Text(
                 isSearching
                     ? 'No matches for "${_searchController.text.trim()}".'
-                    : 'Nothing here yet. Use ${widget.createLabel} to create the first one.',
+                    : widget.onCreate == null
+                        ? 'Nothing to show yet.'
+                        : 'Nothing here yet. Use ${widget.createLabel} to create the first one.',
                 style: theme.textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),

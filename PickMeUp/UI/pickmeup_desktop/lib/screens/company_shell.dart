@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import '../layouts/nav_destination.dart';
 import '../layouts/role_side_nav.dart';
 import 'company/car_assignment_list_screen.dart';
+import 'company/order_list_screen.dart';
+import 'company/payment_overview_screen.dart';
+import 'company/review_list_screen.dart';
+import 'company/shift_list_screen.dart';
 import 'company/car_list_screen.dart';
 import 'company/company_profile_screen.dart';
 import 'company/driver_list_screen.dart';
@@ -39,26 +43,17 @@ class CompanyShell extends StatelessWidget {
         NavDestination(
           label: 'Orders',
           icon: Icons.receipt_long,
-          builder: (_) => const PlaceholderScreen(
-            title: 'Orders',
-            arrivesWith: 'the Order entity',
-          ),
+          builder: (_) => const OrderListScreen(),
         ),
         NavDestination(
           label: 'Shifts',
           icon: Icons.schedule,
-          builder: (_) => const PlaceholderScreen(
-            title: 'Driver shifts',
-            arrivesWith: 'the Shift entity',
-          ),
+          builder: (_) => const ShiftListScreen(),
         ),
         NavDestination(
           label: 'Reviews',
           icon: Icons.star_rate,
-          builder: (_) => const PlaceholderScreen(
-            title: 'Reviews',
-            arrivesWith: 'the Review entity',
-          ),
+          builder: (_) => const ReviewListScreen(),
         ),
         NavDestination(
           label: 'Fleet map',
@@ -71,10 +66,7 @@ class CompanyShell extends StatelessWidget {
         NavDestination(
           label: 'Payments',
           icon: Icons.payments,
-          builder: (_) => const PlaceholderScreen(
-            title: 'Payment status & history',
-            arrivesWith: 'the Payment entity',
-          ),
+          builder: (_) => const PaymentOverviewScreen(),
         ),
         NavDestination(
           label: 'Business report',
