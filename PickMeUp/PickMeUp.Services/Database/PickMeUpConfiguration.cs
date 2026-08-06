@@ -15,6 +15,16 @@ namespace PickMeUp.Services.Database
             modelBuilder.Entity<RefreshToken>()
                 .HasQueryFilter(rt => !rt.User.IsDeleted);
 
+            modelBuilder.Entity<TwoFactorCode>()
+                .HasQueryFilter(c => !c.User.IsDeleted);
+
+            modelBuilder.Entity<TwoFactorCode>()
+                .HasOne(c => c.User).WithMany().HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<TwoFactorCode>()
+                .HasIndex(c => new { c.UserId, c.ConsumedAt, c.ExpiresAt });
+
             modelBuilder.Entity<UserRole>()
                 .HasOne(ur => ur.User)
                 .WithMany(ur => ur.UserRoles)

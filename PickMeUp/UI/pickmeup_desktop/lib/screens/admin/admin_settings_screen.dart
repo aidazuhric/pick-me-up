@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../providers/auth_provider.dart';
+import '../../utils/api_error_handler.dart';
+import '../../widgets/app_messages.dart';
 
 class AdminSettingsScreen extends StatefulWidget {
   const AdminSettingsScreen({super.key});
@@ -14,6 +16,58 @@ class AdminSettingsScreen extends StatefulWidget {
 
 class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
   bool _notifications = true;
+  bool _twoFactor = false;
+  bool _isLoadingTwoFactor = true;
+  bool _isSavingTwoFactor = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTwoFactor();
+  }
+
+  Future<void> _loadTwoFactor() async {
+    try {
+      final enabled = await context.read<AuthProvider>().readTwoFactorSetting();
+
+      if (!mounted) return;
+
+      setState(() {
+        _twoFactor = enabled;
+        _isLoadingTwoFactor = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoadingTwoFactor = false);
+      ApiErrorHandler.surface(context, e);
+    }
+  }
+
+  Future<void> _saveTwoFactor(bool enabled) async {
+    setState(() => _isSavingTwoFactor = true);
+
+    try {
+      final saved = await context.read<AuthProvider>().setTwoFactorSetting(enabled);
+
+      if (!mounted) return;
+
+      setState(() {
+        _twoFactor = saved;
+        _isSavingTwoFactor = false;
+      });
+
+      AppMessages.success(
+        context,
+        saved
+            ? 'From now on we will email you a code each time you sign in.'
+            : 'You will sign in with your password only.',
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isSavingTwoFactor = false);
+      ApiErrorHandler.surface(context, e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,10 +125,14 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                       children: [
                         _ToggleRow(
                           label: 'Two-factor authentication',
-                          description:
-                              'Sign in with a code sent by email. Not available yet — the server does not issue codes.',
-                          value: false,
-                          onChanged: null,
+                          description: _isLoadingTwoFactor
+                              ? 'Reading your security settings…'
+                              : 'Ask for a code sent to your email every time you sign in.',
+                          value: _twoFactor,
+                          onChanged:
+                              _isLoadingTwoFactor || _isSavingTwoFactor
+                                  ? null
+                                  : _saveTwoFactor,
                         ),
                       ],
                     ),

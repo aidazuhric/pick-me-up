@@ -12,6 +12,7 @@ namespace PickMeUp.Services.Database
         public DbSet<Role> Roles { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<TwoFactorCode> TwoFactorCodes { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<VehicleCategory> VehicleCategories { get; set; }
         public DbSet<OrderStatus> OrderStatuses { get; set; }

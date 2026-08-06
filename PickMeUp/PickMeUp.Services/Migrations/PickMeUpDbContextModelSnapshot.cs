@@ -3337,6 +3337,46 @@ namespace PickMeUp.Services.Migrations
                         });
                 });
 
+            modelBuilder.Entity("PickMeUp.Services.Database.TwoFactorCode", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AttemptCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("CodeHash")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("CodeSalt")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime?>("ConsumedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "ConsumedAt", "ExpiresAt");
+
+                    b.ToTable("TwoFactorCodes");
+                });
+
             modelBuilder.Entity("PickMeUp.Services.Database.User", b =>
                 {
                     b.Property<int>("Id")
@@ -3391,6 +3431,9 @@ namespace PickMeUp.Services.Migrations
                         .HasMaxLength(260)
                         .HasColumnType("character varying(260)");
 
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -3412,6 +3455,7 @@ namespace PickMeUp.Services.Migrations
                             LastName = "Admin",
                             PasswordHash = "w2ka8ahYEDcLTXF5tlMLcMfIjIA=",
                             PasswordSalt = "nlQ9pafmLDDgNQjCdCHDBA==",
+                            TwoFactorEnabled = false,
                             Username = "admin1"
                         },
                         new
@@ -3425,6 +3469,7 @@ namespace PickMeUp.Services.Migrations
                             LastName = "Company",
                             PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
                             PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
+                            TwoFactorEnabled = false,
                             Username = "company1"
                         },
                         new
@@ -3438,6 +3483,7 @@ namespace PickMeUp.Services.Migrations
                             LastName = "Driver",
                             PasswordHash = "C2PEEH/Xup8N70SBm2JUe+0ZOgw=",
                             PasswordSalt = "JEexDUo3l4SMx/4mz4etmQ==",
+                            TwoFactorEnabled = false,
                             Username = "driver1"
                         },
                         new
@@ -3451,6 +3497,7 @@ namespace PickMeUp.Services.Migrations
                             LastName = "Passenger",
                             PasswordHash = "052xFoGxDl/+S7j6ADYmEJRJj1k=",
                             PasswordSalt = "QtT/dkd9xeip5+bSeaA+4A==",
+                            TwoFactorEnabled = false,
                             Username = "passenger1"
                         },
                         new
@@ -3464,6 +3511,7 @@ namespace PickMeUp.Services.Migrations
                             LastName = "Neretva",
                             PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
                             PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
+                            TwoFactorEnabled = false,
                             Username = "company2"
                         },
                         new
@@ -3477,6 +3525,7 @@ namespace PickMeUp.Services.Migrations
                             LastName = "Express",
                             PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
                             PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
+                            TwoFactorEnabled = false,
                             Username = "company3"
                         },
                         new
@@ -3490,6 +3539,7 @@ namespace PickMeUp.Services.Migrations
                             LastName = "Hodzic",
                             PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
                             PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
+                            TwoFactorEnabled = false,
                             Username = "driver2"
                         },
                         new
@@ -3503,6 +3553,7 @@ namespace PickMeUp.Services.Migrations
                             LastName = "Kovac",
                             PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
                             PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
+                            TwoFactorEnabled = false,
                             Username = "driver3"
                         },
                         new
@@ -3517,6 +3568,7 @@ namespace PickMeUp.Services.Migrations
                             PasswordHash = "56VoVY84Uv3DwxLzx4fwlU3IzrM=",
                             PasswordSalt = "Rk9wYmJ2MnhLd0RlTHRRUQ==",
                             PhoneNumber = "+38761234567",
+                            TwoFactorEnabled = false,
                             Username = "passenger2"
                         },
                         new
@@ -3531,6 +3583,7 @@ namespace PickMeUp.Services.Migrations
                             PasswordHash = "pG3YU6itVrSMloQBg/eTd0NOfNo=",
                             PasswordSalt = "c1RtWnFYaDdOdkxrRWJVdA==",
                             PhoneNumber = "+38761765432",
+                            TwoFactorEnabled = false,
                             Username = "passenger3"
                         },
                         new
@@ -3545,6 +3598,7 @@ namespace PickMeUp.Services.Migrations
                             PasswordHash = "VryTRHSCv/ouQq2T4UhDu7VG8ow=",
                             PasswordSalt = "WGpQdzRzTmhCcTJmVmRLYQ==",
                             PhoneNumber = "+38733555666",
+                            TwoFactorEnabled = true,
                             Username = "company4"
                         },
                         new
@@ -3559,6 +3613,7 @@ namespace PickMeUp.Services.Migrations
                             PasswordHash = "NVrK8OXfEs43X/SeZ5ylkNrLeMg=",
                             PasswordSalt = "THBjNXZLZ1J3TjhtWXNFag==",
                             PhoneNumber = "+38736777888",
+                            TwoFactorEnabled = false,
                             Username = "driver4"
                         },
                         new
@@ -3573,6 +3628,7 @@ namespace PickMeUp.Services.Migrations
                             PasswordHash = "Yk+hY2PFplbc+iJLzo9GXPyQCXo=",
                             PasswordSalt = "QjdrTndSdFhoTTJ2Q3BZZA==",
                             PhoneNumber = "+38733999000",
+                            TwoFactorEnabled = false,
                             Username = "driver5"
                         });
                 });
@@ -4111,6 +4167,17 @@ namespace PickMeUp.Services.Migrations
                         .IsRequired();
 
                     b.Navigation("City");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PickMeUp.Services.Database.TwoFactorCode", b =>
+                {
+                    b.HasOne("PickMeUp.Services.Database.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

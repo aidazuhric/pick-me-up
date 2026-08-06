@@ -177,6 +177,7 @@ builder.Services.AddScoped<INotificationRecorder, NotificationRecorder>();
 builder.Services.AddScoped<IInteractionRecorder, InteractionRecorder>();
 builder.Services.AddScoped<IRecommendationService, RecommendationService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<ITwoFactorService, TwoFactorService>();
 builder.Services.AddScoped<IImageFileStore, ImageFileStore>();
 
 builder.Services.AddScoped<ICityService, CityService>();

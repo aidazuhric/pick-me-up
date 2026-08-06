@@ -14,33 +14,102 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _codeFormKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _codeController = TextEditingController();
 
   bool _isSubmitting = false;
   String? _errorMessage;
+  String? _noticeMessage;
+  TwoFactorChallenge? _challenge;
 
   @override
   void dispose() {
     _usernameController.dispose();
     _passwordController.dispose();
+    _codeController.dispose();
     super.dispose();
   }
 
   Future<void> _submit() async {
-    setState(() => _errorMessage = null);
+    setState(() {
+      _errorMessage = null;
+      _noticeMessage = null;
+    });
 
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
-    setState(() => _isSubmitting = true);
-
-    try {
-      await context.read<AuthProvider>().login(
+    await _run(() async {
+      final challenge = await context.read<AuthProvider>().login(
             _usernameController.text.trim(),
             _passwordController.text,
           );
+
+      if (challenge != null && mounted) {
+        setState(() {
+          _challenge = challenge;
+          _codeController.clear();
+        });
+      }
+    });
+  }
+
+  Future<void> _submitCode() async {
+    setState(() {
+      _errorMessage = null;
+      _noticeMessage = null;
+    });
+
+    if (!_codeFormKey.currentState!.validate()) {
+      return;
+    }
+
+    await _run(() async {
+      await context.read<AuthProvider>().verifyCode(
+            _usernameController.text.trim(),
+            _codeController.text.trim(),
+          );
+    });
+  }
+
+  Future<void> _resendCode() async {
+    setState(() {
+      _errorMessage = null;
+      _noticeMessage = null;
+    });
+
+    await _run(() async {
+      final challenge = await context.read<AuthProvider>().login(
+            _usernameController.text.trim(),
+            _passwordController.text,
+          );
+
+      if (!mounted) return;
+
+      setState(() {
+        _challenge = challenge ?? _challenge;
+        _noticeMessage = 'We sent another code. Check your inbox.';
+      });
+    });
+  }
+
+  void _backToCredentials() {
+    setState(() {
+      _challenge = null;
+      _codeController.clear();
+      _errorMessage = null;
+      _noticeMessage = null;
+    });
+  }
+
+  Future<void> _run(Future<void> Function() action) async {
+    setState(() => _isSubmitting = true);
+
+    try {
+      await action();
     } on ApiClientException catch (e) {
       if (mounted) {
         setState(() => _errorMessage = e.message);
@@ -99,67 +168,140 @@ class _LoginScreenState extends State<LoginScreen> {
                 constraints: const BoxConstraints(maxWidth: 420),
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.all(40),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text('Sign in', style: theme.textTheme.headlineMedium),
-                        const SizedBox(height: 28),
-                        TextFormField(
-                          controller: _usernameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Username',
-                          ),
-                          textInputAction: TextInputAction.next,
-                          validator: (value) =>
-                              (value == null || value.trim().isEmpty)
-                                  ? 'Enter your username.'
-                                  : null,
-                        ),
-                        const SizedBox(height: 20),
-                        TextFormField(
-                          controller: _passwordController,
-                          decoration: const InputDecoration(
-                            labelText: 'Password',
-                          ),
-                          obscureText: true,
-                          onFieldSubmitted: (_) => _submit(),
-                          validator: (value) =>
-                              (value == null || value.isEmpty)
-                                  ? 'Enter your password.'
-                                  : null,
-                        ),
-                        if (_errorMessage != null) ...[
-                          const SizedBox(height: 16),
-                          Text(
-                            _errorMessage!,
-                            style: TextStyle(color: theme.colorScheme.error),
-                          ),
-                        ],
-                        const SizedBox(height: 32),
-                        FilledButton(
-                          onPressed: _isSubmitting ? null : _submit,
-                          child: _isSubmitting
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : const Text('SIGN IN'),
-                        ),
-                      ],
-                    ),
-                  ),
+                  child: _challenge == null
+                      ? _buildCredentials(theme)
+                      : _buildCodeStep(theme, _challenge!),
                 ),
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildCredentials(ThemeData theme) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text('Sign in', style: theme.textTheme.headlineMedium),
+          const SizedBox(height: 28),
+          TextFormField(
+            controller: _usernameController,
+            decoration: const InputDecoration(labelText: 'Username'),
+            textInputAction: TextInputAction.next,
+            validator: (value) => (value == null || value.trim().isEmpty)
+                ? 'Enter your username.'
+                : null,
+          ),
+          const SizedBox(height: 20),
+          TextFormField(
+            controller: _passwordController,
+            decoration: const InputDecoration(labelText: 'Password'),
+            obscureText: true,
+            onFieldSubmitted: (_) => _submit(),
+            validator: (value) =>
+                (value == null || value.isEmpty) ? 'Enter your password.' : null,
+          ),
+          _buildMessages(theme),
+          const SizedBox(height: 32),
+          FilledButton(
+            onPressed: _isSubmitting ? null : _submit,
+            child: _isSubmitting ? const _ButtonSpinner() : const Text('SIGN IN'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCodeStep(ThemeData theme, TwoFactorChallenge challenge) {
+    return Form(
+      key: _codeFormKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              IconButton(
+                tooltip: 'Back',
+                onPressed: _isSubmitting ? null : _backToCredentials,
+                icon: const Icon(Icons.arrow_back),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text('Check your email',
+                    style: theme.textTheme.headlineSmall),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'We sent a sign-in code to ${challenge.maskedEmail}. '
+            'It works once, and only for the next ${_minutes(challenge.expiresInSeconds)}.',
+            style: theme.textTheme.bodyMedium,
+          ),
+          const SizedBox(height: 28),
+          TextFormField(
+            controller: _codeController,
+            autofocus: true,
+            decoration: const InputDecoration(labelText: 'Code from the email'),
+            keyboardType: TextInputType.number,
+            onFieldSubmitted: (_) => _submitCode(),
+            validator: (value) => (value == null || value.trim().isEmpty)
+                ? 'Enter the code we sent you.'
+                : null,
+          ),
+          _buildMessages(theme),
+          const SizedBox(height: 32),
+          FilledButton(
+            onPressed: _isSubmitting ? null : _submitCode,
+            child: _isSubmitting ? const _ButtonSpinner() : const Text('VERIFY'),
+          ),
+          const SizedBox(height: 12),
+          TextButton(
+            onPressed: _isSubmitting ? null : _resendCode,
+            child: const Text('Send a new code'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMessages(ThemeData theme) {
+    if (_errorMessage == null && _noticeMessage == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: Text(
+        _errorMessage ?? _noticeMessage!,
+        style: TextStyle(
+          color: _errorMessage != null
+              ? theme.colorScheme.error
+              : theme.colorScheme.primary,
+        ),
+      ),
+    );
+  }
+
+  static String _minutes(int seconds) {
+    final minutes = (seconds / 60).ceil();
+    return minutes <= 1 ? 'minute' : '$minutes minutes';
+  }
+}
+
+class _ButtonSpinner extends StatelessWidget {
+  const _ButtonSpinner();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox(
+      height: 20,
+      width: 20,
+      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
     );
   }
 }

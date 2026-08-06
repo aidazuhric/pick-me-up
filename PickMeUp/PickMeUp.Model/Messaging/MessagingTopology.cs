@@ -13,6 +13,7 @@ namespace PickMeUp.Model.Messaging
             public const string OrderCancelled = "order.cancelled";
             public const string PaymentConfirmed = "payment.confirmed";
             public const string PaymentRefunded = "payment.refunded";
+            public const string TwoFactorCodeIssued = "auth.two-factor-code";
         }
     }
 }

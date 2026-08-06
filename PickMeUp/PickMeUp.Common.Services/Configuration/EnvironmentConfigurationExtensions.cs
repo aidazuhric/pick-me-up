@@ -48,6 +48,14 @@ namespace PickMeUp.Common.Services.Configuration
                 UseSsl = EnvironmentReader.Bool("SMTP_USE_SSL", true)
             }));
 
+            services.AddSingleton(Options.Create(new TwoFactorOptions
+            {
+                CodeLength = EnvironmentReader.Int("TWO_FACTOR_CODE_LENGTH", 6),
+                ExpiryMinutes = EnvironmentReader.Int("TWO_FACTOR_EXPIRY_MINUTES", 5),
+                MaxAttempts = EnvironmentReader.Int("TWO_FACTOR_MAX_ATTEMPTS", 5),
+                ResendCooldownSeconds = EnvironmentReader.Int("TWO_FACTOR_RESEND_COOLDOWN_SECONDS", 30)
+            }));
+
             services.AddSingleton(Options.Create(new StripeOptions
             {
                 SecretKey = EnvironmentReader.Optional("STRIPE_SECRET_KEY"),

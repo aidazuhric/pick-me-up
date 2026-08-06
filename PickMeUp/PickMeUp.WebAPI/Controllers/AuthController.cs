@@ -12,18 +12,69 @@ public class AuthController : ControllerBase
 {
     private readonly IAccessManager _accessManager;
     private readonly IAuthenticatedUserAccessor _authenticatedUserAccessor;
+    private readonly ITwoFactorService _twoFactorService;
 
-    public AuthController(IAccessManager accessManager, IAuthenticatedUserAccessor authenticatedUserAccessor)
+    public AuthController(IAccessManager accessManager, IAuthenticatedUserAccessor authenticatedUserAccessor, ITwoFactorService twoFactorService)
     {
         _accessManager = accessManager;
         _authenticatedUserAccessor = authenticatedUserAccessor;
+        _twoFactorService = twoFactorService;
     }
 
+    /// <summary>
+    /// Checks the credentials. An account with two-factor authentication turned on gets no
+    /// token here — the response only reports that a code was sent, and the token is issued
+    /// by <c>Verify</c> once that code is presented.
+    /// </summary>
     [HttpPost("Login")]
     public async Task<ActionResult<UserLoginResponse>> Login([FromBody] UserLoginRequest request)
     {
         var result = await _accessManager.LoginAsync(request);
         return Ok(result);
+    }
+
+    /// <summary>
+    /// Exchanges the emailed code for a token. The code is single use and expires.
+    /// </summary>
+    [HttpPost("Verify")]
+    public async Task<ActionResult<UserLoginResponse>> Verify([FromBody] TwoFactorVerifyRequest request)
+    {
+        var result = await _accessManager.VerifyTwoFactorAsync(request);
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Reports whether the caller signs in with an emailed code, and to which address.
+    /// </summary>
+    [Authorize]
+    [HttpGet("TwoFactor")]
+    public async Task<ActionResult<TwoFactorSettingResponse>> GetTwoFactor()
+    {
+        var userId = _authenticatedUserAccessor.GetUserId();
+
+        if (userId == null)
+        {
+            return Unauthorized();
+        }
+
+        return Ok(await _twoFactorService.GetSettingAsync(userId.Value));
+    }
+
+    /// <summary>
+    /// Turns the emailed sign-in code on or off for the caller's own account.
+    /// </summary>
+    [Authorize]
+    [HttpPut("TwoFactor")]
+    public async Task<ActionResult<TwoFactorSettingResponse>> SetTwoFactor([FromBody] TwoFactorSettingRequest request)
+    {
+        var userId = _authenticatedUserAccessor.GetUserId();
+
+        if (userId == null)
+        {
+            return Unauthorized();
+        }
+
+        return Ok(await _twoFactorService.SetEnabledAsync(userId.Value, request.Enabled));
     }
 
     [HttpPost("RefreshToken")]

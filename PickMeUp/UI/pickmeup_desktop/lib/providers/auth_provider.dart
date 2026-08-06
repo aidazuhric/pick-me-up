@@ -6,6 +6,16 @@ import 'package:http/http.dart' as http;
 import '../core/config/api_config.dart';
 import '../utils/api_client_exception.dart';
 
+class TwoFactorChallenge {
+  const TwoFactorChallenge({
+    required this.maskedEmail,
+    required this.expiresInSeconds,
+  });
+
+  final String maskedEmail;
+  final int expiresInSeconds;
+}
+
 class AuthProvider with ChangeNotifier {
   static String? accessToken;
   static String? refreshToken;
@@ -19,16 +29,36 @@ class AuthProvider with ChangeNotifier {
   int? get userId => _userId;
   bool get isAuthenticated => accessToken != null;
 
-  Future<void> login(String username, String password) async {
+  Future<TwoFactorChallenge?> login(String username, String password) {
+    return _authenticate(
+      'Auth/Login',
+      {'username': username, 'password': password},
+      'Invalid username or password.',
+    );
+  }
+
+  Future<TwoFactorChallenge?> verifyCode(String username, String code) {
+    return _authenticate(
+      'Auth/Verify',
+      {'username': username, 'code': code},
+      'That code is not correct.',
+    );
+  }
+
+  Future<TwoFactorChallenge?> _authenticate(
+    String path,
+    Map<String, String> body,
+    String rejectionMessage,
+  ) async {
     final response = await http.post(
-      Uri.parse('${ApiConfig.baseUrl}Auth/Login'),
+      Uri.parse('${ApiConfig.baseUrl}$path'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'username': username, 'password': password}),
+      body: jsonEncode(body),
     );
 
     if (response.statusCode == 400 || response.statusCode == 401) {
       final parsed = ApiErrorParser.messageFromBody(response.body);
-      throw ApiClientException(parsed ?? 'Invalid username or password.');
+      throw ApiClientException(parsed ?? rejectionMessage);
     }
 
     if (response.statusCode >= 299) {
@@ -37,12 +67,60 @@ class AuthProvider with ChangeNotifier {
     }
 
     final data = jsonDecode(response.body);
+
+    if (data['requiresTwoFactor'] == true) {
+      return TwoFactorChallenge(
+        maskedEmail: data['maskedEmail'] as String? ?? '',
+        expiresInSeconds: data['codeExpiresInSeconds'] as int? ?? 0,
+      );
+    }
+
     accessToken = data['accesstoken'];
     refreshToken = data['refreshtoken'];
 
     _readClaims();
     notifyListeners();
+
+    return null;
   }
+
+  Future<bool> readTwoFactorSetting() async {
+    final response = await http.get(
+      Uri.parse('${ApiConfig.baseUrl}Auth/TwoFactor'),
+      headers: _authorizedHeaders(),
+    );
+
+    if (response.statusCode >= 299) {
+      throw ApiClientException(
+        ApiErrorParser.messageFromBody(response.body) ??
+            'Could not read your security settings.',
+      );
+    }
+
+    return jsonDecode(response.body)['enabled'] as bool? ?? false;
+  }
+
+  Future<bool> setTwoFactorSetting(bool enabled) async {
+    final response = await http.put(
+      Uri.parse('${ApiConfig.baseUrl}Auth/TwoFactor'),
+      headers: _authorizedHeaders(),
+      body: jsonEncode({'enabled': enabled}),
+    );
+
+    if (response.statusCode >= 299) {
+      throw ApiClientException(
+        ApiErrorParser.messageFromBody(response.body) ??
+            'Could not change your security settings.',
+      );
+    }
+
+    return jsonDecode(response.body)['enabled'] as bool? ?? false;
+  }
+
+  Map<String, String> _authorizedHeaders() => {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${accessToken ?? ''}',
+      };
 
   Future<void> logout() async {
     final token = accessToken;

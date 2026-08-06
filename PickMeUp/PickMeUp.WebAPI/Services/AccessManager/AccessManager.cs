@@ -20,13 +20,15 @@ namespace PickMeUp.WebAPI.Services.AccessManager
         private readonly JwtOptions _jwtOptions;
         private readonly ICryptoService _cryptoService;
         private readonly IRefreshTokenService _refreshTokenService;
+        private readonly ITwoFactorService _twoFactorService;
 
-        public AccessManager(IUserService userService, IOptions<JwtOptions> jwtOptions, ICryptoService cryptoService, IRefreshTokenService refreshTokenService)
+        public AccessManager(IUserService userService, IOptions<JwtOptions> jwtOptions, ICryptoService cryptoService, IRefreshTokenService refreshTokenService, ITwoFactorService twoFactorService)
         {
             _userService = userService;
             _jwtOptions = jwtOptions.Value;
             _cryptoService = cryptoService;
             _refreshTokenService = refreshTokenService;
+            _twoFactorService = twoFactorService;
         }
 
         public async Task<UserLoginResponse> LoginAsync(UserLoginRequest request)
@@ -38,23 +40,33 @@ namespace PickMeUp.WebAPI.Services.AccessManager
                 throw new BusinessException("Invalid username or password.");
             }
 
-            var accessToken = GenerateToken(user);
-            var refreshTokenValue = GenerateRefreshToken();
-
-            var refreshToken = new RefreshToken
+            if (user.TwoFactorEnabled)
             {
-                UserId = user.Id,
-                Token = refreshTokenValue,
-                ExpiresAt = DateTime.UtcNow.AddDays(7)
-            };
+                var challenge = await _twoFactorService.IssueChallengeAsync(user.Id);
 
-            await _refreshTokenService.InsertAsync(refreshToken);
+                return new UserLoginResponse
+                {
+                    RequiresTwoFactor = true,
+                    MaskedEmail = challenge.MaskedEmail,
+                    CodeExpiresInSeconds = challenge.ExpiresInSeconds
+                };
+            }
 
-            return new UserLoginResponse
+            return await IssueSessionAsync(user);
+        }
+
+        public async Task<UserLoginResponse> VerifyTwoFactorAsync(TwoFactorVerifyRequest request)
+        {
+            var user = await _userService.GetByUsernameAsync(request.Username);
+
+            if (user == null || !user.TwoFactorEnabled)
             {
-                Accesstoken = accessToken,
-                Refreshtoken = refreshTokenValue
-            };
+                throw new BusinessException("That code has expired. Sign in again to get a new one.");
+            }
+
+            await _twoFactorService.VerifyAsync(user.Id, request.Code);
+
+            return await IssueSessionAsync(user);
         }
 
         public async Task<UserLoginResponse> LoginWithRefreshTokenAsync(RefreshAccessTokenRequest request)
@@ -90,28 +102,32 @@ namespace PickMeUp.WebAPI.Services.AccessManager
 
             await _refreshTokenService.DeleteAllUserRefreshTokensAsync(user.Id);
 
+            return await IssueSessionAsync(user);
+        }
+
+        public Task LogoutAsync(int userId) =>
+            _refreshTokenService.DeleteAllUserRefreshTokensAsync(userId);
+
+        private async Task<UserLoginResponse> IssueSessionAsync(UserResponse user)
+        {
             var accessToken = GenerateToken(user);
             var refreshTokenValue = GenerateRefreshToken();
 
-            var token = new RefreshToken
+            var refreshToken = new RefreshToken
             {
                 UserId = user.Id,
                 Token = refreshTokenValue,
                 ExpiresAt = DateTime.UtcNow.AddDays(7)
             };
 
-            await _refreshTokenService.InsertAsync(token);
+            await _refreshTokenService.InsertAsync(refreshToken);
 
             return new UserLoginResponse
             {
                 Accesstoken = accessToken,
                 Refreshtoken = refreshTokenValue
             };
-
         }
-
-        public Task LogoutAsync(int userId) =>
-            _refreshTokenService.DeleteAllUserRefreshTokensAsync(userId);
 
         private string GenerateToken(UserResponse user)
         {
