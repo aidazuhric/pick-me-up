@@ -21,14 +21,19 @@ services:
   pickmeup-rabbitmq:
     image: rabbitmq:3.13-management
     container_name: pickmeup-rabbitmq
+    hostname: pickmeup-rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+      RABBITMQ_ERLANG_COOKIE: ${RABBITMQ_ERLANG_COOKIE}
+      RABBITMQ_NODENAME: rabbit@pickmeup-rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
     healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_port_connectivity"]
+      test: ["CMD-SHELL", "HOME=/tmp rabbitmq-diagnostics -q check_port_connectivity"]
       interval: 10s
       timeout: 30s
       retries: 20
@@ -75,6 +80,7 @@ services:
 
 volumes:
   postgres_data:
+  rabbitmq_data:
 
 networks:
   pickmeup:
