@@ -142,7 +142,7 @@ namespace PickMeUp.Services.Database
                     CreatedAt = SeedTimestamp,
                     LastLoginAt = (DateTime?)null,
                     PhoneNumber = (string?)null,
-                    ProfileImagePath = (string?)null,
+                    ProfileImagePath = (string?)"user-photos/1.png",
                     IsDeleted = false,
                     DeletedAt = (DateTime?)null
                 },
@@ -160,7 +160,7 @@ namespace PickMeUp.Services.Database
                     CreatedAt = SeedTimestamp,
                     LastLoginAt = (DateTime?)null,
                     PhoneNumber = (string?)null,
-                    ProfileImagePath = (string?)null,
+                    ProfileImagePath = (string?)"user-photos/2.png",
                     IsDeleted = false,
                     DeletedAt = (DateTime?)null
                 },
@@ -178,7 +178,7 @@ namespace PickMeUp.Services.Database
                     CreatedAt = SeedTimestamp,
                     LastLoginAt = (DateTime?)null,
                     PhoneNumber = (string?)null,
-                    ProfileImagePath = (string?)null,
+                    ProfileImagePath = (string?)"user-photos/3.jpg",
                     IsDeleted = false,
                     DeletedAt = (DateTime?)null
                 },
@@ -196,7 +196,7 @@ namespace PickMeUp.Services.Database
                     CreatedAt = SeedTimestamp,
                     LastLoginAt = (DateTime?)null,
                     PhoneNumber = (string?)null,
-                    ProfileImagePath = (string?)null,
+                    ProfileImagePath = (string?)"user-photos/4.jpg",
                     IsDeleted = false,
                     DeletedAt = (DateTime?)null
                 },
@@ -214,7 +214,7 @@ namespace PickMeUp.Services.Database
                     CreatedAt = SeedTimestamp,
                     LastLoginAt = (DateTime?)null,
                     PhoneNumber = (string?)null,
-                    ProfileImagePath = (string?)null,
+                    ProfileImagePath = (string?)"user-photos/5.png",
                     IsDeleted = false,
                     DeletedAt = (DateTime?)null
                 },
@@ -232,7 +232,7 @@ namespace PickMeUp.Services.Database
                     CreatedAt = SeedTimestamp,
                     LastLoginAt = (DateTime?)null,
                     PhoneNumber = (string?)null,
-                    ProfileImagePath = (string?)null,
+                    ProfileImagePath = (string?)"user-photos/6.jpg",
                     IsDeleted = false,
                     DeletedAt = (DateTime?)null
                 },
@@ -250,7 +250,7 @@ namespace PickMeUp.Services.Database
                     CreatedAt = SeedTimestamp,
                     LastLoginAt = (DateTime?)null,
                     PhoneNumber = (string?)null,
-                    ProfileImagePath = (string?)null,
+                    ProfileImagePath = (string?)"user-photos/7.jpg",
                     IsDeleted = false,
                     DeletedAt = (DateTime?)null
                 },
@@ -268,7 +268,7 @@ namespace PickMeUp.Services.Database
                     CreatedAt = SeedTimestamp,
                     LastLoginAt = (DateTime?)null,
                     PhoneNumber = (string?)null,
-                    ProfileImagePath = (string?)null,
+                    ProfileImagePath = (string?)"user-photos/8.jpg",
                     IsDeleted = false,
                     DeletedAt = (DateTime?)null
                 },
@@ -286,7 +286,7 @@ namespace PickMeUp.Services.Database
                     CreatedAt = SeedTimestamp,
                     LastLoginAt = (DateTime?)null,
                     PhoneNumber = (string?)"+38761234567",
-                    ProfileImagePath = (string?)null,
+                    ProfileImagePath = (string?)"user-photos/9.jpg",
                     IsDeleted = false,
                     DeletedAt = (DateTime?)null
                 },
@@ -304,7 +304,7 @@ namespace PickMeUp.Services.Database
                     CreatedAt = SeedTimestamp,
                     LastLoginAt = (DateTime?)null,
                     PhoneNumber = (string?)"+38761765432",
-                    ProfileImagePath = (string?)null,
+                    ProfileImagePath = (string?)"user-photos/10.jpg",
                     IsDeleted = false,
                     DeletedAt = (DateTime?)null
                 },
@@ -322,7 +322,7 @@ namespace PickMeUp.Services.Database
                     CreatedAt = SeedTimestamp,
                     LastLoginAt = (DateTime?)null,
                     PhoneNumber = (string?)"+38733555666",
-                    ProfileImagePath = (string?)null,
+                    ProfileImagePath = (string?)"user-photos/11.png",
                     IsDeleted = false,
                     DeletedAt = (DateTime?)null
                 },
@@ -340,7 +340,7 @@ namespace PickMeUp.Services.Database
                     CreatedAt = SeedTimestamp,
                     LastLoginAt = (DateTime?)null,
                     PhoneNumber = (string?)"+38736777888",
-                    ProfileImagePath = (string?)null,
+                    ProfileImagePath = (string?)"user-photos/12.jpg",
                     IsDeleted = false,
                     DeletedAt = (DateTime?)null
                 },
@@ -358,7 +358,7 @@ namespace PickMeUp.Services.Database
                     CreatedAt = SeedTimestamp,
                     LastLoginAt = (DateTime?)null,
                     PhoneNumber = (string?)"+38733999000",
-                    ProfileImagePath = (string?)null,
+                    ProfileImagePath = (string?)"user-photos/13.png",
                     IsDeleted = false,
                     DeletedAt = (DateTime?)null
                 }
@@ -379,7 +379,7 @@ namespace PickMeUp.Services.Database
                     OwnerName = "Bella Company",
                     StartingPrice = 2.50m,
                     PricePerKm = 1.20m,
-                    LogoImagePath = (string?)null,
+                    LogoImagePath = (string?)"company-logos/1.png",
                     UserId = 2,
                     IsActive = true,
                     CreatedAt = SeedTimestamp,
@@ -398,7 +398,7 @@ namespace PickMeUp.Services.Database
                     OwnerName = "Nedim Neretva",
                     StartingPrice = 2.00m,
                     PricePerKm = 1.35m,
-                    LogoImagePath = (string?)null,
+                    LogoImagePath = (string?)"company-logos/2.png",
                     UserId = 5,
                     IsActive = true,
                     CreatedAt = SeedTimestamp,
@@ -417,7 +417,7 @@ namespace PickMeUp.Services.Database
                     OwnerName = "Selma Express",
                     StartingPrice = 3.00m,
                     PricePerKm = 1.10m,
-                    LogoImagePath = (string?)null,
+                    LogoImagePath = (string?)"company-logos/3.png",
                     UserId = 6,
                     IsActive = true,
                     CreatedAt = SeedTimestamp,
@@ -436,7 +436,7 @@ namespace PickMeUp.Services.Database
                     OwnerName = "Kenan Bosna",
                     StartingPrice = 2.80m,
                     PricePerKm = 1.15m,
-                    LogoImagePath = (string?)null,
+                    LogoImagePath = (string?)"company-logos/4.jpg",
                     UserId = 11,
                     IsActive = true,
                     CreatedAt = SeedTimestamp,
@@ -557,12 +557,12 @@ namespace PickMeUp.Services.Database
         private void SeedCars(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Car>().HasData(
-                new { Id = 1, Make = "Skoda", Model = "Octavia", Plate = "A12-T-345", Year = 2019, Seats = 4, VehicleCategoryId = 1, TaxiCompanyId = 1, PhotoImagePath = (string?)null, IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null },
-                new { Id = 2, Make = "Volkswagen", Model = "Passat", Plate = "A34-K-567", Year = 2021, Seats = 4, VehicleCategoryId = 2, TaxiCompanyId = 1, PhotoImagePath = (string?)null, IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null },
-                new { Id = 3, Make = "Ford", Model = "Tourneo", Plate = "A56-M-789", Year = 2020, Seats = 8, VehicleCategoryId = 3, TaxiCompanyId = 1, PhotoImagePath = (string?)null, IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null },
-                new { Id = 4, Make = "Skoda", Model = "Superb", Plate = "E56-M-789", Year = 2022, Seats = 4, VehicleCategoryId = 2, TaxiCompanyId = 2, PhotoImagePath = (string?)null, IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null },
-                new { Id = 5, Make = "Toyota", Model = "Corolla", Plate = "K78-J-012", Year = 2018, Seats = 4, VehicleCategoryId = 3, TaxiCompanyId = 3, PhotoImagePath = (string?)null, IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null },
-                new { Id = 6, Make = "Renault", Model = "Megane", Plate = "J12-A-678", Year = 2021, Seats = 4, VehicleCategoryId = 1, TaxiCompanyId = 4, PhotoImagePath = (string?)null, IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null }
+                new { Id = 1, Make = "Skoda", Model = "Octavia", Plate = "A12-T-345", Year = 2019, Seats = 4, VehicleCategoryId = 1, TaxiCompanyId = 1, PhotoImagePath = (string?)"car-photos/1.jpg", IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null },
+                new { Id = 2, Make = "Volkswagen", Model = "Passat", Plate = "A34-K-567", Year = 2021, Seats = 4, VehicleCategoryId = 2, TaxiCompanyId = 1, PhotoImagePath = (string?)"car-photos/2.jpg", IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null },
+                new { Id = 3, Make = "Ford", Model = "Tourneo", Plate = "A56-M-789", Year = 2020, Seats = 8, VehicleCategoryId = 3, TaxiCompanyId = 1, PhotoImagePath = (string?)"car-photos/3.jpg", IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null },
+                new { Id = 4, Make = "Skoda", Model = "Superb", Plate = "E56-M-789", Year = 2022, Seats = 4, VehicleCategoryId = 2, TaxiCompanyId = 2, PhotoImagePath = (string?)"car-photos/4.jpg", IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null },
+                new { Id = 5, Make = "Toyota", Model = "Corolla", Plate = "K78-J-012", Year = 2018, Seats = 4, VehicleCategoryId = 3, TaxiCompanyId = 3, PhotoImagePath = (string?)"car-photos/5.jpg", IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null },
+                new { Id = 6, Make = "Renault", Model = "Megane", Plate = "J12-A-678", Year = 2021, Seats = 4, VehicleCategoryId = 1, TaxiCompanyId = 4, PhotoImagePath = (string?)"car-photos/6.jpg", IsActive = true, CreatedAt = SeedTimestamp, UpdatedAt = (DateTime?)null, IsDeleted = false, DeletedAt = (DateTime?)null }
             );
         }
 

@@ -5,6 +5,7 @@ using PickMeUp.Model.Requests;
 using PickMeUp.Model.Responses;
 using PickMeUp.Model.SearchObjects;
 using PickMeUp.Services.Database;
+using PickMeUp.Services.Storage;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,11 +19,51 @@ namespace PickMeUp.Services
 {
     public class UserService : BaseCRUDService<User, UserResponse, UserSearch, UserInsertRequest, UserUpdateRequest>, IUserService
     {
+        private const string ProfileStorageArea = "user-photos";
+
         private readonly ICryptoService _cryptoService;
-        public UserService(PickMeUpDbContext dbContext, MapsterMapper.IMapper mapper, IValidator<UserInsertRequest> insertValidator, IValidator<UserUpdateRequest> updateValidator, ICryptoService cryptoService)
+        private readonly IImageFileStore _imageFileStore;
+        public UserService(PickMeUpDbContext dbContext, MapsterMapper.IMapper mapper, IValidator<UserInsertRequest> insertValidator, IValidator<UserUpdateRequest> updateValidator, ICryptoService cryptoService, IImageFileStore imageFileStore)
             : base(dbContext, mapper, insertValidator, updateValidator)
         {
             _cryptoService = cryptoService;
+            _imageFileStore = imageFileStore;
+        }
+
+        public async Task<string> StoreProfileImageAsync(int id, Stream content, string fileName, string contentType)
+        {
+            var user = await LoadUserAsync(id);
+
+            var storedPath = await _imageFileStore.SaveAsync(ProfileStorageArea, id, content, fileName, contentType);
+
+            user.ProfileImagePath = storedPath;
+            await _dbContext.SaveChangesAsync();
+
+            return storedPath;
+        }
+
+        public async Task<(Stream Content, string ContentType, string FileName)> GetProfileImageAsync(int id)
+        {
+            var user = await LoadUserAsync(id);
+
+            if (string.IsNullOrWhiteSpace(user.ProfileImagePath))
+            {
+                throw new KeyNotFoundException($"User with id {id} has no profile image.");
+            }
+
+            return _imageFileStore.Open(user.ProfileImagePath);
+        }
+
+        private async Task<User> LoadUserAsync(int id)
+        {
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+
+            if (user == null)
+            {
+                throw new KeyNotFoundException($"User with id {id} not found.");
+            }
+
+            return user;
         }
 
         protected override Task<IQueryable<User>> IncludeRelatedEntitiesAsync(UserSearch? search, IQueryable<User> query)

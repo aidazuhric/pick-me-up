@@ -15,6 +15,7 @@ RUN dotnet publish "PickMeUp.WebAPI/PickMeUp.WebAPI.csproj" -c Release -o /app
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
+COPY seed-assets/seed-storage ./storage
 
 
 ENTRYPOINT ["dotnet", "PickMeUp.WebAPI.dll"]

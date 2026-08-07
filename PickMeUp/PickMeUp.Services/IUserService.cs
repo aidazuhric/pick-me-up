@@ -10,5 +10,9 @@ namespace PickMeUp.Services
         Task<UserSensitiveResponse?> GetByUsernameAsync(string username);
         Task<UserResponse?> GetWithRoleByIdAsync(int id);
         Task ChangePasswordAsync(UserPasswordChangeRequest request);
+
+        Task<string> StoreProfileImageAsync(int id, Stream content, string fileName, string contentType);
+
+        Task<(Stream Content, string ContentType, string FileName)> GetProfileImageAsync(int id);
     }
 }

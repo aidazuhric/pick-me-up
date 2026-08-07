@@ -64,12 +64,12 @@ builder.Services.AddMapster();
 
 TypeAdapterConfig<User, UserResponse>.NewConfig()
     .Map(dest => dest.Role, src => src.UserRoles.Select(ur => ur.Role.Name).FirstOrDefault() ?? string.Empty)
-    .Map(dest => dest.ProfileImageUrl, src => src.ProfileImagePath)
+    .Map(dest => dest.ProfileImageUrl, src => src.ProfileImagePath == null ? null : "Users/" + src.Id + "/Photo")
     .IgnoreNullValues(true);
 TypeAdapterConfig<UserUpdateRequest, User>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<TaxiCompany, TaxiCompanyResponse>.NewConfig()
     .Map(dest => dest.CityName, src => src.City.Name)
-    .Map(dest => dest.LogoImageUrl, src => src.LogoImagePath)
+    .Map(dest => dest.LogoImageUrl, src => src.LogoImagePath == null ? null : "TaxiCompanies/" + src.Id + "/Logo")
     .Ignore(dest => dest.InitialLoginUsername!)
     .Ignore(dest => dest.InitialLoginPassword!);
 TypeAdapterConfig<TaxiCompanyUpdateRequest, TaxiCompany>.NewConfig().IgnoreNullValues(true);
@@ -83,7 +83,7 @@ TypeAdapterConfig<Driver, DriverResponse>.NewConfig()
 TypeAdapterConfig<Car, CarResponse>.NewConfig()
     .Map(dest => dest.CategoryName, src => src.VehicleCategory.Name)
     .Map(dest => dest.CompanyName, src => src.TaxiCompany.Name)
-    .Map(dest => dest.PhotoImageUrl, src => src.PhotoImagePath);
+    .Map(dest => dest.PhotoImageUrl, src => src.PhotoImagePath == null ? null : "Cars/" + src.Id + "/Photo");
 TypeAdapterConfig<CarUpdateRequest, Car>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<SupportTicketReply, SupportTicketReplyResponse>.NewConfig()
     .Map(dest => dest.AuthorName, src => src.Author.FirstName + " " + src.Author.LastName);

@@ -41,4 +41,27 @@ public class UsersController : BaseCRUDController<UserResponse, UserSearch, User
         await _service.ChangePasswordAsync(request);
         return Ok();
     }
+
+    [Authorization(Roles.Admin)]
+    [HttpPost("{id}/Photo")]
+    public async Task<IActionResult> UploadPhoto(int id, IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest(new { message = "Choose an image file to upload." });
+        }
+
+        await using var stream = file.OpenReadStream();
+        await _service.StoreProfileImageAsync(id, stream, file.FileName, file.ContentType);
+
+        return NoContent();
+    }
+
+    [Authorization(Roles.Admin, Roles.Company, Roles.Driver, Roles.Passenger)]
+    [HttpGet("{id}/Photo")]
+    public async Task<IActionResult> GetPhoto(int id)
+    {
+        var (content, contentType, fileName) = await _service.GetProfileImageAsync(id);
+        return File(content, contentType, fileName);
+    }
 }

@@ -96,6 +96,7 @@ namespace PickMeUp.Services.Migrations
                             IsDeleted = false,
                             Make = "Skoda",
                             Model = "Octavia",
+                            PhotoImagePath = "car-photos/1.jpg",
                             Plate = "A12-T-345",
                             Seats = 4,
                             TaxiCompanyId = 1,
@@ -110,6 +111,7 @@ namespace PickMeUp.Services.Migrations
                             IsDeleted = false,
                             Make = "Volkswagen",
                             Model = "Passat",
+                            PhotoImagePath = "car-photos/2.jpg",
                             Plate = "A34-K-567",
                             Seats = 4,
                             TaxiCompanyId = 1,
@@ -124,6 +126,7 @@ namespace PickMeUp.Services.Migrations
                             IsDeleted = false,
                             Make = "Ford",
                             Model = "Tourneo",
+                            PhotoImagePath = "car-photos/3.jpg",
                             Plate = "A56-M-789",
                             Seats = 8,
                             TaxiCompanyId = 1,
@@ -138,6 +141,7 @@ namespace PickMeUp.Services.Migrations
                             IsDeleted = false,
                             Make = "Skoda",
                             Model = "Superb",
+                            PhotoImagePath = "car-photos/4.jpg",
                             Plate = "E56-M-789",
                             Seats = 4,
                             TaxiCompanyId = 2,
@@ -152,6 +156,7 @@ namespace PickMeUp.Services.Migrations
                             IsDeleted = false,
                             Make = "Toyota",
                             Model = "Corolla",
+                            PhotoImagePath = "car-photos/5.jpg",
                             Plate = "K78-J-012",
                             Seats = 4,
                             TaxiCompanyId = 3,
@@ -166,6 +171,7 @@ namespace PickMeUp.Services.Migrations
                             IsDeleted = false,
                             Make = "Renault",
                             Model = "Megane",
+                            PhotoImagePath = "car-photos/6.jpg",
                             Plate = "J12-A-678",
                             Seats = 4,
                             TaxiCompanyId = 4,
@@ -3281,6 +3287,7 @@ namespace PickMeUp.Services.Migrations
                             HqAddress = "Bulevar 12",
                             IsActive = true,
                             IsDeleted = false,
+                            LogoImagePath = "company-logos/1.png",
                             Name = "Mostar Taxi",
                             OwnerName = "Bella Company",
                             PricePerKm = 1.20m,
@@ -3297,6 +3304,7 @@ namespace PickMeUp.Services.Migrations
                             HqAddress = "Kralja Tomislava 4",
                             IsActive = true,
                             IsDeleted = false,
+                            LogoImagePath = "company-logos/2.png",
                             Name = "Neretva Prevoz",
                             OwnerName = "Nedim Neretva",
                             PricePerKm = 1.35m,
@@ -3313,6 +3321,7 @@ namespace PickMeUp.Services.Migrations
                             HqAddress = "Zmaja od Bosne 88",
                             IsActive = true,
                             IsDeleted = false,
+                            LogoImagePath = "company-logos/3.png",
                             Name = "Sarajevo Express",
                             OwnerName = "Selma Express",
                             PricePerKm = 1.10m,
@@ -3329,6 +3338,7 @@ namespace PickMeUp.Services.Migrations
                             HqAddress = "Mula Mustafe Baseskije 18",
                             IsActive = true,
                             IsDeleted = false,
+                            LogoImagePath = "company-logos/4.jpg",
                             Name = "Bascarsija Taxi",
                             OwnerName = "Kenan Bosna",
                             PricePerKm = 1.15m,
@@ -3455,6 +3465,7 @@ namespace PickMeUp.Services.Migrations
                             LastName = "Admin",
                             PasswordHash = "w2ka8ahYEDcLTXF5tlMLcMfIjIA=",
                             PasswordSalt = "nlQ9pafmLDDgNQjCdCHDBA==",
+                            ProfileImagePath = "user-photos/1.png",
                             TwoFactorEnabled = false,
                             Username = "admin1"
                         },
@@ -3469,6 +3480,7 @@ namespace PickMeUp.Services.Migrations
                             LastName = "Company",
                             PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
                             PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
+                            ProfileImagePath = "user-photos/2.png",
                             TwoFactorEnabled = false,
                             Username = "company1"
                         },
@@ -3483,6 +3495,7 @@ namespace PickMeUp.Services.Migrations
                             LastName = "Driver",
                             PasswordHash = "C2PEEH/Xup8N70SBm2JUe+0ZOgw=",
                             PasswordSalt = "JEexDUo3l4SMx/4mz4etmQ==",
+                            ProfileImagePath = "user-photos/3.jpg",
                             TwoFactorEnabled = false,
                             Username = "driver1"
                         },
@@ -3497,6 +3510,7 @@ namespace PickMeUp.Services.Migrations
                             LastName = "Passenger",
                             PasswordHash = "052xFoGxDl/+S7j6ADYmEJRJj1k=",
                             PasswordSalt = "QtT/dkd9xeip5+bSeaA+4A==",
+                            ProfileImagePath = "user-photos/4.jpg",
                             TwoFactorEnabled = false,
                             Username = "passenger1"
                         },
@@ -3511,6 +3525,7 @@ namespace PickMeUp.Services.Migrations
                             LastName = "Neretva",
                             PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
                             PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
+                            ProfileImagePath = "user-photos/5.png",
                             TwoFactorEnabled = false,
                             Username = "company2"
                         },
@@ -3525,6 +3540,7 @@ namespace PickMeUp.Services.Migrations
                             LastName = "Express",
                             PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
                             PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
+                            ProfileImagePath = "user-photos/6.jpg",
                             TwoFactorEnabled = false,
                             Username = "company3"
                         },
@@ -3539,6 +3555,7 @@ namespace PickMeUp.Services.Migrations
                             LastName = "Hodzic",
                             PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
                             PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
+                            ProfileImagePath = "user-photos/7.jpg",
                             TwoFactorEnabled = false,
                             Username = "driver2"
                         },
@@ -3553,6 +3570,7 @@ namespace PickMeUp.Services.Migrations
                             LastName = "Kovac",
                             PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
                             PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
+                            ProfileImagePath = "user-photos/8.jpg",
                             TwoFactorEnabled = false,
                             Username = "driver3"
                         },
@@ -3568,6 +3586,7 @@ namespace PickMeUp.Services.Migrations
                             PasswordHash = "56VoVY84Uv3DwxLzx4fwlU3IzrM=",
                             PasswordSalt = "Rk9wYmJ2MnhLd0RlTHRRUQ==",
                             PhoneNumber = "+38761234567",
+                            ProfileImagePath = "user-photos/9.jpg",
                             TwoFactorEnabled = false,
                             Username = "passenger2"
                         },
@@ -3583,6 +3602,7 @@ namespace PickMeUp.Services.Migrations
                             PasswordHash = "pG3YU6itVrSMloQBg/eTd0NOfNo=",
                             PasswordSalt = "c1RtWnFYaDdOdkxrRWJVdA==",
                             PhoneNumber = "+38761765432",
+                            ProfileImagePath = "user-photos/10.jpg",
                             TwoFactorEnabled = false,
                             Username = "passenger3"
                         },
@@ -3598,6 +3618,7 @@ namespace PickMeUp.Services.Migrations
                             PasswordHash = "VryTRHSCv/ouQq2T4UhDu7VG8ow=",
                             PasswordSalt = "WGpQdzRzTmhCcTJmVmRLYQ==",
                             PhoneNumber = "+38733555666",
+                            ProfileImagePath = "user-photos/11.png",
                             TwoFactorEnabled = true,
                             Username = "company4"
                         },
@@ -3613,6 +3634,7 @@ namespace PickMeUp.Services.Migrations
                             PasswordHash = "NVrK8OXfEs43X/SeZ5ylkNrLeMg=",
                             PasswordSalt = "THBjNXZLZ1J3TjhtWXNFag==",
                             PhoneNumber = "+38736777888",
+                            ProfileImagePath = "user-photos/12.jpg",
                             TwoFactorEnabled = false,
                             Username = "driver4"
                         },
@@ -3628,6 +3650,7 @@ namespace PickMeUp.Services.Migrations
                             PasswordHash = "Yk+hY2PFplbc+iJLzo9GXPyQCXo=",
                             PasswordSalt = "QjdrTndSdFhoTTJ2Q3BZZA==",
                             PhoneNumber = "+38733999000",
+                            ProfileImagePath = "user-photos/13.png",
                             TwoFactorEnabled = false,
                             Username = "driver5"
                         });
