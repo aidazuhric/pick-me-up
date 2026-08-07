@@ -35,9 +35,11 @@ namespace PickMeUp.WebAPI.Services.AccessManager
         {
             var user = await _userService.GetByUsernameAsync(request.Username);
 
-            if (user == null || !_cryptoService.Verify(user.PasswordHash, user.PasswordSalt, request.Password))
+            if (user == null
+                || !_cryptoService.Verify(user.PasswordHash, user.PasswordSalt, request.Password)
+                || !CanSignIn(user))
             {
-                throw new BusinessException("Invalid username or password.");
+                throw new BusinessException("Invalid username or password, or the account is not active.");
             }
 
             if (user.TwoFactorEnabled)
@@ -59,7 +61,7 @@ namespace PickMeUp.WebAPI.Services.AccessManager
         {
             var user = await _userService.GetByUsernameAsync(request.Username);
 
-            if (user == null || !user.TwoFactorEnabled)
+            if (user == null || !user.TwoFactorEnabled || !CanSignIn(user))
             {
                 throw new BusinessException("That code has expired. Sign in again to get a new one.");
             }
@@ -95,7 +97,7 @@ namespace PickMeUp.WebAPI.Services.AccessManager
                 throw new BusinessException("User not found");
             }
 
-            if (!user.IsActive)
+            if (!CanSignIn(user))
             {
                 throw new BusinessException("User is not active");
             }
@@ -107,6 +109,8 @@ namespace PickMeUp.WebAPI.Services.AccessManager
 
         public Task LogoutAsync(int userId) =>
             _refreshTokenService.DeleteAllUserRefreshTokensAsync(userId);
+
+        private static bool CanSignIn(UserResponse user) => user.IsActive;
 
         private async Task<UserLoginResponse> IssueSessionAsync(UserResponse user)
         {
