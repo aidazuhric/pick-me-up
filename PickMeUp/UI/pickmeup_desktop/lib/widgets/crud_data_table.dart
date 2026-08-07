@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../core/theme/app_colors.dart';
 import '../core/theme/app_spacing.dart';
 import '../models/search_result.dart';
+import 'api_image.dart';
 import 'disabled_action.dart';
 
 typedef PageLoader<T> = Future<SearchResult<T>> Function(
@@ -435,18 +436,7 @@ class CrudDataTableState<T> extends State<CrudDataTable<T>> {
     );
   }
 
-  Widget _thumbnail(String? url) {
-    if (url == null || url.isEmpty) {
-      return const CircleAvatar(
-        radius: 16,
-        backgroundColor: AppColors.inputFill,
-        child: Icon(Icons.image_not_supported_outlined,
-            size: 15, color: AppColors.textMuted),
-      );
-    }
-
-    return CircleAvatar(radius: 16, backgroundImage: NetworkImage(url));
-  }
+  Widget _thumbnail(String? url) => ApiImage.avatar(url: url);
 
   bool get _hasRowActions =>
       widget.onEdit != null ||
