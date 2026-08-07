@@ -68,6 +68,7 @@ class CrudDataTable<T> extends StatefulWidget {
     this.searchHint = 'Search',
     this.createLabel = 'ADD NEW',
     this.imageUrlOf,
+    this.imageFit = BoxFit.cover,
     this.filters = const [],
     this.editTooltip = 'Edit',
     this.editIcon = Icons.edit_outlined,
@@ -85,6 +86,7 @@ class CrudDataTable<T> extends StatefulWidget {
   final String searchHint;
   final String createLabel;
   final String? Function(T item)? imageUrlOf;
+  final BoxFit imageFit;
   final List<Widget> filters;
   final String editTooltip;
   final IconData editIcon;
@@ -436,7 +438,8 @@ class CrudDataTableState<T> extends State<CrudDataTable<T>> {
     );
   }
 
-  Widget _thumbnail(String? url) => ApiImage.avatar(url: url);
+  Widget _thumbnail(String? url) =>
+      ApiImage.avatar(url: url, fit: widget.imageFit);
 
   bool get _hasRowActions =>
       widget.onEdit != null ||

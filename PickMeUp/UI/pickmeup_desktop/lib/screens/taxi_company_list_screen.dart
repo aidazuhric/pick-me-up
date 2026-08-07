@@ -87,6 +87,7 @@ class _TaxiCompanyListScreenState extends State<TaxiCompanyListScreen> {
               reason: 'This company is already inactive.',
             ),
       imageUrlOf: (company) => company.logoImageUrl,
+      imageFit: BoxFit.contain,
       columns: [
         CrudColumn(label: 'Company name', value: (c) => c.name ?? '', sortKey: 'Name'),
         CrudColumn(label: 'City', value: (c) => c.cityName ?? ''),

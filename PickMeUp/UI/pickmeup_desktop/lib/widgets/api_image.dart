@@ -5,10 +5,16 @@ import '../core/theme/app_colors.dart';
 import '../providers/auth_provider.dart';
 
 class ApiImage extends StatelessWidget {
-  const ApiImage.avatar({super.key, required this.url, this.radius = 16});
+  const ApiImage.avatar({
+    super.key,
+    required this.url,
+    this.radius = 16,
+    this.fit = BoxFit.cover,
+  });
 
   final String? url;
   final double radius;
+  final BoxFit fit;
 
   static String? resolve(String? path) {
     if (path == null || path.trim().isEmpty) {
@@ -42,13 +48,20 @@ class ApiImage extends StatelessWidget {
       return _placeholder(diameter);
     }
 
-    return ClipOval(
+    return Container(
+      width: diameter,
+      height: diameter,
+      decoration: const BoxDecoration(
+        color: AppColors.inputFill,
+        shape: BoxShape.circle,
+      ),
+      clipBehavior: Clip.antiAlias,
       child: Image.network(
         resolved,
         headers: authHeaders(),
         width: diameter,
         height: diameter,
-        fit: BoxFit.cover,
+        fit: fit,
         errorBuilder: (_, _, _) => _placeholder(diameter),
         loadingBuilder: (context, child, progress) =>
             progress == null ? child : _loading(diameter),
