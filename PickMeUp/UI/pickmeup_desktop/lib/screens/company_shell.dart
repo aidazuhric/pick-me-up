@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../layouts/nav_destination.dart';
 import '../layouts/role_side_nav.dart';
 import 'company/business_report_screen.dart';
+import 'company/online_support_screen.dart';
 import 'company/fleet_map_screen.dart';
 import 'company/car_assignment_list_screen.dart';
 import 'company/order_list_screen.dart';
@@ -12,7 +13,6 @@ import 'company/shift_list_screen.dart';
 import 'company/car_list_screen.dart';
 import 'company/company_profile_screen.dart';
 import 'company/driver_list_screen.dart';
-import 'placeholder_screen.dart';
 
 class CompanyShell extends StatelessWidget {
   const CompanyShell({super.key});
@@ -75,10 +75,7 @@ class CompanyShell extends StatelessWidget {
         NavDestination(
           label: 'Online support',
           icon: Icons.support_agent,
-          builder: (_) => const PlaceholderScreen(
-            title: 'Online support',
-            arrivesWith: 'the SupportTicket entity',
-          ),
+          builder: (_) => const OnlineSupportScreen(),
         ),
       ],
     );
