@@ -15,7 +15,6 @@ class AdminSettingsScreen extends StatefulWidget {
 }
 
 class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
-  bool _notifications = true;
   bool _twoFactor = false;
   bool _isLoadingTwoFactor = true;
   bool _isSavingTwoFactor = false;
@@ -108,14 +107,6 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                     _SettingsCard(
                       title: 'Preferences',
                       children: [
-                        _ToggleRow(
-                          label: 'Notifications',
-                          description:
-                              'Show a message when a ride or a payment changes.',
-                          value: _notifications,
-                          onChanged: (value) =>
-                              setState(() => _notifications = value),
-                        ),
                         const _ValueRow(label: 'Language', value: 'English'),
                       ],
                     ),

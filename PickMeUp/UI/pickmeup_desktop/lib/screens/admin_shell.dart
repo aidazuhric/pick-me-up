@@ -7,7 +7,6 @@ import 'admin/pdf_reports_screen.dart';
 import 'admin/support_ticket_list_screen.dart';
 import 'admin/user_list_screen.dart';
 import 'reference/reference_data_hub.dart';
-import 'shell_gallery_screen.dart';
 import 'taxi_company_list_screen.dart';
 
 class AdminShell extends StatelessWidget {
@@ -42,11 +41,6 @@ class AdminShell extends StatelessWidget {
           label: 'PDF reports',
           icon: Icons.picture_as_pdf,
           builder: (_) => const PdfReportsScreen(),
-        ),
-        NavDestination(
-          label: 'Shared shells',
-          icon: Icons.widgets_outlined,
-          builder: (_) => const ShellGalleryScreen(),
         ),
         NavDestination(
           label: 'Settings',
