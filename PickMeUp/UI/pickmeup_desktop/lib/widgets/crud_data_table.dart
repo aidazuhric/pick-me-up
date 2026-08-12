@@ -101,6 +101,7 @@ class CrudDataTableState<T> extends State<CrudDataTable<T>> {
   static const int pageSize = 10;
 
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _horizontalController = ScrollController();
 
   List<T> _items = const [];
   int _totalCount = 0;
@@ -118,6 +119,7 @@ class CrudDataTableState<T> extends State<CrudDataTable<T>> {
   @override
   void dispose() {
     _searchController.dispose();
+    _horizontalController.dispose();
     super.dispose();
   }
 
@@ -412,58 +414,66 @@ class CrudDataTableState<T> extends State<CrudDataTable<T>> {
           builder: (context, constraints) {
             final share = _fairColumnWidth(constraints.maxWidth);
 
-            return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minWidth: constraints.maxWidth),
-                child: DataTable(
-                  showCheckboxColumn: false,
-                  columnSpacing: AppSpacing.lg,
-                  horizontalMargin: AppSpacing.md,
-                  border: const TableBorder(
-                    horizontalInside: BorderSide(color: AppColors.border),
-                  ),
-                  columns: [
-                    if (widget.imageUrlOf != null)
-                      const DataColumn(
-                        label: SizedBox(width: 36),
-                        columnWidth: FixedColumnWidth(52),
-                      ),
-                    for (final column in widget.columns)
-                      DataColumn(
-                        label: _CellText(
-                          column: column,
-                          value: column.label,
-                          share: share,
+            return Scrollbar(
+              controller: _horizontalController,
+              thumbVisibility: true,
+              scrollbarOrientation: ScrollbarOrientation.bottom,
+              child: SingleChildScrollView(
+                controller: _horizontalController,
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                  child: DataTable(
+                    showCheckboxColumn: false,
+                    columnSpacing: AppSpacing.lg,
+                    horizontalMargin: AppSpacing.md,
+                    border: const TableBorder(
+                      horizontalInside: BorderSide(color: AppColors.border),
+                    ),
+                    columns: [
+                      if (widget.imageUrlOf != null)
+                        const DataColumn(
+                          label: SizedBox(width: 36),
+                          columnWidth: FixedColumnWidth(52),
                         ),
-                        columnWidth: const IntrinsicColumnWidth(flex: 1),
-                      ),
-                    if (_hasRowActions)
-                      const DataColumn(label: SizedBox.shrink()),
-                  ],
-                  rows: [
-                    for (final item in _items)
-                      DataRow(
-                        color: WidgetStateProperty.resolveWith(
-                          (states) => states.contains(WidgetState.hovered)
-                              ? AppColors.rowHover
-                              : null,
+                      for (final column in widget.columns)
+                        DataColumn(
+                          label: _CellText(
+                            column: column,
+                            value: column.label,
+                            share: share,
+                          ),
+                          columnWidth: const IntrinsicColumnWidth(flex: 1),
                         ),
-                        cells: [
-                          if (widget.imageUrlOf != null)
-                            DataCell(_thumbnail(widget.imageUrlOf!(item))),
-                          for (final column in widget.columns)
-                            DataCell(
-                              _CellText(
-                                column: column,
-                                value: column.value(item),
-                                share: share,
+                      if (_hasRowActions)
+                        const DataColumn(label: SizedBox.shrink()),
+                    ],
+                    rows: [
+                      for (final item in _items)
+                        DataRow(
+                          color: WidgetStateProperty.resolveWith(
+                            (states) => states.contains(WidgetState.hovered)
+                                ? AppColors.rowHover
+                                : null,
+                          ),
+                          cells: [
+                            if (widget.imageUrlOf != null)
+                              DataCell(_thumbnail(widget.imageUrlOf!(item))),
+                            for (final column in widget.columns)
+                              DataCell(
+                                _CellText(
+                                  column: column,
+                                  value: column.value(item),
+                                  share: share,
+                                ),
                               ),
-                            ),
-                          if (_hasRowActions) DataCell(_buildRowActions(item)),
-                        ],
-                      ),
-                  ],
+                            if (_hasRowActions)
+                              DataCell(_buildRowActions(item)),
+                          ],
+                        ),
+                    ],
+                  ),
                 ),
               ),
             );
@@ -479,8 +489,9 @@ class CrudDataTableState<T> extends State<CrudDataTable<T>> {
         (_hasRowActions ? 120.0 : 0.0);
     final spacing = AppSpacing.lg * widget.columns.length + AppSpacing.md * 2;
     final usable = available - reserved - spacing;
+    final share = usable / widget.columns.length;
 
-    return usable / widget.columns.length;
+    return share < _CellText.readableWidth ? _CellText.readableWidth : share;
   }
 
   Widget _thumbnail(String? url) =>
@@ -553,7 +564,7 @@ class CrudDataTableState<T> extends State<CrudDataTable<T>> {
 class _CellText<T> extends StatelessWidget {
   const _CellText({required this.column, required this.value, this.share});
 
-  static const double minimumShare = 90;
+  static const double readableWidth = 140;
 
   final CrudColumn<T> column;
   final String value;
@@ -581,17 +592,15 @@ class _CellText<T> extends StatelessWidget {
   }
 
   double? get _cap {
-    final fairShare = share == null || share! < minimumShare ? null : share;
-
     if (column.maxWidth == null) {
-      return fairShare;
+      return share;
     }
 
-    if (fairShare == null) {
+    if (share == null) {
       return column.maxWidth;
     }
 
-    return column.maxWidth! < fairShare ? column.maxWidth : fairShare;
+    return column.maxWidth! < share! ? column.maxWidth : share;
   }
 }
 
