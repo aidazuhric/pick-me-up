@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../layouts/mobile_shell.dart';
 import '../../layouts/nav_destination.dart';
 import '../placeholder_screen.dart';
+import 'order_taxi_screen.dart';
 
 class PassengerShell extends StatelessWidget {
   const PassengerShell({super.key});
@@ -15,13 +16,7 @@ class PassengerShell extends StatelessWidget {
         MobileDestination(
           icon: Icons.home_outlined,
           label: 'Home',
-          builder: (_) => const PlaceholderScreen(
-            icon: Icons.local_taxi_outlined,
-            title: 'Order a taxi',
-            description:
-                'Pick your location and destination on the map, compare '
-                'companies and confirm the ride.',
-          ),
+          builder: (_) => const OrderTaxiScreen(),
         ),
         MobileDestination(
           icon: Icons.receipt_long_outlined,
