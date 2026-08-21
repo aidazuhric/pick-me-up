@@ -15,5 +15,7 @@ namespace PickMeUp.Services
         Task<PaymentResponse> GetByOrderAsync(int orderId);
 
         Task<List<PayableOrderResponse>> GetPayableOrdersAsync();
+
+        PaymentConfigResponse GetConfiguration();
     }
 }

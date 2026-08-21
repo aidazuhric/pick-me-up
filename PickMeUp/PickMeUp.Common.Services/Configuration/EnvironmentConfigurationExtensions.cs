@@ -59,6 +59,7 @@ namespace PickMeUp.Common.Services.Configuration
             services.AddSingleton(Options.Create(new StripeOptions
             {
                 SecretKey = EnvironmentReader.Optional("STRIPE_SECRET_KEY"),
+                PublishableKey = EnvironmentReader.Optional("STRIPE_PUBLISHABLE_KEY"),
                 WebhookSecret = EnvironmentReader.Optional("STRIPE_WEBHOOK_SECRET")
             }));
 

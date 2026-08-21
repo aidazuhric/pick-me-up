@@ -4,6 +4,8 @@ namespace PickMeUp.Services.Payments
     {
         Task<StripeIntent> CreateIntentAsync(decimal amount, string currency, int orderId, CancellationToken cancellationToken = default);
 
+        Task<StripeIntent?> FindOpenIntentAsync(string paymentIntentId, CancellationToken cancellationToken = default);
+
         Task<StripeRefund> RefundAsync(string paymentIntentId, decimal amount, string? reason, CancellationToken cancellationToken = default);
 
         StripeWebhookEvent ReadWebhook(string payload, string signatureHeader);

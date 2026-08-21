@@ -54,6 +54,17 @@ public class PaymentsController : BaseReadController<PaymentResponse, PaymentSea
     }
 
     /// <summary>
+    /// The publishable key the mobile client needs to open the Stripe payment sheet. Only the
+    /// publishable half of the key pair is ever sent; the secret key stays on the server.
+    /// </summary>
+    [Authorization(Roles.Passenger, Roles.Admin)]
+    [HttpGet("Config")]
+    public ActionResult<PaymentConfigResponse> Config()
+    {
+        return _service.GetConfiguration();
+    }
+
+    /// <summary>
     /// Starts payment for a completed ride. The amount is taken from the fare the server
     /// computed when the ride finished — the caller cannot supply or influence it.
     /// </summary>

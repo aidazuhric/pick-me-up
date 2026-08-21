@@ -39,6 +39,28 @@ namespace PickMeUp.Services.Payments
             }
         }
 
+        public async Task<StripeIntent?> FindOpenIntentAsync(string paymentIntentId, CancellationToken cancellationToken = default)
+        {
+            EnsureConfigured();
+
+            try
+            {
+                var intent = await new PaymentIntentService()
+                    .GetAsync(paymentIntentId, cancellationToken: cancellationToken);
+
+                if (intent.Status == "succeeded" || intent.Status == "canceled")
+                {
+                    return null;
+                }
+
+                return new StripeIntent(intent.Id, intent.ClientSecret);
+            }
+            catch (StripeException)
+            {
+                return null;
+            }
+        }
+
         public async Task<StripeRefund> RefundAsync(string paymentIntentId, decimal amount, string? reason, CancellationToken cancellationToken = default)
         {
             EnsureConfigured();
@@ -81,7 +103,11 @@ namespace PickMeUp.Services.Payments
 
             try
             {
-                stripeEvent = EventUtility.ConstructEvent(payload, signatureHeader, _options.WebhookSecret);
+                stripeEvent = EventUtility.ConstructEvent(
+                    payload,
+                    signatureHeader,
+                    _options.WebhookSecret,
+                    throwOnApiVersionMismatch: false);
             }
             catch (StripeException exception)
             {

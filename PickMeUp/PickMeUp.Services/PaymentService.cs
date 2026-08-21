@@ -6,8 +6,10 @@ using PickMeUp.Model.Responses;
 using PickMeUp.Model.SearchObjects;
 using PickMeUp.Services.Database;
 using PickMeUp.Services.Payments;
+using PickMeUp.Common.Services.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace PickMeUp.Services
 {
@@ -18,6 +20,7 @@ namespace PickMeUp.Services
         private readonly IAuthenticatedUserAccessor _userAccessor;
         private readonly IStripeGateway _stripeGateway;
         private readonly IPaymentNotificationDispatcher _dispatcher;
+        private readonly StripeOptions _stripeOptions;
         private readonly ILogger<PaymentService> _logger;
 
         private PaymentScope? _scope;
@@ -28,13 +31,24 @@ namespace PickMeUp.Services
             IAuthenticatedUserAccessor userAccessor,
             IStripeGateway stripeGateway,
             IPaymentNotificationDispatcher dispatcher,
+            IOptions<StripeOptions> stripeOptions,
             ILogger<PaymentService> logger)
             : base(mapper, dbContext)
         {
             _userAccessor = userAccessor;
             _stripeGateway = stripeGateway;
             _dispatcher = dispatcher;
+            _stripeOptions = stripeOptions.Value;
             _logger = logger;
+        }
+
+        public PaymentConfigResponse GetConfiguration()
+        {
+            return new PaymentConfigResponse
+            {
+                PublishableKey = _stripeOptions.PublishableKey,
+                IsLiveGateway = !string.IsNullOrWhiteSpace(_stripeOptions.SecretKey)
+            };
         }
 
         public async Task<PaymentIntentResponse> CreateIntentAsync(PaymentIntentRequest request)
@@ -65,9 +79,26 @@ namespace PickMeUp.Services
 
             if (existing != null)
             {
-                throw new BusinessException(existing.IsPaid
-                    ? "This ride has already been paid for."
-                    : "A payment is already in progress for this ride.");
+                if (existing.IsPaid)
+                {
+                    throw new BusinessException("This ride has already been paid for.");
+                }
+
+                var open = await _stripeGateway.FindOpenIntentAsync(existing.StripePaymentIntentId!);
+
+                if (open == null)
+                {
+                    throw new BusinessException("A payment is already in progress for this ride.");
+                }
+
+                return new PaymentIntentResponse
+                {
+                    PaymentId = existing.Id,
+                    OrderId = order.Id,
+                    AmountCharged = existing.AmountCharged,
+                    Currency = existing.Currency,
+                    ClientSecret = open.ClientSecret
+                };
             }
 
             var payment = new Payment

@@ -34,6 +34,12 @@ namespace PickMeUp.Services.Payments
             return Task.FromResult(new StripeIntent(id, $"{id}_secret"));
         }
 
+        public Task<StripeIntent?> FindOpenIntentAsync(string paymentIntentId, CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult<StripeIntent?>(
+                new StripeIntent(paymentIntentId, $"{paymentIntentId}_secret"));
+        }
+
         public Task<StripeRefund> RefundAsync(string paymentIntentId, decimal amount, string? reason, CancellationToken cancellationToken = default)
         {
             _logger.LogWarning(
@@ -54,7 +60,11 @@ namespace PickMeUp.Services.Payments
 
             try
             {
-                stripeEvent = EventUtility.ConstructEvent(payload, signatureHeader, _options.WebhookSecret);
+                stripeEvent = EventUtility.ConstructEvent(
+                    payload,
+                    signatureHeader,
+                    _options.WebhookSecret,
+                    throwOnApiVersionMismatch: false);
             }
             catch (StripeException exception)
             {
