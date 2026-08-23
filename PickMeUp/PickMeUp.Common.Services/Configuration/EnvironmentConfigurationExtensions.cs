@@ -56,6 +56,13 @@ namespace PickMeUp.Common.Services.Configuration
                 ResendCooldownSeconds = EnvironmentReader.Int("TWO_FACTOR_RESEND_COOLDOWN_SECONDS", 30)
             }));
 
+            services.AddSingleton(Options.Create(new PasswordResetOptions
+            {
+                TokenLength = EnvironmentReader.Int("PASSWORD_RESET_TOKEN_LENGTH", 8),
+                ExpiryMinutes = EnvironmentReader.Int("PASSWORD_RESET_EXPIRY_MINUTES", 20),
+                MaxAttempts = EnvironmentReader.Int("PASSWORD_RESET_MAX_ATTEMPTS", 5)
+            }));
+
             services.AddSingleton(Options.Create(new StripeOptions
             {
                 SecretKey = EnvironmentReader.Optional("STRIPE_SECRET_KEY"),

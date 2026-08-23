@@ -25,6 +25,16 @@ namespace PickMeUp.Services.Database
             modelBuilder.Entity<TwoFactorCode>()
                 .HasIndex(c => new { c.UserId, c.ConsumedAt, c.ExpiresAt });
 
+            modelBuilder.Entity<PasswordResetToken>()
+                .HasQueryFilter(t => !t.User.IsDeleted);
+
+            modelBuilder.Entity<PasswordResetToken>()
+                .HasOne(t => t.User).WithMany().HasForeignKey(t => t.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<PasswordResetToken>()
+                .HasIndex(t => new { t.UserId, t.ConsumedAt, t.ExpiresAt });
+
             modelBuilder.Entity<UserRole>()
                 .HasOne(ur => ur.User)
                 .WithMany(ur => ur.UserRoles)

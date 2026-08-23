@@ -146,6 +146,51 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<String> requestPasswordReset(String email) async {
+    final response = await http.post(
+      Uri.parse('${ApiConfig.baseUrl}Auth/ForgotPassword'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email}),
+    );
+
+    if (response.statusCode >= 299) {
+      throw ApiClientException(
+        ApiErrorParser.messageFromBody(response.body) ??
+            'Could not start the reset. Please try again.',
+      );
+    }
+
+    final data = jsonDecode(response.body);
+
+    return data['message'] as String? ??
+        'If that email address belongs to an account, we have sent it a reset code.';
+  }
+
+  Future<void> resetPassword({
+    required String email,
+    required String token,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    final response = await http.post(
+      Uri.parse('${ApiConfig.baseUrl}Auth/ResetPassword'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': email,
+        'token': token,
+        'newPassword': newPassword,
+        'confirmNewPassword': confirmPassword,
+      }),
+    );
+
+    if (response.statusCode >= 299) {
+      throw ApiClientException(
+        ApiErrorParser.messageFromBody(response.body) ??
+            'Could not reset your password. Please try again.',
+      );
+    }
+  }
+
   Future<void> logout() async {
     final token = accessToken;
 

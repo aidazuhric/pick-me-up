@@ -2190,6 +2190,46 @@ namespace PickMeUp.Services.Migrations
                         });
                 });
 
+            modelBuilder.Entity("PickMeUp.Services.Database.PasswordResetToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AttemptCount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ConsumedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("TokenSalt")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "ConsumedAt", "ExpiresAt");
+
+                    b.ToTable("PasswordResetTokens");
+                });
+
             modelBuilder.Entity("PickMeUp.Services.Database.Payment", b =>
                 {
                     b.Property<int>("Id")
@@ -4055,6 +4095,17 @@ namespace PickMeUp.Services.Migrations
                     b.Navigation("Order");
 
                     b.Navigation("ToStatus");
+                });
+
+            modelBuilder.Entity("PickMeUp.Services.Database.PasswordResetToken", b =>
+                {
+                    b.HasOne("PickMeUp.Services.Database.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("PickMeUp.Services.Database.Payment", b =>

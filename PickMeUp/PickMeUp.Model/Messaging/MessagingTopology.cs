@@ -14,6 +14,7 @@ namespace PickMeUp.Model.Messaging
             public const string PaymentConfirmed = "payment.confirmed";
             public const string PaymentRefunded = "payment.refunded";
             public const string TwoFactorCodeIssued = "auth.two-factor-code";
+            public const string PasswordResetRequested = "auth.password-reset";
         }
     }
 }

@@ -6,6 +6,7 @@ import '../../providers/auth_provider.dart';
 import '../../utils/api_client_exception.dart';
 import '../../utils/validators.dart';
 import '../../widgets/auth_header.dart';
+import 'forgot_password_screen.dart';
 import 'sign_up_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -205,8 +206,15 @@ class _LoginScreenState extends State<LoginScreen> {
             validator: (value) =>
                 (value == null || value.isEmpty) ? 'Password is required.' : null,
           ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: _isSubmitting ? null : _openForgotPassword,
+              child: const Text('Forgot password?'),
+            ),
+          ),
           _buildMessages(theme),
-          const SizedBox(height: AppSpacing.lg),
+          const SizedBox(height: AppSpacing.sm),
           FilledButton(
             onPressed: _isSubmitting ? null : _submit,
             child: _isSubmitting
@@ -304,6 +312,22 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _openForgotPassword() async {
+    final email = await ForgotPasswordScreen.open(
+      context,
+      _usernameController.text.trim(),
+    );
+
+    if (email == null || !mounted) {
+      return;
+    }
+
+    setState(() {
+      _passwordController.clear();
+      _noticeMessage = 'Password changed. Sign in with your new password.';
+    });
   }
 
   Future<void> _openSignUp() async {

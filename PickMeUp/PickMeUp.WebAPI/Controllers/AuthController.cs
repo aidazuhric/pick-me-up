@@ -1,4 +1,6 @@
 using PickMeUp.Model.Access;
+using PickMeUp.Model.Requests;
+using PickMeUp.Model.Responses;
 using PickMeUp.Services;
 using PickMeUp.WebAPI.Services.AccessManager;
 using Microsoft.AspNetCore.Authorization;
@@ -13,12 +15,40 @@ public class AuthController : ControllerBase
     private readonly IAccessManager _accessManager;
     private readonly IAuthenticatedUserAccessor _authenticatedUserAccessor;
     private readonly ITwoFactorService _twoFactorService;
+    private readonly IPasswordResetService _passwordResetService;
 
-    public AuthController(IAccessManager accessManager, IAuthenticatedUserAccessor authenticatedUserAccessor, ITwoFactorService twoFactorService)
+    public AuthController(IAccessManager accessManager, IAuthenticatedUserAccessor authenticatedUserAccessor, ITwoFactorService twoFactorService, IPasswordResetService passwordResetService)
     {
         _accessManager = accessManager;
         _authenticatedUserAccessor = authenticatedUserAccessor;
         _twoFactorService = twoFactorService;
+        _passwordResetService = passwordResetService;
+    }
+
+    /// <summary>
+    /// Starts a password reset for someone who cannot sign in. The reply is the same whether or
+    /// not the address belongs to an account, so this cannot be used to discover who is
+    /// registered, and the code itself is only ever emailed — never returned here.
+    /// </summary>
+    [AllowAnonymous]
+    [HttpPost("ForgotPassword")]
+    public async Task<ActionResult<PasswordResetResponse>> ForgotPassword(
+        [FromBody] ForgotPasswordRequest request)
+    {
+        return await _passwordResetService.RequestAsync(request);
+    }
+
+    /// <summary>
+    /// Sets a new password using the emailed code. The code works once, expires, and is checked
+    /// against a hash; a wrong, used or expired code is refused. Every existing session is
+    /// revoked so an attacker who held one is signed out.
+    /// </summary>
+    [AllowAnonymous]
+    [HttpPost("ResetPassword")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+    {
+        await _passwordResetService.ResetAsync(request);
+        return NoContent();
     }
 
     /// <summary>
