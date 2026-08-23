@@ -6,12 +6,16 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../models/order.dart';
 import '../../models/payment.dart';
+import '../../models/review.dart';
 import '../../providers/order_provider.dart';
 import '../../providers/payment_provider.dart';
+import '../../providers/review_provider.dart';
 import '../../utils/api_client_exception.dart';
 import '../../utils/formats.dart';
 import '../../widgets/app_messages.dart';
+import '../../widgets/rating_stars.dart';
 import '../../widgets/status_pill.dart';
+import 'review_form_screen.dart';
 
 class RideDetailScreen extends StatefulWidget {
   const RideDetailScreen({super.key, required this.orderId});
@@ -36,9 +40,11 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
 
   final _orders = OrderProvider();
   final _payments = PaymentProvider();
+  final _reviews = ReviewProvider();
 
   Order? _ride;
   Payment? _payment;
+  List<Review> _myReviews = const [];
   bool _isLoading = true;
   String? _error;
 
@@ -65,11 +71,21 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
         payment = null;
       }
 
+      var reviews = const <Review>[];
+
+      if (ride.status == 'Completed') {
+        final found = await _reviews.get(
+          filter: {'OrderId': widget.orderId, 'Page': 1, 'PageSize': 10},
+        );
+        reviews = found.items ?? const <Review>[];
+      }
+
       if (!mounted) return;
 
       setState(() {
         _ride = ride;
         _payment = payment;
+        _myReviews = reviews;
         _isLoading = false;
       });
     } on ApiClientException catch (e) {
@@ -220,19 +236,75 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                 ),
               ],
               if (ride.status == 'Completed') ...[
-                const SizedBox(height: AppSpacing.lg),
-                OutlinedButton.icon(
-                  onPressed: () => AppMessages.success(
-                    context,
-                    'Reviews open in the next release.',
-                  ),
-                  icon: const Icon(Icons.star_outline, size: 18),
-                  label: const Text('LEAVE A REVIEW'),
-                ),
+                const Divider(height: AppSpacing.xl),
+                _buildReviewSection(theme, ride),
               ],
             ],
           ),
         ),
+      ],
+    );
+  }
+
+  bool get _companyReviewed => _myReviews.any((r) => r.companyName != null);
+
+  bool get _driverReviewed => _myReviews.any((r) => r.driverName != null);
+
+  Future<void> _leaveReview(Order ride) async {
+    final submitted = await ReviewFormScreen.open(
+      context,
+      ride: ride,
+      canReviewCompany: ride.taxiCompanyId != null && !_companyReviewed,
+      canReviewDriver: ride.driverName != null && !_driverReviewed,
+    );
+
+    if (submitted != true || !mounted) {
+      return;
+    }
+
+    AppMessages.success(context, 'Thanks — your review has been saved.');
+    await _load();
+  }
+
+  Widget _buildReviewSection(ThemeData theme, Order ride) {
+    final canReviewCompany = ride.taxiCompanyId != null && !_companyReviewed;
+    final canReviewDriver = ride.driverName != null && !_driverReviewed;
+    final canReview = canReviewCompany || canReviewDriver;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('Your review', style: theme.textTheme.titleMedium),
+        const SizedBox(height: AppSpacing.sm),
+        if (_myReviews.isEmpty)
+          Text(
+            'You have not reviewed this ride yet.',
+            style: theme.textTheme.bodySmall,
+          )
+        else
+          for (final review in _myReviews)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+              child: _MyReviewTile(review: review),
+            ),
+        const SizedBox(height: AppSpacing.sm),
+        if (canReview)
+          OutlinedButton.icon(
+            onPressed: () => _leaveReview(ride),
+            icon: const Icon(Icons.star_outline, size: 18),
+            label: Text(
+              _myReviews.isEmpty
+                  ? 'LEAVE A REVIEW'
+                  : (canReviewDriver ? 'REVIEW THE DRIVER' : 'REVIEW THE COMPANY'),
+            ),
+          )
+        else
+          Text(
+            _myReviews.isEmpty
+                ? 'There is nobody to review on this ride.'
+                : 'You have reviewed everyone on this ride. Thank you.',
+            style: theme.textTheme.bodySmall,
+          ),
       ],
     );
   }
@@ -467,6 +539,57 @@ class _Stat extends StatelessWidget {
           FittedBox(
             child: Text(value, style: theme.textTheme.titleMedium, maxLines: 1),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MyReviewTile extends StatelessWidget {
+  const _MyReviewTile({required this.review});
+
+  final Review review;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final targets = [
+      if (review.companyName != null) review.companyName!,
+      if (review.driverName != null) review.driverName!,
+    ].join(' · ');
+
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(AppSpacing.controlRadius),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  targets,
+                  style: theme.textTheme.bodySmall,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              RatingStars(
+                average: (review.rating ?? 0).toDouble(),
+                reviewCount: 1,
+                size: 14,
+                showLabel: false,
+              ),
+            ],
+          ),
+          if ((review.comment ?? '').isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.xs),
+            Text(review.comment!, style: theme.textTheme.bodyMedium),
+          ],
         ],
       ),
     );

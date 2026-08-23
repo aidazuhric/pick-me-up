@@ -202,7 +202,7 @@ namespace PickMeUp.Services
 
         protected override IQueryable<Review> ApplyFilters(IQueryable<Review> query, ReviewSearch? search)
         {
-            query = ApplyReadScope(query);
+            query = ApplyReadScope(query, search);
 
             if (search == null)
             {
@@ -288,7 +288,7 @@ namespace PickMeUp.Services
             }
         }
 
-        private IQueryable<Review> ApplyReadScope(IQueryable<Review> query)
+        private IQueryable<Review> ApplyReadScope(IQueryable<Review> query, ReviewSearch? search)
         {
             var scope = _scope!;
 
@@ -310,6 +310,11 @@ namespace PickMeUp.Services
 
             if (scope.PassengerUserId.HasValue)
             {
+                if (search?.TargetCompanyId != null || search?.TargetDriverId != null)
+                {
+                    return query;
+                }
+
                 return query.Where(r => r.PassengerId == scope.PassengerUserId.Value);
             }
 
