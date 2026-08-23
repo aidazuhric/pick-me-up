@@ -12,9 +12,15 @@ class ReviewProvider extends BaseProvider<Review> {
   @override
   Review fromJson(dynamic data) => Review.fromJson(data as Map<String, dynamic>);
 
-  Future<List<RatingSummary>> readCompanyAverages() async {
+  Future<List<RatingSummary>> readDriverAverages() =>
+      _readAverages('DriverAverages');
+
+  Future<List<RatingSummary>> readCompanyAverages() =>
+      _readAverages('CompanyAverages');
+
+  Future<List<RatingSummary>> _readAverages(String path) async {
     final response = await http.get(
-      Uri.parse('${BaseProvider.baseUrl}$endpoint/CompanyAverages'),
+      Uri.parse('${BaseProvider.baseUrl}$endpoint/$path'),
       headers: createHeaders(),
     );
     validateResponse(response);

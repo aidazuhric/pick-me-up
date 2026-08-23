@@ -201,6 +201,8 @@ namespace PickMeUp.Services
 
         public async Task<DriverResponse> ResignAsync(int id)
         {
+            await EnsureDriverMayOnlyResignSelfAsync(id);
+
             var driver = await LoadOwnedDriverAsync(id);
 
             if (driver.ResignedAt != null)
@@ -218,6 +220,28 @@ namespace PickMeUp.Services
             await _dbContext.SaveChangesAsync();
 
             return _mapper.Map<DriverResponse>(driver);
+        }
+
+        private async Task EnsureDriverMayOnlyResignSelfAsync(int id)
+        {
+            if (!_userAccessor.IsInRole(Roles.Driver) || CallerIsAdmin)
+            {
+                return;
+            }
+
+            var userId = _userAccessor.GetUserId();
+
+            var ownDriverId = userId == null
+                ? null
+                : await _dbContext.Drivers
+                    .Where(d => d.UserId == userId.Value)
+                    .Select(d => (int?)d.Id)
+                    .FirstOrDefaultAsync();
+
+            if (ownDriverId != id)
+            {
+                throw new KeyNotFoundException($"Driver with id {id} not found.");
+            }
         }
 
         private async Task<Driver> LoadOwnedDriverAsync(int id)

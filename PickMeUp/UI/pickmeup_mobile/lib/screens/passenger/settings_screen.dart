@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/constants/roles.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../models/user.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/driver_provider.dart';
+import '../../providers/notification_store.dart';
 import '../../providers/user_provider.dart';
 import '../../utils/api_client_exception.dart';
 import '../../utils/validators.dart';
@@ -26,6 +29,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _users = UserProvider();
+  final _drivers = DriverProvider();
 
   User? _me;
   bool _isLoading = true;
@@ -33,6 +37,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _isEditing = false;
   bool _twoFactorEnabled = false;
   bool _isTogglingTwoFactor = false;
+  bool _isResigning = false;
   String _maskedEmail = '';
   String? _error;
   String? _saveError;
@@ -181,6 +186,72 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  Future<void> _resign() async {
+    final me = _me;
+
+    if (me?.email == null) {
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Resign as a driver?'),
+        content: const Text(
+          'You will stop receiving ride requests and be taken off active duty. '
+          'Your company has to take you back on.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('CANCEL'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('RESIGN'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) {
+      return;
+    }
+
+    setState(() => _isResigning = true);
+
+    final auth = context.read<AuthProvider>();
+    final notifications = context.read<NotificationStore>();
+
+    try {
+      final self = await _drivers.findByEmail(me!.email!);
+
+      if (self?.id == null) {
+        throw ApiClientException('Your driver record could not be found.');
+      }
+
+      await _drivers.resign(self!.id!);
+
+      if (!mounted) return;
+
+      AppMessages.success(context, 'You have resigned. Signing you out.');
+
+      await notifications.disconnect();
+      await auth.logout();
+    } on ApiClientException catch (e) {
+      if (!mounted) return;
+      setState(() => _isResigning = false);
+      AppMessages.failure(context, e.message);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _isResigning = false);
+      AppMessages.failure(
+        context,
+        'Could not reach the server. Check that the API is running.',
+      );
+    }
+  }
+
   Future<void> _changePassword() async {
     final changed = await ChangePasswordScreen.open(context);
 
@@ -290,6 +361,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
             icon: const Icon(Icons.password, size: 18),
             label: const Text('CHANGE PASSWORD'),
           ),
+          if (me.role == Roles.driver) ...[
+            const Divider(height: AppSpacing.xl),
+            Text('Leaving', style: theme.textTheme.titleMedium),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              'Finish any ride and end your shift first — you cannot resign '
+              'mid-ride.',
+              style: theme.textTheme.bodySmall,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            OutlinedButton.icon(
+              onPressed: _isResigning ? null : _resign,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.danger,
+                side: const BorderSide(color: AppColors.danger),
+              ),
+              icon: const Icon(Icons.logout, size: 18),
+              label: Text(_isResigning ? 'RESIGNING…' : 'RESIGN'),
+            ),
+          ],
         ],
       ),
     );
