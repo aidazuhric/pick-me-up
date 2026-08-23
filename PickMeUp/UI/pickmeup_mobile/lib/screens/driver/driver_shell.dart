@@ -4,6 +4,7 @@ import '../../layouts/mobile_shell.dart';
 import '../../layouts/nav_destination.dart';
 import '../placeholder_screen.dart';
 import 'my_shift_screen.dart';
+import 'ride_requests_screen.dart';
 
 class DriverShell extends StatelessWidget {
   const DriverShell({super.key});
@@ -32,11 +33,7 @@ class DriverShell extends StatelessWidget {
         MobileDestination(
           icon: Icons.notifications_active_outlined,
           label: 'Ride requests',
-          builder: (_) => const PlaceholderScreen(
-            icon: Icons.notifications_active_outlined,
-            title: 'Ride requests',
-            description: 'Incoming orders to accept or reject.',
-          ),
+          builder: (_) => const RideRequestsScreen(),
         ),
         MobileDestination(
           icon: Icons.done_all,
