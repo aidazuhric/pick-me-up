@@ -10,18 +10,20 @@ class StatusPill extends StatelessWidget {
   final String? status;
 
   static Color colourFor(String? status) => switch (status) {
-    'Completed' || 'Paid' => AppColors.toggleOn,
+    'Completed' || 'Paid' || 'Resolved' => AppColors.toggleOn,
     'Cancelled' || 'Failed' => AppColors.danger,
     'Refunded' || 'PartiallyRefunded' => AppColors.accentCyan,
     'InProgress' || 'Confirmed' => AppColors.mobileHeader,
+    'Open' => AppColors.accentCyan,
     _ => AppColors.textMuted,
   };
 
   static IconData iconFor(String? status) => switch (status) {
-    'Completed' || 'Paid' => Icons.check_circle,
+    'Completed' || 'Paid' || 'Resolved' => Icons.check_circle,
     'Cancelled' || 'Failed' => Icons.cancel_outlined,
     'Refunded' || 'PartiallyRefunded' => Icons.undo,
-    'InProgress' => Icons.navigation_outlined,
+    'InProgress' => Icons.autorenew,
+    'Open' => Icons.mark_email_unread_outlined,
     'Confirmed' => Icons.directions_car_outlined,
     _ => Icons.schedule,
   };

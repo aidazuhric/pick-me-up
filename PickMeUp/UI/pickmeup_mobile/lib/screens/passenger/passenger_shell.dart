@@ -5,6 +5,7 @@ import '../../layouts/nav_destination.dart';
 import '../placeholder_screen.dart';
 import 'companies_screen.dart';
 import 'my_reviews_screen.dart';
+import 'online_support_screen.dart';
 import 'order_taxi_screen.dart';
 import 'payment_history_screen.dart';
 import 'recommended_screen.dart';
@@ -67,11 +68,7 @@ class PassengerShell extends StatelessWidget {
         MobileDestination(
           icon: Icons.support_agent_outlined,
           label: 'Online support',
-          builder: (_) => const PlaceholderScreen(
-            icon: Icons.support_agent_outlined,
-            title: 'Online support',
-            description: 'Ask the PickMeUp team for help and read the answer.',
-          ),
+          builder: (_) => const OnlineSupportScreen(),
         ),
       ],
     );
