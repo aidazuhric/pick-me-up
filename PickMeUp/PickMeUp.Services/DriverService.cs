@@ -222,6 +222,106 @@ namespace PickMeUp.Services
             return _mapper.Map<DriverResponse>(driver);
         }
 
+        public async Task<DriverLocationResponse> ReportOwnLocationAsync(DriverLocationUpdateRequest request)
+        {
+            if (request.Latitude is < -90 or > 90)
+            {
+                throw new BusinessException("Latitude must be between -90 and 90.");
+            }
+
+            if (request.Longitude is < -180 or > 180)
+            {
+                throw new BusinessException("Longitude must be between -180 and 180.");
+            }
+
+            var driverId = await RequireCallerDriverIdAsync();
+
+            var location = await _dbContext.DriverLocations
+                .FirstOrDefaultAsync(l => l.DriverId == driverId);
+
+            if (location == null)
+            {
+                location = new DriverLocation { DriverId = driverId };
+                _dbContext.DriverLocations.Add(location);
+            }
+
+            location.Latitude = request.Latitude;
+            location.Longitude = request.Longitude;
+            location.UpdatedAt = DateTime.UtcNow;
+
+            await _dbContext.SaveChangesAsync();
+
+            var rows = await QueryFleetLocations(l => l.DriverId == driverId);
+
+            return rows.Single();
+        }
+
+        public Task<List<DriverLocationResponse>> GetFleetLocationsAsync()
+        {
+            return QueryFleetLocations(null);
+        }
+
+        private async Task<List<DriverLocationResponse>> QueryFleetLocations(
+            System.Linq.Expressions.Expression<Func<DriverLocation, bool>>? extra)
+        {
+            IQueryable<DriverLocation> query = _dbContext.DriverLocations.AsNoTracking();
+
+            if (!CallerIsAdmin)
+            {
+                var companyId = await GetCallerCompanyIdAsync();
+
+                if (companyId == null)
+                {
+                    return new List<DriverLocationResponse>();
+                }
+
+                query = query.Where(l => l.Driver.TaxiCompanyId == companyId.Value);
+            }
+
+            if (extra != null)
+            {
+                query = query.Where(extra);
+            }
+
+            var openShifts = _dbContext.Shifts.Where(s => s.EndedAt == null);
+
+            return await query
+                .Select(l => new DriverLocationResponse
+                {
+                    DriverId = l.DriverId,
+                    DriverName = l.Driver.User.FirstName + " " + l.Driver.User.LastName,
+                    CompanyName = l.Driver.TaxiCompany.Name,
+                    CarPlate = _dbContext.CarAssignments
+                        .Where(a => a.DriverId == l.DriverId && a.IsActive && a.AssignedTo == null)
+                        .Select(a => a.Car.Plate)
+                        .FirstOrDefault(),
+                    Latitude = l.Latitude,
+                    Longitude = l.Longitude,
+                    UpdatedAt = l.UpdatedAt,
+                    IsOnShift = openShifts.Any(s => s.DriverId == l.DriverId),
+                    IsOnBreak = openShifts.Any(s => s.DriverId == l.DriverId
+                        && s.Breaks.Any(b => b.EndedAt == null)),
+                    IsDispatchEligible = openShifts.Any(s => s.DriverId == l.DriverId
+                        && !s.Breaks.Any(b => b.EndedAt == null))
+                })
+                .OrderBy(l => l.DriverName)
+                .ToListAsync();
+        }
+
+        private async Task<int> RequireCallerDriverIdAsync()
+        {
+            var userId = _userAccessor.GetUserId()
+                ?? throw new BusinessException("The caller could not be identified.");
+
+            var driverId = await _dbContext.Drivers
+                .Where(d => d.UserId == userId && d.ResignedAt == null)
+                .Select(d => (int?)d.Id)
+                .FirstOrDefaultAsync();
+
+            return driverId
+                ?? throw new BusinessException("This account is not an active driver.");
+        }
+
         private async Task EnsureDriverMayOnlyResignSelfAsync(int id)
         {
             if (!_userAccessor.IsInRole(Roles.Driver) || CallerIsAdmin)

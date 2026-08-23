@@ -6,6 +6,7 @@ import '../passenger/settings_screen.dart';
 import 'active_ride_screen.dart';
 import 'completed_rides_screen.dart';
 import 'driver_reviews_screen.dart';
+import 'report_location_screen.dart';
 import 'my_shift_screen.dart';
 import 'ride_requests_screen.dart';
 
@@ -26,6 +27,11 @@ class DriverShell extends StatelessWidget {
           icon: Icons.schedule_outlined,
           label: 'My shift',
           builder: (_) => const MyShiftScreen(),
+        ),
+        MobileDestination(
+          icon: Icons.share_location,
+          label: 'Report location',
+          builder: (_) => const ReportLocationScreen(),
         ),
         MobileDestination(
           icon: Icons.notifications_active_outlined,

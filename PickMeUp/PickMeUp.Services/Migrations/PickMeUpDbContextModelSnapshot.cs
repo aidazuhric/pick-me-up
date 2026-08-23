@@ -438,6 +438,25 @@ namespace PickMeUp.Services.Migrations
                         });
                 });
 
+            modelBuilder.Entity("PickMeUp.Services.Database.DriverLocation", b =>
+                {
+                    b.Property<int>("DriverId")
+                        .HasColumnType("integer");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("DriverId");
+
+                    b.ToTable("DriverLocations");
+                });
+
             modelBuilder.Entity("PickMeUp.Services.Database.InteractionHistory", b =>
                 {
                     b.Property<int>("Id")
@@ -3888,6 +3907,17 @@ namespace PickMeUp.Services.Migrations
                     b.Navigation("TaxiCompany");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PickMeUp.Services.Database.DriverLocation", b =>
+                {
+                    b.HasOne("PickMeUp.Services.Database.Driver", "Driver")
+                        .WithOne()
+                        .HasForeignKey("PickMeUp.Services.Database.DriverLocation", "DriverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Driver");
                 });
 
             modelBuilder.Entity("PickMeUp.Services.Database.InteractionHistory", b =>

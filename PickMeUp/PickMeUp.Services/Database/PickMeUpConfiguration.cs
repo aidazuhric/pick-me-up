@@ -155,6 +155,15 @@ namespace PickMeUp.Services.Database
             modelBuilder.Entity<Shift>()
                 .HasIndex(s => new { s.DriverId, s.EndedAt });
 
+            modelBuilder.Entity<DriverLocation>()
+                .HasOne(l => l.Driver)
+                .WithOne()
+                .HasForeignKey<DriverLocation>(l => l.DriverId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<DriverLocation>()
+                .HasQueryFilter(l => !l.Driver.IsDeleted);
+
             modelBuilder.Entity<ShiftBreak>()
                 .HasOne(b => b.Shift)
                 .WithMany(s => s.Breaks)

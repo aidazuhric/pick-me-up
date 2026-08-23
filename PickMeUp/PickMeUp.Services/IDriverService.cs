@@ -8,5 +8,9 @@ namespace PickMeUp.Services
         : IBaseCRUDService<DriverResponse, DriverSearch, DriverInsertRequest, DriverUpdateRequest>
     {
         Task<DriverResponse> ResignAsync(int id);
+
+        Task<DriverLocationResponse> ReportOwnLocationAsync(DriverLocationUpdateRequest request);
+
+        Task<List<DriverLocationResponse>> GetFleetLocationsAsync();
     }
 }

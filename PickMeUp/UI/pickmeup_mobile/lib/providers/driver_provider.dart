@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../models/driver.dart';
+import '../models/driver_location.dart';
 import 'base_provider.dart';
 
 class DriverProvider extends BaseProvider<Driver> {
@@ -21,6 +22,17 @@ class DriverProvider extends BaseProvider<Driver> {
     }
 
     return null;
+  }
+
+  Future<DriverLocation> reportLocation(double latitude, double longitude) async {
+    final response = await http.post(
+      Uri.parse('${BaseProvider.baseUrl}$endpoint/Me/Location'),
+      headers: createHeaders(),
+      body: jsonEncode({'latitude': latitude, 'longitude': longitude}),
+    );
+    validateResponse(response);
+
+    return DriverLocation.fromJson(jsonDecode(response.body));
   }
 
   Future<Driver> resign(int driverId) async {

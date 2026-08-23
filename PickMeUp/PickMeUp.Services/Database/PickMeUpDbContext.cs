@@ -33,6 +33,7 @@ namespace PickMeUp.Services.Database
         public DbSet<SupportTicket> SupportTickets { get; set; }
         public DbSet<SupportTicketReply> SupportTicketReplies { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<DriverLocation> DriverLocations { get; set; }
         public DbSet<InteractionHistory> InteractionHistories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

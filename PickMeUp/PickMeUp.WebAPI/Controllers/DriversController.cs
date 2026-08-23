@@ -55,6 +55,30 @@ public class DriversController
     /// Records the driver's resignation. This is the reversible counterpart to deletion —
     /// the employment record is kept and the driver stops receiving work.
     /// </summary>
+    /// <summary>
+    /// Records where the signed-in driver is now. The driver is taken from the token, so a
+    /// caller can only ever move their own pin, and the latest position replaces the previous one.
+    /// </summary>
+    [Authorization(Roles.Driver)]
+    [HttpPost("Me/Location")]
+    public async Task<ActionResult<DriverLocationResponse>> ReportLocation(
+        [FromBody] DriverLocationUpdateRequest request)
+    {
+        return await _service.ReportOwnLocationAsync(request);
+    }
+
+    /// <summary>
+    /// The latest reported position of every driver in the caller's own company, with whether
+    /// they are on shift and free to take a ride. Administrators see every company's drivers;
+    /// nobody sees another company's.
+    /// </summary>
+    [Authorization(Roles.Admin, Roles.Company)]
+    [HttpGet("Locations")]
+    public async Task<ActionResult<List<DriverLocationResponse>>> Locations()
+    {
+        return await _service.GetFleetLocationsAsync();
+    }
+
     [Authorization(Roles.Company, Roles.Driver)]
     [HttpPost("{id}/Resign")]
     public async Task<ActionResult<DriverResponse>> Resign(int id)
