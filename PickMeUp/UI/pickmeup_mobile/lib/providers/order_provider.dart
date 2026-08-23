@@ -15,6 +15,10 @@ class OrderProvider extends BaseProvider<Order> {
 
   Future<Order> reject(int orderId) => _post('$orderId/Reject');
 
+  Future<Order> pickup(int orderId) => _post('$orderId/Pickup');
+
+  Future<Order> complete(int orderId) => _post('$orderId/Complete');
+
   Future<Order> _post(String path) async {
     final response = await http.post(
       Uri.parse('${BaseProvider.baseUrl}$endpoint/$path'),

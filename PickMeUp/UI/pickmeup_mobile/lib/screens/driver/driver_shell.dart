@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../layouts/mobile_shell.dart';
 import '../../layouts/nav_destination.dart';
 import '../placeholder_screen.dart';
+import 'active_ride_screen.dart';
 import 'my_shift_screen.dart';
 import 'ride_requests_screen.dart';
 
@@ -16,14 +17,8 @@ class DriverShell extends StatelessWidget {
       destinations: [
         MobileDestination(
           icon: Icons.home_outlined,
-          label: 'Home',
-          builder: (_) => const PlaceholderScreen(
-            icon: Icons.directions_car_outlined,
-            title: 'Your day',
-            description:
-                'The car you are assigned to, your current shift and the ride '
-                'you are on.',
-          ),
+          label: 'Active ride',
+          builder: (_) => const ActiveRideScreen(),
         ),
         MobileDestination(
           icon: Icons.schedule_outlined,
