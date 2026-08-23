@@ -8,6 +8,7 @@ import 'online_support_screen.dart';
 import 'order_taxi_screen.dart';
 import 'payment_history_screen.dart';
 import 'recommended_screen.dart';
+import 'ride_status_screen.dart';
 import 'settings_screen.dart';
 import 'ride_history_screen.dart';
 import 'pay_ride_screen.dart';
@@ -24,6 +25,11 @@ class PassengerShell extends StatelessWidget {
           icon: Icons.home_outlined,
           label: 'Home',
           builder: (_) => const OrderTaxiScreen(),
+        ),
+        MobileDestination(
+          icon: Icons.navigation_outlined,
+          label: 'Ride status',
+          builder: (_) => const RideStatusScreen(),
         ),
         MobileDestination(
           icon: Icons.auto_awesome,
