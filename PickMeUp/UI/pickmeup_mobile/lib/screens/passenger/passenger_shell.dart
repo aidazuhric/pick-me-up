@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../../layouts/mobile_shell.dart';
 import '../../layouts/nav_destination.dart';
-import '../placeholder_screen.dart';
 import 'companies_screen.dart';
 import 'my_reviews_screen.dart';
 import 'online_support_screen.dart';
 import 'order_taxi_screen.dart';
 import 'payment_history_screen.dart';
 import 'recommended_screen.dart';
+import 'settings_screen.dart';
 import 'ride_history_screen.dart';
 import 'pay_ride_screen.dart';
 
@@ -58,12 +58,7 @@ class PassengerShell extends StatelessWidget {
         MobileDestination(
           icon: Icons.settings_outlined,
           label: 'Settings',
-          builder: (_) => const PlaceholderScreen(
-            icon: Icons.settings_outlined,
-            title: 'Settings',
-            description:
-                'Profile details, notifications and two-factor sign-in.',
-          ),
+          builder: (_) => const SettingsScreen(),
         ),
         MobileDestination(
           icon: Icons.support_agent_outlined,

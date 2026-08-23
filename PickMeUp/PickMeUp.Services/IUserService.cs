@@ -11,6 +11,12 @@ namespace PickMeUp.Services
         Task<UserResponse?> GetWithRoleByIdAsync(int id);
         Task ChangePasswordAsync(UserPasswordChangeRequest request);
 
+        Task<UserResponse> GetOwnAsync();
+
+        Task<UserResponse> UpdateOwnAsync(UserProfileUpdateRequest request);
+
+        Task<string> StoreOwnProfileImageAsync(Stream content, string fileName, string contentType);
+
         Task<string> StoreProfileImageAsync(int id, Stream content, string fileName, string contentType);
 
         Task<(Stream Content, string ContentType, string FileName)> GetProfileImageAsync(int id);

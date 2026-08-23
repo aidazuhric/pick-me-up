@@ -194,6 +194,7 @@ builder.Services.AddScoped<ICryptoService, CryptoService>();
 
 builder.Services.AddScoped<IValidator<UserInsertRequest>, UserInsertValidator>();
 builder.Services.AddScoped<IValidator<UserUpdateRequest>, UserUpdateValidator>();
+builder.Services.AddScoped<IValidator<UserProfileUpdateRequest>, UserProfileUpdateValidator>();
 builder.Services.AddScoped<IValidator<DriverInsertRequest>, DriverInsertValidator>();
 builder.Services.AddScoped<IValidator<DriverUpdateRequest>, DriverUpdateValidator>();
 builder.Services.AddScoped<IValidator<SupportTicketInsertRequest>, SupportTicketInsertValidator>();

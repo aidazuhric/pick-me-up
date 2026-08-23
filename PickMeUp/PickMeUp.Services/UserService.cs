@@ -1,5 +1,6 @@
 using PickMeUp.Common.Services.CryptoService;
 using PickMeUp.Model.Access;
+using PickMeUp.Model.Constants;
 using PickMeUp.Model.Exceptions;
 using PickMeUp.Model.Requests;
 using PickMeUp.Model.Responses;
@@ -23,11 +24,61 @@ namespace PickMeUp.Services
 
         private readonly ICryptoService _cryptoService;
         private readonly IImageFileStore _imageFileStore;
-        public UserService(PickMeUpDbContext dbContext, MapsterMapper.IMapper mapper, IValidator<UserInsertRequest> insertValidator, IValidator<UserUpdateRequest> updateValidator, ICryptoService cryptoService, IImageFileStore imageFileStore)
+        private readonly IAuthenticatedUserAccessor _userAccessor;
+        private readonly IValidator<UserProfileUpdateRequest> _profileValidator;
+
+        public UserService(PickMeUpDbContext dbContext, MapsterMapper.IMapper mapper, IValidator<UserInsertRequest> insertValidator, IValidator<UserUpdateRequest> updateValidator, IValidator<UserProfileUpdateRequest> profileValidator, ICryptoService cryptoService, IImageFileStore imageFileStore, IAuthenticatedUserAccessor userAccessor)
             : base(dbContext, mapper, insertValidator, updateValidator)
         {
             _cryptoService = cryptoService;
             _imageFileStore = imageFileStore;
+            _userAccessor = userAccessor;
+            _profileValidator = profileValidator;
+        }
+
+        public async Task<UserResponse> GetOwnAsync()
+        {
+            return await GetWithRoleByIdAsync(RequireOwnUserId())
+                ?? throw new BusinessException("Your account could not be found.");
+        }
+
+        public async Task<UserResponse> UpdateOwnAsync(UserProfileUpdateRequest request)
+        {
+            await _profileValidator.ValidateAndThrowAsync(request);
+
+            var userId = RequireOwnUserId();
+            var user = await LoadUserAsync(userId);
+
+            var email = request.Email.Trim();
+
+            var taken = await _dbContext.Users
+                .AnyAsync(u => u.Id != userId && u.Email == email);
+
+            if (taken)
+            {
+                throw new BusinessException("That email address is already in use.");
+            }
+
+            user.FirstName = request.FirstName.Trim();
+            user.LastName = request.LastName.Trim();
+            user.Email = email;
+            user.PhoneNumber = string.IsNullOrWhiteSpace(request.PhoneNumber)
+                ? null
+                : request.PhoneNumber.Trim();
+            await _dbContext.SaveChangesAsync();
+
+            return await GetOwnAsync();
+        }
+
+        public Task<string> StoreOwnProfileImageAsync(Stream content, string fileName, string contentType)
+        {
+            return StoreProfileImageAsync(RequireOwnUserId(), content, fileName, contentType);
+        }
+
+        private int RequireOwnUserId()
+        {
+            return _userAccessor.GetUserId()
+                ?? throw new BusinessException("The caller could not be identified.");
         }
 
         public async Task<string> StoreProfileImageAsync(int id, Stream content, string fileName, string contentType)
@@ -219,7 +270,9 @@ namespace PickMeUp.Services
 
         public async Task ChangePasswordAsync(UserPasswordChangeRequest request)
         {
-            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == request.Id);
+            var targetId = _userAccessor.IsInRole(Roles.Admin) ? request.Id : RequireOwnUserId();
+
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == targetId);
 
             if (user == null)
                 throw new BusinessException("User not found.");

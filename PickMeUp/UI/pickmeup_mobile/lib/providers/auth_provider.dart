@@ -6,6 +6,20 @@ import 'package:http/http.dart' as http;
 import '../core/config/api_config.dart';
 import '../utils/api_client_exception.dart';
 
+class TwoFactorSetting {
+  const TwoFactorSetting({required this.enabled, required this.maskedEmail});
+
+  final bool enabled;
+  final String maskedEmail;
+
+  factory TwoFactorSetting.fromJson(Map<String, dynamic> json) {
+    return TwoFactorSetting(
+      enabled: json['enabled'] as bool? ?? false,
+      maskedEmail: json['maskedEmail'] as String? ?? '',
+    );
+  }
+}
+
 class TwoFactorChallenge {
   const TwoFactorChallenge({
     required this.maskedEmail,
@@ -82,6 +96,54 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
 
     return null;
+  }
+
+  Future<TwoFactorSetting> readTwoFactorSetting() async {
+    final response = await http.get(
+      Uri.parse('${ApiConfig.baseUrl}Auth/TwoFactor'),
+      headers: _authorizedHeaders(),
+    );
+
+    if (response.statusCode >= 299) {
+      throw ApiClientException(
+        ApiErrorParser.messageFromBody(response.body) ??
+            'Could not read your security settings.',
+      );
+    }
+
+    return TwoFactorSetting.fromJson(jsonDecode(response.body));
+  }
+
+  Future<TwoFactorSetting> setTwoFactorSetting(bool enabled) async {
+    final response = await http.put(
+      Uri.parse('${ApiConfig.baseUrl}Auth/TwoFactor'),
+      headers: _authorizedHeaders(),
+      body: jsonEncode({'enabled': enabled}),
+    );
+
+    if (response.statusCode >= 299) {
+      throw ApiClientException(
+        ApiErrorParser.messageFromBody(response.body) ??
+            'Could not change your security settings.',
+      );
+    }
+
+    return TwoFactorSetting.fromJson(jsonDecode(response.body));
+  }
+
+  Map<String, String> _authorizedHeaders() => {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ${accessToken ?? ''}',
+  };
+
+  void refreshDisplayName(String? first, String? last) {
+    final name = [
+      first ?? '',
+      last ?? '',
+    ].where((p) => p.isNotEmpty).join(' ');
+
+    _displayName = name.isEmpty ? null : name;
+    notifyListeners();
   }
 
   Future<void> logout() async {
