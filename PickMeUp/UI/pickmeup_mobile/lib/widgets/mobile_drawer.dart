@@ -5,6 +5,7 @@ import '../core/theme/app_colors.dart';
 import '../core/theme/app_spacing.dart';
 import '../layouts/nav_destination.dart';
 import '../providers/auth_provider.dart';
+import '../providers/notification_store.dart';
 
 class MobileDrawer extends StatelessWidget {
   const MobileDrawer({
@@ -90,6 +91,7 @@ class MobileDrawer extends StatelessWidget {
   Future<void> _confirmLogout(BuildContext context) async {
     final navigator = Navigator.of(context);
     final auth = context.read<AuthProvider>();
+    final notifications = context.read<NotificationStore>();
 
     final confirmed = await showDialog<bool>(
       context: context,
@@ -114,6 +116,7 @@ class MobileDrawer extends StatelessWidget {
     }
 
     navigator.pop();
+    await notifications.disconnect();
     await auth.logout();
   }
 }

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'core/constants/roles.dart';
 import 'core/theme/app_theme.dart';
 import 'providers/auth_provider.dart';
+import 'providers/notification_store.dart';
 import 'providers/user_provider.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/driver/driver_shell.dart';
@@ -23,6 +24,7 @@ class PickMeUpMobileApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationStore()),
       ],
       child: MaterialApp(
         title: 'PickMeUp',

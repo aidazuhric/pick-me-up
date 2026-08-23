@@ -18,6 +18,7 @@ dependencies:
   flutter_map: ^8.3.1
   latlong2: ^0.10.1
   flutter_stripe: ^11.3.0
+  signalr_netcore: ^1.4.4
 
 dev_dependencies:
   flutter_test:
