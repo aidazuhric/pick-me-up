@@ -9,6 +9,8 @@ namespace PickMeUp.Services
     {
         Task<TaxiCompanyResponse> GetOwnAsync();
 
+        Task<TaxiCompanyDetailsResponse> GetDetailsAsync(int id);
+
         Task<TaxiCompanyResponse> UpdateOwnAsync(TaxiCompanyUpdateRequest request);
 
         Task<string> StoreOwnLogoAsync(Stream content, string fileName, string contentType);

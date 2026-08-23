@@ -52,9 +52,9 @@ namespace PickMeUp.Services.Recommendations
                                         CompanyName = company.Name,
                                         CityId = company.CityId,
                                         CityName = company.City.Name,
-                                        CompletedRides = signals == null ? 0 : signals.CompletedRides,
-                                        ReviewCount = signals == null ? 0 : signals.ReviewCount,
-                                        RatingTotal = signals == null ? null : (decimal?)signals.RatingTotal
+                                        CompletedRides = (int?)signals.CompletedRides ?? 0,
+                                        ReviewCount = (int?)signals.ReviewCount ?? 0,
+                                        RatingTotal = (decimal?)signals.RatingTotal
                                     })
                                    .ToListAsync();
 

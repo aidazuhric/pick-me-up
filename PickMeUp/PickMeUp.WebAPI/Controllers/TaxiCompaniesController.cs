@@ -41,6 +41,17 @@ public class TaxiCompaniesController
     }
 
     /// <summary>
+    /// One company as a passenger sees it: fleet size, rating and the price list behind a fare
+    /// estimate. Read-only, and limited to companies that are currently listed.
+    /// </summary>
+    [Authorization(Roles.Admin, Roles.Company, Roles.Driver, Roles.Passenger)]
+    [HttpGet("{id}/Details")]
+    public async Task<ActionResult<TaxiCompanyDetailsResponse>> Details(int id)
+    {
+        return await _service.GetDetailsAsync(id);
+    }
+
+    /// <summary>
     /// The signed-in company's own profile, resolved from the token. A company never passes an
     /// id, so it cannot read another company's row through this endpoint; administrators manage
     /// companies through the by-id endpoints instead.

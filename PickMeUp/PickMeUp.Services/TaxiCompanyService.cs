@@ -44,6 +44,32 @@ namespace PickMeUp.Services
             return _mapper.Map<TaxiCompanyResponse>(company);
         }
 
+        public async Task<TaxiCompanyDetailsResponse> GetDetailsAsync(int id)
+        {
+            var details = await _dbContext.TaxiCompanies
+                .AsNoTracking()
+                .Where(t => t.Id == id && t.IsActive)
+                .Select(t => new TaxiCompanyDetailsResponse
+                {
+                    Id = t.Id,
+                    Name = t.Name,
+                    CityName = t.City.Name,
+                    HqAddress = t.HqAddress,
+                    ContactPhone = t.ContactPhone,
+                    StartingPrice = t.StartingPrice,
+                    PricePerKm = t.PricePerKm,
+                    LogoImageUrl = t.LogoImagePath == null ? null : "TaxiCompanies/" + t.Id + "/Logo",
+                    VehicleCount = _dbContext.Cars.Count(c => c.TaxiCompanyId == t.Id && c.IsActive),
+                    ReviewCount = _dbContext.Reviews.Count(r => r.TargetCompanyId == t.Id),
+                    AverageRating = _dbContext.Reviews
+                        .Where(r => r.TargetCompanyId == t.Id)
+                        .Average(r => (double?)r.Rating)
+                })
+                .FirstOrDefaultAsync();
+
+            return details ?? throw new KeyNotFoundException($"Taxi company with id {id} not found.");
+        }
+
         public async Task<TaxiCompanyResponse> UpdateOwnAsync(TaxiCompanyUpdateRequest request)
         {
             request.IsActive = null;

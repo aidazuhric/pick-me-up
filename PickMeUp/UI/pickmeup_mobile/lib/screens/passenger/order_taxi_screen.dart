@@ -16,7 +16,9 @@ import 'company_picker_sheet.dart';
 enum _TripPoint { pickup, destination }
 
 class OrderTaxiScreen extends StatefulWidget {
-  const OrderTaxiScreen({super.key});
+  const OrderTaxiScreen({super.key, this.initialCompany});
+
+  final TaxiCompany? initialCompany;
 
   @override
   State<OrderTaxiScreen> createState() => _OrderTaxiScreenState();
@@ -41,6 +43,12 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
   bool _isLocating = false;
   bool _isSubmitting = false;
   Order? _placed;
+
+  @override
+  void initState() {
+    super.initState();
+    _company = widget.initialCompany;
+  }
 
   @override
   void dispose() {
@@ -237,7 +245,7 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
       _destination = null;
       _pickupAddress = null;
       _destinationAddress = null;
-      _company = null;
+      _company = widget.initialCompany;
       _picking = null;
     });
   }
