@@ -4,6 +4,7 @@ namespace PickMeUp.Model.Responses
     {
         public int Id { get; set; }
         public string PassengerName { get; set; } = string.Empty;
+        public int? TaxiCompanyId { get; set; }
         public string? CompanyName { get; set; }
         public string? DriverName { get; set; }
         public string? CarPlate { get; set; }

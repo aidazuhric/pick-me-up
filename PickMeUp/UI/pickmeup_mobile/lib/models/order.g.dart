@@ -31,6 +31,7 @@ Map<String, dynamic> _$OrderStatusHistoryEntryToJson(
 Order _$OrderFromJson(Map<String, dynamic> json) => Order(
   id: (json['id'] as num?)?.toInt(),
   passengerName: json['passengerName'] as String?,
+  taxiCompanyId: (json['taxiCompanyId'] as num?)?.toInt(),
   companyName: json['companyName'] as String?,
   driverName: json['driverName'] as String?,
   carPlate: json['carPlate'] as String?,
@@ -65,6 +66,7 @@ Order _$OrderFromJson(Map<String, dynamic> json) => Order(
 Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
   'id': instance.id,
   'passengerName': instance.passengerName,
+  'taxiCompanyId': instance.taxiCompanyId,
   'companyName': instance.companyName,
   'driverName': instance.driverName,
   'carPlate': instance.carPlate,

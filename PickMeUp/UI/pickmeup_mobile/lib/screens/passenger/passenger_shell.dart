@@ -5,7 +5,9 @@ import '../../layouts/nav_destination.dart';
 import '../placeholder_screen.dart';
 import 'companies_screen.dart';
 import 'order_taxi_screen.dart';
+import 'payment_history_screen.dart';
 import 'recommended_screen.dart';
+import 'ride_history_screen.dart';
 import 'pay_ride_screen.dart';
 
 class PassengerShell extends StatelessWidget {
@@ -39,21 +41,12 @@ class PassengerShell extends StatelessWidget {
         MobileDestination(
           icon: Icons.receipt_long_outlined,
           label: 'Payment history',
-          builder: (_) => const PlaceholderScreen(
-            icon: Icons.receipt_long_outlined,
-            title: 'Payment history',
-            description: 'Every card payment you make will be listed here.',
-          ),
+          builder: (_) => const PaymentHistoryScreen(),
         ),
         MobileDestination(
           icon: Icons.history,
           label: 'Ride history',
-          builder: (_) => const PlaceholderScreen(
-            icon: Icons.history,
-            title: 'Ride history',
-            description:
-                'Your past rides, with the driver, the route and the fare.',
-          ),
+          builder: (_) => const RideHistoryScreen(),
         ),
         MobileDestination(
           icon: Icons.settings_outlined,

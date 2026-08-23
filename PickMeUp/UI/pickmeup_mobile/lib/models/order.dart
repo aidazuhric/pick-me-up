@@ -28,6 +28,7 @@ class OrderStatusHistoryEntry {
 class Order {
   int? id;
   String? passengerName;
+  int? taxiCompanyId;
   String? companyName;
   String? driverName;
   String? carPlate;
@@ -51,6 +52,7 @@ class Order {
   Order({
     this.id,
     this.passengerName,
+    this.taxiCompanyId,
     this.companyName,
     this.driverName,
     this.carPlate,
