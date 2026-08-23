@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../layouts/mobile_shell.dart';
 import '../../layouts/nav_destination.dart';
 import '../placeholder_screen.dart';
+import 'my_shift_screen.dart';
 
 class DriverShell extends StatelessWidget {
   const DriverShell({super.key});
@@ -26,11 +27,7 @@ class DriverShell extends StatelessWidget {
         MobileDestination(
           icon: Icons.schedule_outlined,
           label: 'My shift',
-          builder: (_) => const PlaceholderScreen(
-            icon: Icons.schedule_outlined,
-            title: 'Shift',
-            description: 'Start and end your shift, and take a break.',
-          ),
+          builder: (_) => const MyShiftScreen(),
         ),
         MobileDestination(
           icon: Icons.notifications_active_outlined,
