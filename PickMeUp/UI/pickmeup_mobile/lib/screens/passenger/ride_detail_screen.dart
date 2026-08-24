@@ -15,6 +15,7 @@ import '../../utils/formats.dart';
 import '../../widgets/app_messages.dart';
 import '../../widgets/rating_stars.dart';
 import '../../widgets/status_pill.dart';
+import 'cancel_ride_dialog.dart';
 import 'review_form_screen.dart';
 
 class RideDetailScreen extends StatefulWidget {
@@ -45,6 +46,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
   Order? _ride;
   Payment? _payment;
   List<Review> _myReviews = const [];
+  bool _isCancelling = false;
   bool _isLoading = true;
   String? _error;
 
@@ -239,11 +241,60 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                 const Divider(height: AppSpacing.xl),
                 _buildReviewSection(theme, ride),
               ],
+              if (_isCancellable(ride)) ...[
+                const SizedBox(height: AppSpacing.lg),
+                OutlinedButton.icon(
+                  onPressed: _isCancelling ? null : () => _cancelRide(ride),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.danger,
+                    side: const BorderSide(color: AppColors.danger),
+                  ),
+                  icon: const Icon(Icons.cancel_outlined, size: 18),
+                  label: Text(_isCancelling ? 'CANCELLING…' : 'CANCEL RIDE'),
+                ),
+              ],
             ],
           ),
         ),
       ],
     );
+  }
+
+  static bool _isCancellable(Order ride) =>
+      ride.id != null &&
+      const ['Pending', 'Confirmed', 'InProgress'].contains(ride.status);
+
+  Future<void> _cancelRide(Order ride) async {
+    final reason = await CancelRideDialog.show(context);
+
+    if (reason == null || !mounted) {
+      return;
+    }
+
+    setState(() => _isCancelling = true);
+
+    try {
+      await _orders.cancel(ride.id!, reason);
+
+      if (!mounted) return;
+
+      AppMessages.success(context, 'Ride #${ride.id} is cancelled.');
+      await _load();
+    } on ApiClientException catch (e) {
+      if (!mounted) return;
+      AppMessages.failure(context, e.message);
+      await _load();
+    } catch (_) {
+      if (!mounted) return;
+      AppMessages.failure(
+        context,
+        'Could not reach the server. Check that the API is running.',
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isCancelling = false);
+      }
+    }
   }
 
   bool get _companyReviewed => _myReviews.any((r) => r.companyName != null);

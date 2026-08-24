@@ -10,7 +10,9 @@ import '../../providers/notification_store.dart';
 import '../../providers/order_provider.dart';
 import '../../utils/api_client_exception.dart';
 import '../../utils/formats.dart';
+import '../../widgets/app_messages.dart';
 import '../../widgets/status_pill.dart';
+import 'cancel_ride_dialog.dart';
 import 'pay_ride_screen.dart';
 import 'ride_detail_screen.dart';
 
@@ -36,6 +38,7 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
   Order? _ride;
   int _otherActive = 0;
   bool _isLoading = true;
+  bool _isCancelling = false;
   String? _error;
 
   @override
@@ -146,6 +149,39 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
     }
   }
 
+  Future<void> _cancelRide(Order ride) async {
+    final reason = await CancelRideDialog.show(context);
+
+    if (reason == null || !mounted) {
+      return;
+    }
+
+    setState(() => _isCancelling = true);
+
+    try {
+      await _orders.cancel(ride.id!, reason);
+
+      if (!mounted) return;
+
+      AppMessages.success(context, 'Ride #${ride.id} is cancelled.');
+      await _load();
+    } on ApiClientException catch (e) {
+      if (!mounted) return;
+      AppMessages.failure(context, e.message);
+      await _load();
+    } catch (_) {
+      if (!mounted) return;
+      AppMessages.failure(
+        context,
+        'Could not reach the server. Check that the API is running.',
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isCancelling = false);
+      }
+    }
+  }
+
   Future<void> _payNow() async {
     await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
@@ -240,6 +276,20 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
                   const SizedBox(height: AppSpacing.lg),
                   _buildCompletedActions(theme, ride),
                 ],
+                if (_isCancellable(ride)) ...[
+                  const SizedBox(height: AppSpacing.lg),
+                  OutlinedButton.icon(
+                    onPressed: _isCancelling ? null : () => _cancelRide(ride),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.danger,
+                      side: const BorderSide(color: AppColors.danger),
+                    ),
+                    icon: const Icon(Icons.cancel_outlined, size: 18),
+                    label: Text(
+                      _isCancelling ? 'CANCELLING…' : 'CANCEL RIDE',
+                    ),
+                  ),
+                ],
                 if (_otherActive > 0) ...[
                   const SizedBox(height: AppSpacing.lg),
                   Text(
@@ -256,6 +306,10 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
       ),
     );
   }
+
+  static bool _isCancellable(Order ride) =>
+      ride.id != null &&
+      const ['Pending', 'Confirmed', 'InProgress'].contains(ride.status);
 
   String _headline(Order ride) => switch (ride.status) {
     'Pending' => ride.isGeneralOrder == true

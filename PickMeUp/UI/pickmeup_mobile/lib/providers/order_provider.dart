@@ -19,6 +19,17 @@ class OrderProvider extends BaseProvider<Order> {
 
   Future<Order> complete(int orderId) => _post('$orderId/Complete');
 
+  Future<Order> cancel(int orderId, String reason) async {
+    final response = await http.post(
+      Uri.parse('${BaseProvider.baseUrl}$endpoint/$orderId/Cancel'),
+      headers: createHeaders(),
+      body: jsonEncode({'reason': reason}),
+    );
+    validateResponse(response);
+
+    return Order.fromJson(jsonDecode(response.body));
+  }
+
   Future<Order> _post(String path) async {
     final response = await http.post(
       Uri.parse('${BaseProvider.baseUrl}$endpoint/$path'),
