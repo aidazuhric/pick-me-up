@@ -1,8 +1,10 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 import '../models/user.dart';
+import 'auth_provider.dart';
 import 'base_provider.dart';
 
 class UserProvider extends BaseProvider<User> {
@@ -40,6 +42,30 @@ class UserProvider extends BaseProvider<User> {
     validateResponse(response);
 
     return User.fromJson(jsonDecode(response.body));
+  }
+
+  Future<void> uploadOwnPhoto(String filePath, String mimeType) async {
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse('${BaseProvider.baseUrl}$endpoint/Me/Photo'),
+    );
+
+    request.headers.addAll({
+      'Authorization': 'Bearer ${AuthProvider.accessToken ?? ''}',
+    });
+
+    request.files.add(
+      await http.MultipartFile.fromPath(
+        'file',
+        filePath,
+        contentType: MediaType.parse(mimeType),
+      ),
+    );
+
+    final streamed = await request.send();
+    final response = await http.Response.fromStream(streamed);
+
+    validateResponse(response);
   }
 
   Future<void> changePassword({

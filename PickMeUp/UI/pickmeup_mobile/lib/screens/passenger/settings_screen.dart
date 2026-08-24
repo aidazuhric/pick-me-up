@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -30,6 +33,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final _phoneController = TextEditingController();
   final _users = UserProvider();
   final _drivers = DriverProvider();
+  final _picker = ImagePicker();
 
   User? _me;
   bool _isLoading = true;
@@ -38,6 +42,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _twoFactorEnabled = false;
   bool _isTogglingTwoFactor = false;
   bool _isResigning = false;
+  bool _isUploadingPhoto = false;
+  int _photoVersion = 0;
+
+  static const int _maxPhotoBytes = 2 * 1024 * 1024;
   String _maskedEmail = '';
   String? _error;
   String? _saveError;
@@ -186,6 +194,94 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  Future<void> _changePhoto() async {
+    XFile? picked;
+
+    try {
+      picked = await _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 85,
+      );
+    } catch (_) {
+      if (!mounted) return;
+      AppMessages.failure(
+        context,
+        'Could not open your photos. Check the app has permission to see them.',
+      );
+      return;
+    }
+
+    if (picked == null || !mounted) {
+      return;
+    }
+
+    final mimeType = _mimeTypeFor(picked.path);
+
+    if (mimeType == null) {
+      AppMessages.failure(context, 'Choose a JPEG or PNG image.');
+      return;
+    }
+
+    final length = await File(picked.path).length();
+
+    if (length > _maxPhotoBytes) {
+      if (!mounted) return;
+      AppMessages.failure(context, 'The image must be 2 MB or smaller.');
+      return;
+    }
+
+    if (!mounted) return;
+
+    setState(() => _isUploadingPhoto = true);
+
+    try {
+      await _users.uploadOwnPhoto(picked.path, mimeType);
+
+      final resolved = ApiImage.resolve(_me?.profileImageUrl);
+
+      if (resolved != null) {
+        await NetworkImage(
+          resolved,
+          headers: ApiImage.authHeaders(),
+        ).evict();
+      }
+
+      final refreshed = await _users.readMe();
+
+      if (!mounted) return;
+
+      setState(() {
+        _me = refreshed;
+        _photoVersion++;
+        _isUploadingPhoto = false;
+      });
+
+      AppMessages.success(context, 'Your photo has been updated.');
+    } on ApiClientException catch (e) {
+      if (!mounted) return;
+      setState(() => _isUploadingPhoto = false);
+      AppMessages.failure(context, e.message);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _isUploadingPhoto = false);
+      AppMessages.failure(
+        context,
+        'Could not reach the server. Check that the API is running.',
+      );
+    }
+  }
+
+  static String? _mimeTypeFor(String path) {
+    final lower = path.toLowerCase();
+
+    if (lower.endsWith('.png')) return 'image/png';
+    if (lower.endsWith('.jpg') || lower.endsWith('.jpeg')) return 'image/jpeg';
+
+    return null;
+  }
+
   Future<void> _resign() async {
     final me = _me;
 
@@ -296,10 +392,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           Row(
             children: [
-              ApiImage.logo(
+              _AvatarPicker(
                 url: me.profileImageUrl,
-                size: 64,
-                fallbackIcon: Icons.person,
+                version: _photoVersion,
+                isBusy: _isUploadingPhoto,
+                onTap: _isUploadingPhoto ? null : _changePhoto,
               ),
               const SizedBox(width: AppSpacing.md),
               Expanded(
@@ -530,6 +627,65 @@ class _Row extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _AvatarPicker extends StatelessWidget {
+  const _AvatarPicker({
+    required this.url,
+    required this.version,
+    required this.isBusy,
+    required this.onTap,
+  });
+
+  final String? url;
+  final int version;
+  final bool isBusy;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: 'Change your photo',
+      child: InkWell(
+        onTap: onTap,
+        customBorder: const CircleBorder(),
+        child: Stack(
+          alignment: Alignment.bottomRight,
+          children: [
+            ApiImage.logo(
+              key: ValueKey('avatar-$version'),
+              url: url,
+              size: 64,
+              fallbackIcon: Icons.person,
+            ),
+            Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: AppColors.mobileHeader,
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.surface, width: 2),
+              ),
+              child: isBusy
+                  ? const SizedBox(
+                      height: 12,
+                      width: 12,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Icon(
+                      Icons.photo_camera,
+                      size: 12,
+                      color: Colors.white,
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }

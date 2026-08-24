@@ -4,6 +4,10 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>PickMeUp needs access to your photos so you can choose a profile picture.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>PickMeUp needs the camera so you can take a profile picture.</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsLocalNetworking</key>
