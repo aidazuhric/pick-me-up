@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../layouts/mobile_shell.dart';
 import '../../layouts/nav_destination.dart';
 import '../passenger/settings_screen.dart';
+import '../support/online_support_screen.dart';
 import 'active_ride_screen.dart';
 import 'completed_rides_screen.dart';
 import 'driver_reviews_screen.dart';
@@ -47,6 +48,11 @@ class DriverShell extends StatelessWidget {
           icon: Icons.star_outline,
           label: 'My reviews',
           builder: (_) => const DriverReviewsScreen(),
+        ),
+        MobileDestination(
+          icon: Icons.support_agent_outlined,
+          label: 'Online support',
+          builder: (_) => const OnlineSupportScreen(),
         ),
         MobileDestination(
           icon: Icons.settings_outlined,

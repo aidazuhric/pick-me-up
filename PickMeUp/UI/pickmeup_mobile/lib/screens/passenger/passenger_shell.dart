@@ -4,7 +4,7 @@ import '../../layouts/mobile_shell.dart';
 import '../../layouts/nav_destination.dart';
 import 'companies_screen.dart';
 import 'my_reviews_screen.dart';
-import 'online_support_screen.dart';
+import '../support/online_support_screen.dart';
 import 'order_taxi_screen.dart';
 import 'payment_history_screen.dart';
 import 'recommended_screen.dart';
