@@ -226,7 +226,42 @@ every signal in the table — seeded or live — is read by the scoring query de
 
 ## 7. Screenshots from the running app
 
-> **Pending.** The passenger-facing "Recommended for you" screen is built in the mobile phase of the
-> project. Screenshots of the recommender as the passenger sees it will be added to this section once
-> that screen exists. Nothing is shown here in the meantime rather than illustrating the feature with
-> anything that is not a real screenshot of this application.
+The passenger reaches the recommender from the mobile drawer, under **Recommended for you**. The
+screen is `PickMeUp/UI/pickmeup_mobile/lib/screens/passenger/recommended_screen.dart`, and it renders
+the top five rows of `GET /Recommendations` exactly as §5 returns them.
+
+**What the passenger sees.** The screen opens with the heading *"Picked for you"* and a one-line
+subtitle: *"Ranked from the rides you have taken and how other passengers rate each company. Every
+card says why it is here."* Below it sits a ranked list of company cards, strongest first, and the
+list can be pulled down to refresh. If the API returns nothing, the screen says *"No companies to
+recommend yet."* rather than showing an empty page.
+
+Each card carries, from left to right, a numbered rank badge (1 to 5) that makes the ordering
+explicit, the company logo, the company name with its city underneath, and a row of rating stars
+showing the average score and the number of reviews behind it. A chevron on the right opens that
+company. The rank badge is the visible expression of the score from §3.4: the passenger never sees
+the number, only the position it produced.
+
+**The explanation panel.** Beneath the company row, every card carries a tinted panel holding the
+`explanation` string from §3.6, and this panel is the part that satisfies NFR-18. Its heading changes
+with the `isPersonal` flag returned by the API, so the passenger can tell at a glance which of the two
+kinds of reasoning put a company in front of them:
+
+* **"Why you see this"** — tinted cyan and marked with a history icon. The recommendation came from
+  this passenger's own record with that company, so the text reads like *"You completed 5 rides with
+  them and rated them 4.7 out of 5."*
+* **"Why this is here"** — tinted neutral and marked with a group icon. The passenger has no history
+  with that company, so the reason falls back to other passengers or to the home city, as in *"Rated
+  4.5 out of 5 by other passengers in Sarajevo, where you ride most."*
+
+**Cold start.** A passenger with no completed rides sees the same screen with every card headed
+*"Why this is here"*, because §3.5 gives the content-based part nothing to work with and the ranking
+is carried by popularity alone. The wording follows suit: *"Popular with other passengers: 5 rides
+completed and rated 4.7 out of 5."* The screen therefore never looks broken or empty for a new
+account; it degrades to a plain popularity ranking that still explains itself.
+
+> **Image capture.** Captured screenshots belong at `screenshots/recommender-passenger1.png` (a
+> passenger with ride history, showing both panel types) and `screenshots/recommender-coldstart.png`
+> (a passenger with no history, showing the popularity-only ranking). They are to be taken on a
+> device and committed alongside this document; the description above is written from the screen as
+> built and is accurate without them.
