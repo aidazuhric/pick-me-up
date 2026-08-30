@@ -1,158 +1,151 @@
-# PickMeUp — Recommender documentation
+# PickMeUp — The recommender
 
-This document describes the recommender that powers **FR-X3** and **feature 4.11 (Recommended
-companies)**: which signals it stores, how they are turned into a score, and where every part of it
-lives in the source tree.
+## 1. Overview
 
-The rule this implementation is held to is **NFR-18** — the scoring signals must be *persisted and
-actually used*, not merely collected. Section 4 walks a single recommendation from the stored rows
-to the number the API returns, so that claim can be checked rather than taken on trust.
+PickMeUp suggests taxi companies to a passenger through a **Recommended for you** list: the active
+companies on the platform, ranked best first, with the reason for each placement shown next to it.
 
----
+Our recommender is a hybrid of two complementary approaches. A **content-based** part looks only at
+the passenger's own record with each company: how often they have ordered from it, how many of those
+rides they completed, and how they rated it afterwards. A **popularity** part looks at how every
+passenger treats that company, through its completed rides and its average rating. A small **city
+affinity** bonus then favours companies in the city where the passenger actually rides. Blending the
+two lets us give a useful answer both to a regular with years of habits and to somebody who signed up
+a minute ago, without switching to a different algorithm for each.
 
-## 1. What is stored
+Two design commitments shape everything below. Every score is built from signals we recorded while
+people used the application, never from values supplied by a client. And every recommendation is
+**explainable**: each result carries a sentence, written from the same numbers that produced its
+score, saying why that company is on the list.
 
-Every signal is a row in the **`InteractionHistory`** table. One row is one thing a passenger did
-with one taxi company.
+## 2. The signals we collect
+
+We record passenger behaviour in a single table, `InteractionHistory`. Each row ties one passenger to
+one company, with a signal type, a numeric value, the order it came from, and the moment it was
+written:
 
 | Column | Meaning |
 | --- | --- |
-| `UserId` | the passenger the signal belongs to (FK → `Users`) |
-| `TaxiCompanyId` | the company the signal is about (FK → `TaxiCompanies`) |
-| `SignalTypeId` | `1 = Ordered`, `2 = Completed`, `3 = Reviewed` |
-| `Value` | `1` for Ordered and Completed; the **star rating (1–5)** for Reviewed |
-| `OrderId` | the ride the signal came from (FK → `Orders`, nullable) |
-| `CreatedAt` | when the signal was recorded (UTC) |
+| `UserId` | The passenger the signal belongs to |
+| `TaxiCompanyId` | The company it is about |
+| `SignalTypeId` | `1` Ordered, `2` Completed, `3` Reviewed |
+| `Value` | `1` for Ordered and Completed; the star rating for Reviewed |
+| `OrderId` | The ride that produced the signal |
+| `CreatedAt` | When it was written |
 
-Three signal types are captured. A *viewed* signal was deliberately **not** added: the API has no
-company-view write path, and writing to the database on an HTTP `GET` is an anti-pattern.
+These rows accumulate as a side effect of ordinary use. There are exactly four places in our code
+that write them, and each one fires at the moment the underlying action succeeds:
 
-**Source**
+1. **A passenger places an order with a company.** `OrderService.CreateAsync` writes an `Ordered`
+   signal once the order is committed.
+2. **A driver accepts a ride that was not addressed to a company.** When a passenger orders without
+   naming a company, we do not know the company until a driver takes the job, so
+   `OrderService.AcceptAsync` writes the `Ordered` signal at that point instead. This way a
+   dispatched ride counts towards the passenger's history exactly like a directly ordered one.
+3. **A ride is completed.** `OrderService.CompleteAsync` writes a `Completed` signal.
+4. **A passenger reviews a ride.** `ReviewService` writes a `Reviewed` signal whose `Value` is the
+   rating given, so the star count travels with the signal.
 
-- Entity — `PickMeUp/PickMeUp.Services/Database/InteractionHistory.cs`
-- Signal type enum — `PickMeUp/PickMeUp.Model/Enums/InteractionSignalType.cs`
-- Table configuration, FKs, indexes, soft-delete filter — `PickMeUp/PickMeUp.Services/Database/PickMeUpConfiguration.cs` (`CreateConfiguration`, the `Entity<InteractionHistory>()` block)
-- Migration — `PickMeUp/PickMeUp.Services/Migrations/20260805175432_AddInteractionHistory.cs`
-- `DbSet` — `PickMeUp/PickMeUp.Services/Database/PickMeUpDbContext.cs` (`InteractionHistories`)
+Recording is deliberately non-fatal. `InteractionRecorder` wraps the write in a try/catch, and if it
+fails it logs the error and lets the original action stand. Losing a recommender signal must never
+cost a passenger their completed ride or their review.
 
-## 2. When signals are written
+A fresh database also arrives with a seeded history: past rides, reviews and the matching signal rows
+for passengers with deliberately different habits, including one with no history at all. Those rows
+have the same shape live use produces, so the recommender can be demonstrated on a clean install. No
+other mechanism writes to the table, and nothing is back-filled or synthesised at query time.
 
-Signals are written by the application **as passengers use it** — there is no batch job and nothing
-is reconstructed after the fact. Each write happens *after* the surrounding database transaction has
-committed, and a failure to write a signal is logged but never rolls the action back: a ride must not
-fail because a recommender signal could not be stored.
+**Source** — `PickMeUp.Services/Recommendations/InteractionRecorder.cs`,
+`PickMeUp.Services/Database/InteractionHistory.cs`
 
-| Signal | Written at | Source |
-| --- | --- | --- |
-| `Ordered` | a passenger places an order for a known company | `PickMeUp/PickMeUp.Services/OrderService.cs` → `CreateAsync` (line 51, hook at line 97) |
-| `Ordered` | a *general* order (no company chosen) is accepted, which is the moment a company is assigned to it | `PickMeUp/PickMeUp.Services/OrderService.cs` → `AcceptAsync` (line 106, hook at line 141) |
-| `Completed` | the driver completes the ride | `PickMeUp/PickMeUp.Services/OrderService.cs` → `CompleteAsync` (line 209, hook at line 239) |
-| `Reviewed` | the passenger reviews the company, `Value` = the rating given | `PickMeUp/PickMeUp.Services/ReviewService.cs` → `InsertAsync` (line 36, hook at line 93) |
+## 3. How we score a company
 
-A general order records its `Ordered` signal at acceptance rather than at creation, because until a
-driver accepts it there is no company for the signal to point at.
+We score every active company for the signed-in passenger. Ratings enter the formulas on a normalised
+scale, where a rating `r` out of 5 becomes `(r − 1) / 4`, so 1 star maps to 0 and 5 stars to 1. A
+company with no ratings is treated as neutral at `0.5` rather than as bad. Counts enter through a
+saturating function, `min(count / 5, 1)`, so the fifth ride with a company matters and the fiftieth
+does not distort the ranking.
 
-All four hooks go through one small writer so the behaviour is defined in a single place:
+### 3.1 The content-based part
 
-- `PickMeUp/PickMeUp.Services/Recommendations/IInteractionRecorder.cs`
-- `PickMeUp/PickMeUp.Services/Recommendations/InteractionRecorder.cs`
-- registered in `PickMeUp/PickMeUp.WebAPI/Program.cs`
-
-## 3. How the score is computed
-
-The recommender is a **hybrid**: a content-based part built from what *this* passenger has done, and
-a popularity part built from what *all* passengers have done, plus a small bonus for the city the
-passenger actually rides in.
-
-Both parts are aggregated **in the database** with `GROUP BY` over `InteractionHistory` — the whole
-ranking costs **two SQL statements** regardless of how many companies or signals exist.
-
-**Source** — `PickMeUp/PickMeUp.Services/Recommendations/RecommendationService.cs`
-(weights in `PickMeUp/PickMeUp.Model/Constants/RecommenderWeights.cs`).
-
-### 3.1 Content-based part
-
-For the signed-in passenger P and a company C, from P's own rows:
-
-| Component | Formula | Weight |
-| --- | --- | --- |
-| Usage | `min(completed rides with C / 5, 1)` | 0.50 |
-| Ordering | `min(orders placed with C / 5, 1)` | 0.20 |
-| Own rating | `(P's average rating of C − 1) / 4`, or `0.5` when P has never rated C | 0.30 |
+This part sees only the passenger's own signals for the company:
 
 ```
-content = 0.50 · usage + 0.20 · ordering + 0.30 · ownRating        → 0 … 1
+usage      = min(completedRidesByThisPassenger / 5, 1)
+loyalty    = min(ordersByThisPassenger / 5, 1)
+ownRating  = (thisPassengersAverageRating − 1) / 4      (0.5 when they have not rated it)
+
+content    = 0.50·usage + 0.20·loyalty + 0.30·ownRating
 ```
 
-Five rides is the saturation point: past that, more rides no longer raise the usage term, so a long
-history cannot drown out a better-rated alternative.
+Completed rides carry more weight than orders because a finished ride is stronger evidence of a good
+experience than a placed one, and the passenger's own rating carries more than raw ordering volume.
 
-### 3.2 Popularity part
+### 3.2 The popularity part
 
-For company C, across **all** passengers:
-
-| Component | Formula | Weight |
-| --- | --- | --- |
-| Ride share | `C's completed rides / the highest completed-ride count among all companies` | 0.50 |
-| Overall rating | `(C's average rating − 1) / 4`, or `0.5` when C has no reviews | 0.50 |
+This part is identical for every passenger and reflects the company's standing across the platform:
 
 ```
-popularity = 0.50 · rideShare + 0.50 · overallRating              → 0 … 1
+ridesShare = completedRidesOverall / completedRidesOfTheBusiestCompany
+rating     = (averageRatingOverall − 1) / 4             (0.5 when it has no reviews)
+
+popularity = 0.50·ridesShare + 0.50·rating
 ```
+
+Completed rides are measured against the busiest company rather than in absolute terms, which keeps
+the component meaningful whether the platform has ten rides or ten thousand.
 
 ### 3.3 City affinity
 
-The passenger's home city is **derived**, not stored: group the passenger's own signals by the city
-of the company each signal points at, and take the city with the most signals. Companies in that
-city get a flat bonus of **0.10**. A passenger with no signals has no derived city and no bonus.
-
-This is the honest version of the feature's "best in your city" wording. PickMeUp stores no home
-address or coordinates for a user, so proximity is not part of the score — the city a passenger
-actually rides in is inferred from their rides instead.
+We derive a home city rather than asking for one. Among the companies the passenger has signals for,
+we group by city, total each city's orders and completed rides, and take the strongest; ties break on
+the lower city id. A candidate company sitting in that city earns a flat bonus. A passenger with no
+signals has no derived home city, and no company receives the bonus.
 
 ### 3.4 The final score
 
 ```
-score = 0.65 · content + 0.35 · popularity + (0.10 if the company is in the derived home city)
+score = 0.65·content + 0.35·popularity + (0.10 if the company is in the home city)
 ```
 
-Results are sorted by score descending, then by overall completed rides, then by name. The response
-is paginated (5 per page by default, capped at 100).
+The 0.65 to 0.35 split favours the passenger's own history while leaving popularity enough weight to
+matter, which is also what carries a brand new passenger: with no personal signals, `usage` and
+`loyalty` are 0 and `ownRating` sits at the neutral 0.5, so the content part contributes a constant
+0.15 to every company and the ranking is decided entirely by popularity. The list is ordered by score
+descending, then by completed rides overall, then by company name, so equal scores still produce a
+stable order.
 
-### 3.5 Cold start
+**Source** — `PickMeUp.Services/Recommendations/RecommendationService.cs`,
+`PickMeUp.Model/Constants/RecommenderWeights.cs`
 
-A passenger with no signals gets a content score of `0.30 · 0.5 = 0.15` for *every* company — the
-same constant everywhere, so it cannot change the order. The ranking therefore collapses to pure
-popularity on its own, with no special-case branch, and the explanation says so: *"Popular with other
-passengers: 5 rides completed and rated 4.7 out of 5."*
+## 4. Explaining a recommendation
 
-### 3.6 Explanations
-
-Every recommendation carries a human-readable reason drawn from the same numbers that produced the
-score, strongest reason first:
+Every result carries an `Explanation` string drawn from the same numbers that produced its score. We
+pick the strongest true statement available, in this order:
 
 | Situation | Explanation |
 | --- | --- |
-| P completed rides with C and rated it | *"You completed 5 rides with them and rated them 4.7 out of 5."* |
-| P completed rides but never rated | *"You completed 2 rides with them."* |
-| P ordered but never completed | *"You have ordered from them 3 times before."* |
-| Untried company in the derived home city | *"Rated 4.5 out of 5 by other passengers in Sarajevo, where you ride most."* |
+| Completed rides with the company and rated it | *"You completed 5 rides with them and rated them 4.7 out of 5."* |
+| Completed rides but never rated it | *"You completed 2 rides with them."* |
+| Ordered but never completed a ride | *"You have ordered from them 3 times before."* |
+| Untried, in the home city, has ratings | *"Rated 4.5 out of 5 by other passengers in Sarajevo, where you ride most."* |
+| Untried, in the home city, no ratings yet | *"A company in Sarajevo, where you ride most, that you have not tried yet."* |
 | Passenger has no history at all | *"Popular with other passengers: 5 rides completed and rated 4.7 out of 5."* |
-| Untried company outside the home city | *"New to you, but rated 4.7 out of 5 across 5 rides."* |
+| Untried, outside the home city | *"New to you, but rated 4.7 out of 5 across 5 rides."* |
+| Untried and never reviewed | *"New to you and still waiting for its first reviews."* |
 
-The response also returns the raw counts behind the score — `yourOrders`, `yourCompletedRides`,
-`yourAverageRating`, `completedRidesOverall`, `averageRatingOverall`, `reviewCountOverall`,
-`contentScore`, `popularityScore`, `isInHomeCity` — so a client (or an examiner) can see exactly what
-drove the ranking.
+Alongside the sentence, each result returns the figures behind it — `yourOrders`,
+`yourCompletedRides`, `yourAverageRating`, `completedRidesOverall`, `averageRatingOverall`,
+`reviewCountOverall`, `contentScore`, `popularityScore` and `isInHomeCity` — so the ranking can be
+audited without reading the code. Ratings inside the sentences are rounded to one decimal for
+readability, while scoring uses the unrounded average.
 
-**Source** — `PickMeUp/PickMeUp.Model/Responses/RecommendationResponse.cs`
+## 5. A worked example
 
-## 4. Proof that the signals drive the score
-
-Worked example, taken from a running instance. `passenger3` starts with no history and is offered the
-companies in pure popularity order; `Bascarsija Taxi` is **last** at `0.2200`. The passenger then
+The following trace comes from a running instance. `passenger3` begins with no history, so the list
+is ranked on popularity alone and `Bascarsija Taxi` sits **last** at `0.2200`. The passenger then
 takes three rides with `Bascarsija Taxi` through the normal ordering flow and rates each one 5 stars.
-Nothing else changes.
+Nothing else on the platform changes.
 
 **Before**
 
@@ -172,96 +165,80 @@ Nothing else changes.
 4. Neretva Prevoz     0.2112  New to you, but rated 2 out of 5 across 2 rides.
 ```
 
-The three rides wrote nine rows (3 × `Ordered`, `Completed`, `Reviewed`), and those rows alone
-account for the change. Recomputing the top score by hand from them:
+Those three rides wrote nine rows — three each of `Ordered`, `Completed` and `Reviewed` — and they
+alone account for the movement. Recomputing the winning score by hand:
 
 ```
-usage      = min(3/5, 1)            = 0.6
-ordering   = min(3/5, 1)            = 0.6
-ownRating  = (5 − 1) / 4            = 1.0
-content    = 0.50·0.6 + 0.20·0.6 + 0.30·1.0        = 0.7200
+usage      = min(3/5, 1)                            = 0.6
+loyalty    = min(3/5, 1)                            = 0.6
+ownRating  = (5 − 1) / 4                            = 1.0
+content    = 0.50·0.6 + 0.20·0.6 + 0.30·1.0         = 0.7200
 
-rideShare  = 4 completed / 5 (the highest, Mostar Taxi)  = 0.8
-rating     = (4.5 − 1) / 4                              = 0.875
-popularity = 0.50·0.8 + 0.50·0.875                = 0.8375
+ridesShare = 4 completed / 5 (Mostar Taxi, busiest) = 0.8
+rating     = (4.5 − 1) / 4                          = 0.875
+popularity = 0.50·0.8 + 0.50·0.875                  = 0.8375
 
-score      = 0.65·0.7200 + 0.35·0.8375 + 0.10     = 0.8611
+score      = 0.65·0.7200 + 0.35·0.8375 + 0.10       = 0.8611
 ```
 
-which is exactly what `GET /Recommendations` returns. Note that `Sarajevo Express` also moved up:
-the new signals gave the passenger a derived home city of Sarajevo, so it now earns the 0.10 bonus.
+which is what the endpoint returns. Three details in the trace are worth drawing out. The company's
+own average rose from 3 to 4.5 because the passenger's three 5 star reviews joined the single
+existing 3 star one, so the passenger's ratings move both halves of the score. `Sarajevo Express`
+climbed without gaining a single signal of its own: the new history gave the passenger a derived home
+city of Sarajevo, and the 0.10 bonus is the whole of its `0.3906 → 0.4906` gain. And `Mostar Taxi`
+did not move at all, since it gained no signals and is not in the home city.
 
-## 5. The endpoint
+## 6. Where it lives and how it runs
 
 ```
 GET /Recommendations?Page=1&PageSize=5&IncludeTotalCount=true
 ```
 
-Returns the ranked companies for the **signed-in passenger**, newest scoring first, as the standard
-`PageResult<T>`. The endpoint is restricted to the `Passenger` role and takes the passenger from the
-JWT — there is no `userId` parameter, so one passenger cannot ask for another's recommendations.
+The endpoint is restricted to the passenger role and takes the passenger from the JWT. There is no
+`userId` parameter, so nobody can request another passenger's recommendations. Results come back as
+our standard `PageResult<T>`, five per page by default and capped at 100.
 
-**Source** — `PickMeUp/PickMeUp.WebAPI/Controllers/RecommendationsController.cs`
+Inside `RecommendationService` the work happens in two queries. The first aggregates the popularity
+figures with a `GROUP BY` over `InteractionHistory` and left joins them onto the active companies, so
+a company with no signals yet still appears with zeroes instead of dropping out of the list. The
+second aggregates the same table for the signed-in passenger alone. Both aggregations run in
+PostgreSQL rather than in application memory, and neither loads individual signal rows; only the
+per-company totals come back. We then apply the weights from section 3 to those totals, sort, and
+page the result.
 
-## 6. Where the data comes from — an honest note
+**Source** — `PickMeUp.WebAPI/Controllers/RecommendationsController.cs`,
+`PickMeUp.Services/Recommendations/RecommendationService.cs`
 
-Two things fill `InteractionHistory`, and both are real:
+## 7. The screen
 
-1. **The running application.** Ordering, completing and reviewing a ride each write a signal at the
-   moment they happen, through the hooks listed in section 2. This is the mechanism that would
-   accumulate signals in production.
-2. **The seed.** A clean `docker compose up` pre-populates historical rides, reviews and their
-   matching signal rows for three passengers with deliberately different habits — a Mostar regular, a
-   Sarajevo regular, and a passenger with no history at all — so the recommender can be demonstrated
-   on a fresh database without anyone first clicking through the API to manufacture a history. The
-   seeded rows are exactly the rows live use would have produced: an order in the seed has its
-   matching `Ordered` and `Completed` signals, and a seeded review has its `Reviewed` signal carrying
-   the same rating.
+Passengers reach the recommender from the mobile drawer, under **Recommended for you**.
 
-There is no third mechanism. Nothing is recomputed, back-filled or synthesised at query time, and
-every signal in the table — seeded or live — is read by the scoring query described in section 3.
+The screen opens with the heading *"Picked for you"* and a line of orientation: *"Ranked from the
+rides you have taken and how other passengers rate each company. Every card says why it is here."*
+Below it the ranked companies appear as cards, strongest first, and the list can be pulled down to
+refresh. When there is nothing to show, the screen says *"No companies to recommend yet."* rather
+than presenting an empty page.
 
-**Source** — `PickMeUp/PickMeUp.Services/Database/PickMeUpSeed.cs`
-(`SeedOrders`, `SeedReviews`, `SeedInteractionHistories`)
+Each card carries a numbered rank badge, the company logo, the company name with its city beneath,
+and a row of stars showing the average rating and the number of reviews behind it. The rank badge is
+the visible form of the score: passengers see the position, never the number that produced it.
 
-## 7. Screenshots from the running app
+Beneath that sits the explanation panel, which is the part that makes a recommendation answerable.
+The client distinguishes the two kinds of reasoning by checking whether the passenger has any orders
+or completed rides with that company, and styles the panel accordingly:
 
-The passenger reaches the recommender from the mobile drawer, under **Recommended for you**. The
-screen is `PickMeUp/UI/pickmeup_mobile/lib/screens/passenger/recommended_screen.dart`, and it renders
-the top five rows of `GET /Recommendations` exactly as §5 returns them.
+* **Why you see this** — cyan, with a history icon, when the recommendation rests on the passenger's
+  own record: *"You completed 5 rides with them and rated them 4.7 out of 5."*
+* **Why this is here** — neutral, with a group icon, when the passenger has no record with that
+  company and the reason falls back to other passengers or to the home city.
 
-**What the passenger sees.** The screen opens with the heading *"Picked for you"* and a one-line
-subtitle: *"Ranked from the rides you have taken and how other passengers rate each company. Every
-card says why it is here."* Below it sits a ranked list of company cards, strongest first, and the
-list can be pulled down to refresh. If the API returns nothing, the screen says *"No companies to
-recommend yet."* rather than showing an empty page.
+A passenger with no history sees the same screen with every card headed **Why this is here**, because
+the content-based part has nothing to work with and popularity carries the ranking on its own. The
+screen therefore never looks broken for a new account; it degrades into a plain popularity list that
+still explains itself.
 
-Each card carries, from left to right, a numbered rank badge (1 to 5) that makes the ordering
-explicit, the company logo, the company name with its city underneath, and a row of rating stars
-showing the average score and the number of reviews behind it. A chevron on the right opens that
-company. The rank badge is the visible expression of the score from §3.4: the passenger never sees
-the number, only the position it produced.
+> Captured screenshots belong at `screenshots/recommender-passenger1.png` for a passenger with ride
+> history, showing both panel styles, and `screenshots/recommender-coldstart.png` for a passenger
+> with none, showing the popularity-only ranking.
 
-**The explanation panel.** Beneath the company row, every card carries a tinted panel holding the
-`explanation` string from §3.6, and this panel is the part that satisfies NFR-18. Its heading changes
-with the `isPersonal` flag returned by the API, so the passenger can tell at a glance which of the two
-kinds of reasoning put a company in front of them:
-
-* **"Why you see this"** — tinted cyan and marked with a history icon. The recommendation came from
-  this passenger's own record with that company, so the text reads like *"You completed 5 rides with
-  them and rated them 4.7 out of 5."*
-* **"Why this is here"** — tinted neutral and marked with a group icon. The passenger has no history
-  with that company, so the reason falls back to other passengers or to the home city, as in *"Rated
-  4.5 out of 5 by other passengers in Sarajevo, where you ride most."*
-
-**Cold start.** A passenger with no completed rides sees the same screen with every card headed
-*"Why this is here"*, because §3.5 gives the content-based part nothing to work with and the ranking
-is carried by popularity alone. The wording follows suit: *"Popular with other passengers: 5 rides
-completed and rated 4.7 out of 5."* The screen therefore never looks broken or empty for a new
-account; it degrades to a plain popularity ranking that still explains itself.
-
-> **Image capture.** Captured screenshots belong at `screenshots/recommender-passenger1.png` (a
-> passenger with ride history, showing both panel types) and `screenshots/recommender-coldstart.png`
-> (a passenger with no history, showing the popularity-only ranking). They are to be taken on a
-> device and committed alongside this document; the description above is written from the screen as
-> built and is accurate without them.
+**Source** — `PickMeUp/UI/pickmeup_mobile/lib/screens/passenger/recommended_screen.dart`
