@@ -227,7 +227,7 @@ namespace PickMeUp.Services
             return await LoadResponseAsync(order.Id);
         }
 
-        public async Task<OrderResponse> CompleteAsync(int id, OrderCompleteRequest request)
+        public async Task<OrderResponse> CompleteAsync(int id)
         {
             var driver = await RequireEligibleDriverAsync();
             var order = await LoadForTransitionAsync(id);

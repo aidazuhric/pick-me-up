@@ -9,6 +9,5 @@ namespace PickMeUp.Model.Requests
         public double? DestinationLat { get; set; }
         public double? DestinationLng { get; set; }
         public string? DestinationAddress { get; set; }
-        public decimal? DistanceKm { get; set; }
     }
 }

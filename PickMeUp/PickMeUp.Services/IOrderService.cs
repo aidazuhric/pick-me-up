@@ -14,7 +14,7 @@ namespace PickMeUp.Services
 
         Task<OrderResponse> PickupAsync(int id);
 
-        Task<OrderResponse> CompleteAsync(int id, OrderCompleteRequest request);
+        Task<OrderResponse> CompleteAsync(int id);
 
         Task<OrderResponse> CancelAsync(int id, OrderCancelRequest request);
 

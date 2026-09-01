@@ -114,6 +114,8 @@ namespace PickMeUp.WebAPI.Services.AccessManager
 
         private async Task<UserLoginResponse> IssueSessionAsync(UserResponse user)
         {
+            await _userService.MarkSignedInAsync(user.Id);
+
             var accessToken = GenerateToken(user);
             var refreshTokenValue = GenerateRefreshToken();
 

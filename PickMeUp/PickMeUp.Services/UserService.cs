@@ -234,6 +234,11 @@ namespace PickMeUp.Services
             return _mapper.Map<UserResponse>(entity);
         }
 
+        public Task MarkSignedInAsync(int userId) =>
+            _dbContext.Users
+                .Where(u => u.Id == userId)
+                .ExecuteUpdateAsync(setters => setters.SetProperty(u => u.LastLoginAt, DateTime.UtcNow));
+
         public async Task<UserSensitiveResponse?> GetByUsernameAsync(string username)
         {
             var user = await _dbContext.Users

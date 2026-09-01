@@ -36,10 +36,6 @@ namespace PickMeUp.Services.Validators
 
             RuleFor(x => x.DestinationAddress).MaximumLength(250)
                 .WithMessage("Destination address must be at most 250 characters.");
-
-            RuleFor(x => x.DistanceKm!.Value).GreaterThanOrEqualTo(0)
-                .When(x => x.DistanceKm.HasValue)
-                .WithMessage("Distance cannot be negative.");
         }
     }
 }

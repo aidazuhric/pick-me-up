@@ -74,9 +74,9 @@ public class OrdersController : BaseReadController<OrderResponse, OrderSearch, I
     /// </summary>
     [Authorization(Roles.Driver)]
     [HttpPost("{id}/Complete")]
-    public async Task<ActionResult<OrderResponse>> Complete(int id, [FromBody] OrderCompleteRequest? request)
+    public async Task<ActionResult<OrderResponse>> Complete(int id)
     {
-        return await _service.CompleteAsync(id, request ?? new OrderCompleteRequest());
+        return await _service.CompleteAsync(id);
     }
 
     /// <summary>

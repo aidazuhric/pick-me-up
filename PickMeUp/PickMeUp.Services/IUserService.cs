@@ -9,6 +9,8 @@ namespace PickMeUp.Services
     {
         Task<UserSensitiveResponse?> GetByUsernameAsync(string username);
         Task<UserResponse?> GetWithRoleByIdAsync(int id);
+
+        Task MarkSignedInAsync(int userId);
         Task ChangePasswordAsync(UserPasswordChangeRequest request);
 
         Task<UserResponse> GetOwnAsync();
