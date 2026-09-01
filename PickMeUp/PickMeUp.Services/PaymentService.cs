@@ -86,10 +86,24 @@ namespace PickMeUp.Services
 
                 var open = await _stripeGateway.FindOpenIntentAsync(existing.StripePaymentIntentId!);
 
-                if (open == null)
+                if (open != null)
                 {
-                    throw new BusinessException("A payment is already in progress for this ride.");
+                    return new PaymentIntentResponse
+                    {
+                        PaymentId = existing.Id,
+                        OrderId = order.Id,
+                        AmountCharged = existing.AmountCharged,
+                        Currency = existing.Currency,
+                        ClientSecret = open.ClientSecret
+                    };
                 }
+
+                var replacement = await _stripeGateway.CreateIntentAsync(amount, existing.Currency, order.Id);
+
+                existing.AmountCharged = amount;
+                existing.StripePaymentIntentId = replacement.PaymentIntentId;
+                existing.UpdatedAt = DateTime.UtcNow;
+                await _dbContext.SaveChangesAsync();
 
                 return new PaymentIntentResponse
                 {
@@ -97,7 +111,7 @@ namespace PickMeUp.Services
                     OrderId = order.Id,
                     AmountCharged = existing.AmountCharged,
                     Currency = existing.Currency,
-                    ClientSecret = open.ClientSecret
+                    ClientSecret = replacement.ClientSecret
                 };
             }
 
