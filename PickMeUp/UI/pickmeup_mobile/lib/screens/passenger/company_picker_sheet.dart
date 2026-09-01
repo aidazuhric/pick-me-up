@@ -16,11 +16,16 @@ class CompanyChoice {
 }
 
 class CompanyPickerSheet extends StatefulWidget {
-  const CompanyPickerSheet({super.key, required this.selectedId});
+  const CompanyPickerSheet({super.key, required this.selectedId, this.cityId});
 
   final int? selectedId;
+  final int? cityId;
 
-  static Future<CompanyChoice?> show(BuildContext context, {int? selectedId}) {
+  static Future<CompanyChoice?> show(
+    BuildContext context, {
+    int? selectedId,
+    int? cityId,
+  }) {
     return showModalBottomSheet<CompanyChoice>(
       context: context,
       isScrollControlled: true,
@@ -30,7 +35,7 @@ class CompanyPickerSheet extends StatefulWidget {
           top: Radius.circular(AppSpacing.cardRadius),
         ),
       ),
-      builder: (_) => CompanyPickerSheet(selectedId: selectedId),
+      builder: (_) => CompanyPickerSheet(selectedId: selectedId, cityId: cityId),
     );
   }
 
@@ -54,7 +59,13 @@ class _CompanyPickerSheetState extends State<CompanyPickerSheet> {
   Future<void> _load() async {
     try {
       final result = await _provider.get(
-        filter: {'IsActive': true, 'Page': 1, 'PageSize': 50, 'SortBy': 'Name'},
+        filter: {
+          'IsActive': true,
+          'Page': 1,
+          'PageSize': 50,
+          'SortBy': 'Name',
+          if (widget.cityId != null) 'CityId': widget.cityId,
+        },
       );
 
       if (!mounted) return;

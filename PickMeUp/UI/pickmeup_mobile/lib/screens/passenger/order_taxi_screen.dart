@@ -7,6 +7,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../models/order.dart';
 import '../../models/taxi_company.dart';
 import '../../providers/order_provider.dart';
+import '../../services/city_locator.dart';
 import '../../services/geocoding_service.dart';
 import '../../utils/api_error_handler.dart';
 import '../../utils/formats.dart';
@@ -117,6 +118,7 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
       if (target == _TripPoint.pickup) {
         _pickup = point;
         _pickupAddress = null;
+        _rememberPickupCity(point);
       } else {
         _destination = point;
         _destinationAddress = null;
@@ -165,6 +167,7 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
       if (target == _TripPoint.pickup) {
         _pickup = place.point;
         _pickupAddress = place.label;
+        _rememberPickupCity(place.point);
       } else {
         _destination = place.point;
         _destinationAddress = place.label;
@@ -190,10 +193,26 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
     });
   }
 
+  int? _cityId;
+
+  void _rememberPickupCity(LatLng point) {
+    CityLocator.resolveFor(point.latitude, point.longitude).then((city) {
+      if (!mounted || city?.id == null) return;
+
+      if (city!.id != _cityId) {
+        setState(() {
+          _cityId = city.id;
+          _company = null;
+        });
+      }
+    });
+  }
+
   Future<void> _chooseCompany() async {
     final choice = await CompanyPickerSheet.show(
       context,
       selectedId: _company?.id,
+      cityId: _cityId,
     );
 
     if (choice == null || !mounted) {
@@ -221,7 +240,6 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
         'destinationLat': _destination?.latitude,
         'destinationLng': _destination?.longitude,
         'destinationAddress': _destination == null ? null : _destinationAddress,
-        'distanceKm': _distanceKm,
       });
 
       if (!mounted) return;

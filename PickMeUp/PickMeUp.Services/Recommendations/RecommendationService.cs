@@ -41,8 +41,11 @@ namespace PickMeUp.Services.Recommendations
                     RatingTotal = g.Sum(i => i.SignalTypeId == reviewed ? i.Value : 0m)
                 });
 
+            var cityId = search?.CityId;
+
             var candidates = await (from company in _dbContext.TaxiCompanies.AsNoTracking()
                                     where company.IsActive
+                                       && (cityId == null || company.CityId == cityId)
                                     join signals in popularity
                                         on company.Id equals signals.TaxiCompanyId into matches
                                     from signals in matches.DefaultIfEmpty()

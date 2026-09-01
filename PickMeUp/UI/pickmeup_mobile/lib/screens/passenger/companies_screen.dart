@@ -6,6 +6,7 @@ import '../../models/rating_summary.dart';
 import '../../models/taxi_company.dart';
 import '../../providers/review_provider.dart';
 import '../../providers/taxi_company_provider.dart';
+import '../../services/city_locator.dart';
 import '../../utils/api_client_exception.dart';
 import '../../utils/formats.dart';
 import '../../widgets/api_image.dart';
@@ -54,6 +55,8 @@ class _CompaniesScreenState extends State<CompaniesScreen> {
     final name = _searchController.text.trim();
 
     try {
+      final city = await CityLocator.resolveDefault();
+
       final result = await _companies.get(
         filter: {
           'IsActive': true,
@@ -62,6 +65,7 @@ class _CompaniesScreenState extends State<CompaniesScreen> {
           'SortBy': 'Name',
           'IncludeTotalCount': true,
           if (name.isNotEmpty) 'Name': name,
+          if (city?.id != null) 'CityId': city!.id,
         },
       );
 
@@ -70,6 +74,7 @@ class _CompaniesScreenState extends State<CompaniesScreen> {
       if (!mounted) return;
 
       setState(() {
+        _cityName = city?.name;
         _items = result.items ?? const <TaxiCompany>[];
         _totalCount = result.totalCount ?? 0;
         _ratings = {
@@ -92,6 +97,8 @@ class _CompaniesScreenState extends State<CompaniesScreen> {
       });
     }
   }
+
+  String? _cityName;
 
   void _search() {
     setState(() => _page = 1);
@@ -137,6 +144,27 @@ class _CompaniesScreenState extends State<CompaniesScreen> {
             onSubmitted: (_) => _search(),
           ),
         ),
+        if ((_cityName ?? '').isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.screenPadding,
+              0,
+              AppSpacing.screenPadding,
+              AppSpacing.sm,
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.place_outlined, size: 16),
+                const SizedBox(width: AppSpacing.xs),
+                Expanded(
+                  child: Text(
+                    'Companies driving in $_cityName',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+              ],
+            ),
+          ),
         Expanded(child: _buildList()),
         if (!_isLoading && _error == null && _pageCount > 1) _buildPager(),
       ],

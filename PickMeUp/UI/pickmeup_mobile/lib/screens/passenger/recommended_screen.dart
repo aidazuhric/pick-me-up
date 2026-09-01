@@ -8,6 +8,7 @@ import '../../models/taxi_company.dart';
 import '../../providers/recommendation_provider.dart';
 import '../../providers/review_provider.dart';
 import '../../providers/taxi_company_provider.dart';
+import '../../services/city_locator.dart';
 import '../../utils/api_client_exception.dart';
 import '../../widgets/api_image.dart';
 import '../../widgets/rating_stars.dart';
@@ -44,12 +45,24 @@ class _RecommendedScreenState extends State<RecommendedScreen> {
     });
 
     try {
+      final city = await CityLocator.resolveDefault();
+
       final result = await _recommendations.get(
-        filter: {'Page': 1, 'PageSize': 5},
+        filter: {
+          'Page': 1,
+          'PageSize': 5,
+          if (city?.id != null) 'CityId': city!.id,
+        },
       );
 
       final companies = await _companies.get(
-        filter: {'IsActive': true, 'Page': 1, 'PageSize': 100, 'SortBy': 'Name'},
+        filter: {
+          'IsActive': true,
+          'Page': 1,
+          'PageSize': 100,
+          'SortBy': 'Name',
+          if (city?.id != null) 'CityId': city!.id,
+        },
       );
 
       final averages = await _reviews.readCompanyAverages();
