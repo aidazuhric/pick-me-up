@@ -182,13 +182,28 @@ namespace PickMeUp.Services
                 throw new BusinessException($"Username '{request.Username}' is already in use.");
             }
 
+            var passengerRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == Roles.Passenger)
+                ?? throw new BusinessException($"Role '{Roles.Passenger}' is missing from the database.");
+
             var entity = MapInsertRequestToEntity(request);
             entity.CreatedAt = DateTime.UtcNow;
 
             _dbContext.Users.Add(entity);
             await _dbContext.SaveChangesAsync();
 
-            return _mapper.Map<UserResponse>(entity);
+            _dbContext.UserRoles.Add(new UserRole
+            {
+                UserId = entity.Id,
+                RoleId = passengerRole.Id,
+                DateAssigned = DateTime.UtcNow
+            });
+
+            await _dbContext.SaveChangesAsync();
+
+            var response = _mapper.Map<UserResponse>(entity);
+            response.Role = passengerRole.Name;
+
+            return response;
         }
 
         public override async Task<UserResponse> UpdateAsync(int id, UserUpdateRequest request)
