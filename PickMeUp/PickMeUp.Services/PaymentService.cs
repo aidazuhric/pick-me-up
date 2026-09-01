@@ -255,7 +255,7 @@ namespace PickMeUp.Services
                 .Where(o => o.PassengerId == userId)
                 .Where(o => o.OrderStatusId == (int)OrderStatusEnum.Completed)
                 .Where(o => o.Fare != null)
-                .Where(o => !_dbContext.Payments.Any(p => p.OrderId == o.Id && (p.IsPaid || p.StripePaymentIntentId != null)))
+                .Where(o => !_dbContext.Payments.Any(p => p.OrderId == o.Id && (p.IsPaid || p.PaymentStatusId != (int)PaymentStatusEnum.Unpaid)))
                 .OrderByDescending(o => o.CompletedAt)
                 .Select(o => new PayableOrderResponse
                 {
