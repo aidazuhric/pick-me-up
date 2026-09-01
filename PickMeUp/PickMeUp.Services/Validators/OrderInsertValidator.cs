@@ -1,3 +1,4 @@
+using System;
 using PickMeUp.Model.Requests;
 using FluentValidation;
 
@@ -5,6 +6,8 @@ namespace PickMeUp.Services.Validators
 {
     public class OrderInsertValidator : AbstractValidator<OrderInsertRequest>
     {
+        private const double CoordinateEpsilon = 0.0001;
+
         public OrderInsertValidator()
         {
             RuleFor(x => x.PickupAddress).NotEmpty()
@@ -17,6 +20,11 @@ namespace PickMeUp.Services.Validators
 
             RuleFor(x => x.PickupLng).InclusiveBetween(-180, 180)
                 .WithMessage("Pick-up longitude must be between -180 and 180.");
+
+            RuleFor(x => x)
+                .Must(x => Math.Abs(x.PickupLat) > CoordinateEpsilon || Math.Abs(x.PickupLng) > CoordinateEpsilon)
+                .WithName(nameof(OrderInsertRequest.PickupLat))
+                .WithMessage("Pick your pick-up point on the map first.");
 
             RuleFor(x => x.DestinationLat!.Value).InclusiveBetween(-90, 90)
                 .When(x => x.DestinationLat.HasValue)

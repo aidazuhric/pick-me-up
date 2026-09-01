@@ -39,11 +39,11 @@ namespace PickMeUp.Services.Database
         private void SeedCities(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<City>().HasData(
-                new { Id = 1, Name = "Mostar", PostalCode = (string?)"88000", IsActive = true },
-                new { Id = 2, Name = "Sarajevo", PostalCode = (string?)"71000", IsActive = true },
-                new { Id = 3, Name = "Banja Luka", PostalCode = (string?)"78000", IsActive = true },
-                new { Id = 4, Name = "Tuzla", PostalCode = (string?)"75000", IsActive = true },
-                new { Id = 5, Name = "Zenica", PostalCode = (string?)"72000", IsActive = true }
+                new { Id = 1, Name = "Mostar", PostalCode = (string?)"88000", IsActive = true, Latitude = 43.3438, Longitude = 17.8078 },
+                new { Id = 2, Name = "Sarajevo", PostalCode = (string?)"71000", IsActive = true, Latitude = 43.8563, Longitude = 18.4131 },
+                new { Id = 3, Name = "Banja Luka", PostalCode = (string?)"78000", IsActive = true, Latitude = 44.7722, Longitude = 17.1910 },
+                new { Id = 4, Name = "Tuzla", PostalCode = (string?)"75000", IsActive = true, Latitude = 44.5384, Longitude = 18.6739 },
+                new { Id = 5, Name = "Zenica", PostalCode = (string?)"72000", IsActive = true, Latitude = 44.2039, Longitude = 17.9066 }
             );
         }
 

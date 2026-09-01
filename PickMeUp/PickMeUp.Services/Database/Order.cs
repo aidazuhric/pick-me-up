@@ -11,6 +11,10 @@ namespace PickMeUp.Services.Database
 
         public User Passenger { get; set; } = null!;
 
+        public int? CityId { get; set; }
+
+        public City? City { get; set; }
+
         public int? TaxiCompanyId { get; set; }
 
         public TaxiCompany? TaxiCompany { get; set; }

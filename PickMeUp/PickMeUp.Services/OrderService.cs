@@ -54,20 +54,30 @@ namespace PickMeUp.Services
 
             var userId = RequireUserId();
 
+            var cityId = await ResolveNearestCityIdAsync(request.PickupLat, request.PickupLng);
+
             if (request.TaxiCompanyId.HasValue)
             {
-                var exists = await _dbContext.TaxiCompanies
-                    .AnyAsync(t => t.Id == request.TaxiCompanyId.Value && t.IsActive);
+                var company = await _dbContext.TaxiCompanies
+                    .Where(t => t.Id == request.TaxiCompanyId.Value && t.IsActive)
+                    .Select(t => new { t.Id, t.CityId })
+                    .FirstOrDefaultAsync();
 
-                if (!exists)
+                if (company == null)
                 {
                     throw new BusinessException("The selected taxi company is not available.");
+                }
+
+                if (cityId.HasValue && company.CityId != cityId.Value)
+                {
+                    throw new BusinessException("This company does not operate in the pickup city.");
                 }
             }
 
             var order = new Order
             {
                 PassengerId = userId,
+                CityId = cityId,
                 TaxiCompanyId = request.TaxiCompanyId,
                 PickupLat = request.PickupLat,
                 PickupLng = request.PickupLng,
@@ -75,12 +85,11 @@ namespace PickMeUp.Services
                 DestinationLat = request.DestinationLat,
                 DestinationLng = request.DestinationLng,
                 DestinationAddress = request.DestinationAddress,
-                DistanceKm = request.DistanceKm.HasValue
-                    ? _fareCalculator.RoundDistance(request.DistanceKm.Value)
-                    : null,
                 OrderStatusId = (int)OrderStatusEnum.Pending,
                 CreatedAt = DateTime.UtcNow
             };
+
+            order.DistanceKm = DeriveDistanceKm(order);
 
             await using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
@@ -125,12 +134,24 @@ namespace PickMeUp.Services
 
             var from = CurrentStatus(order);
             var companyWasUnassigned = order.TaxiCompanyId == null;
+            var acceptedAt = DateTime.UtcNow;
 
-            order.DriverId = driver.Id;
-            order.CarId = carId;
-            order.TaxiCompanyId ??= driver.TaxiCompanyId;
-            order.AcceptedAt = DateTime.UtcNow;
-            ApplyStatus(order, target);
+            var claimed = await _dbContext.Orders
+                .Where(o => o.Id == order.Id
+                    && o.OrderStatusId == (int)OrderStatusEnum.Pending
+                    && o.DriverId == null)
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(o => o.DriverId, driver.Id)
+                    .SetProperty(o => o.CarId, carId)
+                    .SetProperty(o => o.TaxiCompanyId, o => o.TaxiCompanyId ?? driver.TaxiCompanyId)
+                    .SetProperty(o => o.AcceptedAt, acceptedAt)
+                    .SetProperty(o => o.OrderStatusId, (int)target));
+
+            if (claimed == 0)
+            {
+                await transaction.RollbackAsync();
+                throw new BusinessException("This order has already been accepted by a driver.");
+            }
 
             await RecordHistoryAsync(order.Id, from, target, driver.UserId, "Accepted by driver");
             await _dbContext.SaveChangesAsync();
@@ -139,7 +160,7 @@ namespace PickMeUp.Services
             if (companyWasUnassigned)
             {
                 await _interactions.RecordAsync(
-                    order.PassengerId, order.TaxiCompanyId!.Value, InteractionSignalType.Ordered, 1m, order.Id);
+                    order.PassengerId, driver.TaxiCompanyId, InteractionSignalType.Ordered, 1m, order.Id);
             }
 
             await _dispatcher.OrderStatusChangedAsync(order.Id, from.ToString(), target.ToString());
@@ -219,11 +240,7 @@ namespace PickMeUp.Services
 
             await using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
-            if (request.DistanceKm.HasValue)
-            {
-                order.DistanceKm = _fareCalculator.RoundDistance(request.DistanceKm.Value);
-            }
-
+            order.DistanceKm = DeriveDistanceKm(order);
             order.Fare = await ComputeFareAsync(order);
             order.CompletedAt = DateTime.UtcNow;
             ApplyStatus(order, target);
@@ -374,15 +391,17 @@ namespace PickMeUp.Services
             {
                 var driverId = scope.DriverId.Value;
                 var companyId = scope.DriverCompanyId!.Value;
+                var cityId = scope.DriverCompanyCityId;
 
                 if (search?.AvailableForMe == true)
                 {
-                    return QueryAvailableFor(query, driverId, companyId);
+                    return QueryAvailableFor(query, driverId, companyId, cityId);
                 }
 
                 return query.Where(o => o.DriverId == driverId
                     || (o.OrderStatusId == (int)OrderStatusEnum.Pending
                         && (o.TaxiCompanyId == null || o.TaxiCompanyId == companyId)
+                        && (o.CityId == null || o.CityId == cityId)
                         && !o.Rejections.Any(r => r.DriverId == driverId)));
             }
 
@@ -394,13 +413,14 @@ namespace PickMeUp.Services
             return query.Where(o => false);
         }
 
-        private IQueryable<Order> QueryAvailableFor(IQueryable<Order> query, int driverId, int companyId)
+        private IQueryable<Order> QueryAvailableFor(IQueryable<Order> query, int driverId, int companyId, int? cityId)
         {
             var eligibleDriverIds = _shiftService.QueryDispatchEligibleDriverIds();
 
             return query.Where(o => o.OrderStatusId == (int)OrderStatusEnum.Pending
                 && o.DriverId == null
                 && (o.TaxiCompanyId == null || o.TaxiCompanyId == companyId)
+                && (o.CityId == null || o.CityId == cityId)
                 && !o.Rejections.Any(r => r.DriverId == driverId)
                 && eligibleDriverIds.Contains(driverId));
         }
@@ -523,6 +543,37 @@ namespace PickMeUp.Services
             }
         }
 
+        private async Task<int?> ResolveNearestCityIdAsync(double latitude, double longitude)
+        {
+            var cities = await _dbContext.Cities
+                .Where(c => c.IsActive)
+                .Select(c => new { c.Id, c.Latitude, c.Longitude })
+                .ToListAsync();
+
+            if (cities.Count == 0)
+            {
+                return null;
+            }
+
+            return cities
+                .OrderBy(c => GeoDistance.KilometresBetween(latitude, longitude, c.Latitude, c.Longitude))
+                .First()
+                .Id;
+        }
+
+        private decimal? DeriveDistanceKm(Order order)
+        {
+            if (!order.DestinationLat.HasValue || !order.DestinationLng.HasValue)
+            {
+                return null;
+            }
+
+            var kilometres = GeoDistance.KilometresBetween(
+                order.PickupLat, order.PickupLng, order.DestinationLat.Value, order.DestinationLng.Value);
+
+            return _fareCalculator.RoundDistance((decimal)kilometres);
+        }
+
         private async Task<Order> LoadForTransitionAsync(int id) =>
             await _dbContext.Orders
                 .Include(o => o.Rejections)
@@ -585,13 +636,14 @@ namespace PickMeUp.Services
             {
                 var driver = await _dbContext.Drivers
                     .Where(d => d.UserId == userId.Value && d.ResignedAt == null)
-                    .Select(d => new { d.Id, d.TaxiCompanyId })
+                    .Select(d => new { d.Id, d.TaxiCompanyId, CityId = (int?)d.TaxiCompany.CityId })
                     .FirstOrDefaultAsync();
 
                 if (driver != null)
                 {
                     scope.DriverId = driver.Id;
                     scope.DriverCompanyId = driver.TaxiCompanyId;
+                    scope.DriverCompanyCityId = driver.CityId;
                 }
                 else
                 {
@@ -633,6 +685,7 @@ namespace PickMeUp.Services
             public int? PassengerUserId { get; set; }
             public int? DriverId { get; set; }
             public int? DriverCompanyId { get; set; }
+            public int? DriverCompanyCityId { get; set; }
             public int? CompanyId { get; set; }
         }
     }

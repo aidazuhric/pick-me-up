@@ -287,6 +287,12 @@ namespace PickMeUp.Services.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
+                    b.Property<double>("Latitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("double precision");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -308,6 +314,8 @@ namespace PickMeUp.Services.Migrations
                         {
                             Id = 1,
                             IsActive = true,
+                            Latitude = 43.343800000000002,
+                            Longitude = 17.8078,
                             Name = "Mostar",
                             PostalCode = "88000"
                         },
@@ -315,6 +323,8 @@ namespace PickMeUp.Services.Migrations
                         {
                             Id = 2,
                             IsActive = true,
+                            Latitude = 43.856299999999997,
+                            Longitude = 18.4131,
                             Name = "Sarajevo",
                             PostalCode = "71000"
                         },
@@ -322,6 +332,8 @@ namespace PickMeUp.Services.Migrations
                         {
                             Id = 3,
                             IsActive = true,
+                            Latitude = 44.772199999999998,
+                            Longitude = 17.190999999999999,
                             Name = "Banja Luka",
                             PostalCode = "78000"
                         },
@@ -329,6 +341,8 @@ namespace PickMeUp.Services.Migrations
                         {
                             Id = 4,
                             IsActive = true,
+                            Latitude = 44.538400000000003,
+                            Longitude = 18.6739,
                             Name = "Tuzla",
                             PostalCode = "75000"
                         },
@@ -336,6 +350,8 @@ namespace PickMeUp.Services.Migrations
                         {
                             Id = 5,
                             IsActive = true,
+                            Latitude = 44.203899999999997,
+                            Longitude = 17.906600000000001,
                             Name = "Zenica",
                             PostalCode = "72000"
                         });
@@ -1000,6 +1016,9 @@ namespace PickMeUp.Services.Migrations
                     b.Property<int?>("CarId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("CityId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime?>("CompletedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -1062,6 +1081,8 @@ namespace PickMeUp.Services.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CarId");
+
+                    b.HasIndex("CityId");
 
                     b.HasIndex("DriverId");
 
@@ -4011,6 +4032,10 @@ namespace PickMeUp.Services.Migrations
                         .HasForeignKey("CarId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("PickMeUp.Services.Database.City", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId");
+
                     b.HasOne("PickMeUp.Services.Database.Driver", "Driver")
                         .WithMany()
                         .HasForeignKey("DriverId")
@@ -4034,6 +4059,8 @@ namespace PickMeUp.Services.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Car");
+
+                    b.Navigation("City");
 
                     b.Navigation("Driver");
 

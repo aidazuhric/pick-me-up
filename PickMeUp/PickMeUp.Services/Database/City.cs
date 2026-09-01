@@ -14,6 +14,10 @@ namespace PickMeUp.Services.Database
         [MaxLength(20)]
         public string? PostalCode { get; set; }
 
+        public double Latitude { get; set; }
+
+        public double Longitude { get; set; }
+
         public bool IsActive { get; set; } = true;
     }
 }
