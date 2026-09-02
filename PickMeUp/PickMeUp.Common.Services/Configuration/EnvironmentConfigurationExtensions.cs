@@ -75,11 +75,6 @@ namespace PickMeUp.Common.Services.Configuration
                 WebhookSecret = EnvironmentReader.Optional("STRIPE_WEBHOOK_SECRET")
             }));
 
-            services.AddSingleton(Options.Create(new MapsOptions
-            {
-                ApiKey = EnvironmentReader.Optional("MAPS_API_KEY")
-            }));
-
             services.AddSingleton(Options.Create(new FileStorageOptions
             {
                 RootPath = EnvironmentReader.Optional("FILE_STORAGE_ROOT", "storage")
