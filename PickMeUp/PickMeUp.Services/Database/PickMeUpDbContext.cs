@@ -12,6 +12,8 @@ namespace PickMeUp.Services.Database
         public DbSet<Role> Roles { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+
+        public DbSet<RevokedAccessToken> RevokedAccessTokens { get; set; }
         public DbSet<TwoFactorCode> TwoFactorCodes { get; set; }
         public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
         public DbSet<City> Cities { get; set; }

@@ -115,8 +115,10 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Revokes every refresh token issued to the caller, so the session cannot be renewed
-    /// after the client discards its access token. The caller is taken from the JWT.
+    /// Ends the session on the server: the access token presented with this call is added to the
+    /// revocation list until it would have expired, and every refresh token issued to the caller
+    /// is deleted. The token cannot be used again, on any endpoint or on the notification hub.
+    /// The caller is taken from the JWT.
     /// </summary>
     [Authorize]
     [HttpPost("Logout")]
@@ -129,7 +131,11 @@ public class AuthController : ControllerBase
             return Unauthorized();
         }
 
-        await _accessManager.LogoutAsync(userId.Value);
+        await _accessManager.LogoutAsync(
+            userId.Value,
+            HttpContext.Items[TokenClaims.TokenIdItem] as string,
+            HttpContext.Items[TokenClaims.TokenExpiresAtItem] as DateTime?);
+
         return NoContent();
     }
 }

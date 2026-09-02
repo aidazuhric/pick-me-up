@@ -35,6 +35,13 @@ namespace PickMeUp.Services.Database
             modelBuilder.Entity<PasswordResetToken>()
                 .HasIndex(t => new { t.UserId, t.ConsumedAt, t.ExpiresAt });
 
+            modelBuilder.Entity<RevokedAccessToken>()
+                .HasIndex(t => t.TokenId)
+                .IsUnique();
+
+            modelBuilder.Entity<RevokedAccessToken>()
+                .HasIndex(t => t.ExpiresAt);
+
             modelBuilder.Entity<UserRole>()
                 .HasOne(ur => ur.User)
                 .WithMany(ur => ur.UserRoles)

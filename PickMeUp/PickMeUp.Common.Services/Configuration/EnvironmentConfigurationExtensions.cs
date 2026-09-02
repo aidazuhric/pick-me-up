@@ -56,6 +56,11 @@ namespace PickMeUp.Common.Services.Configuration
                 ResendCooldownSeconds = EnvironmentReader.Int("TWO_FACTOR_RESEND_COOLDOWN_SECONDS", 30)
             }));
 
+            services.AddSingleton(Options.Create(new AccessTokenRevocationOptions
+            {
+                SweepMinutes = EnvironmentReader.Int("ACCESS_TOKEN_REVOCATION_SWEEP_MINUTES", 15)
+            }));
+
             services.AddSingleton(Options.Create(new PasswordResetOptions
             {
                 TokenLength = EnvironmentReader.Int("PASSWORD_RESET_TOKEN_LENGTH", 8),

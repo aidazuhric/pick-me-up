@@ -7,6 +7,6 @@ namespace PickMeUp.WebAPI.Services.AccessManager
         Task<UserLoginResponse> LoginAsync(UserLoginRequest request);
         Task<UserLoginResponse> VerifyTwoFactorAsync(TwoFactorVerifyRequest request);
         Task<UserLoginResponse> LoginWithRefreshTokenAsync(RefreshAccessTokenRequest request);
-        Task LogoutAsync(int userId);
+        Task LogoutAsync(int userId, string? tokenId, DateTime? tokenExpiresAt);
     }
 }

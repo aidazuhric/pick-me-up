@@ -21,14 +21,16 @@ namespace PickMeUp.WebAPI.Services.AccessManager
         private readonly ICryptoService _cryptoService;
         private readonly IRefreshTokenService _refreshTokenService;
         private readonly ITwoFactorService _twoFactorService;
+        private readonly IAccessTokenRevocationService _revocationService;
 
-        public AccessManager(IUserService userService, IOptions<JwtOptions> jwtOptions, ICryptoService cryptoService, IRefreshTokenService refreshTokenService, ITwoFactorService twoFactorService)
+        public AccessManager(IUserService userService, IOptions<JwtOptions> jwtOptions, ICryptoService cryptoService, IRefreshTokenService refreshTokenService, ITwoFactorService twoFactorService, IAccessTokenRevocationService revocationService)
         {
             _userService = userService;
             _jwtOptions = jwtOptions.Value;
             _cryptoService = cryptoService;
             _refreshTokenService = refreshTokenService;
             _twoFactorService = twoFactorService;
+            _revocationService = revocationService;
         }
 
         public async Task<UserLoginResponse> LoginAsync(UserLoginRequest request)
@@ -107,8 +109,15 @@ namespace PickMeUp.WebAPI.Services.AccessManager
             return await IssueSessionAsync(user);
         }
 
-        public Task LogoutAsync(int userId) =>
-            _refreshTokenService.DeleteAllUserRefreshTokensAsync(userId);
+        public async Task LogoutAsync(int userId, string? tokenId, DateTime? tokenExpiresAt)
+        {
+            await _refreshTokenService.DeleteAllUserRefreshTokensAsync(userId);
+
+            if (!string.IsNullOrWhiteSpace(tokenId) && tokenExpiresAt.HasValue)
+            {
+                await _revocationService.RevokeAsync(tokenId!, userId, tokenExpiresAt.Value);
+            }
+        }
 
         private static bool CanSignIn(UserResponse user) => user.IsActive;
 
@@ -143,6 +152,7 @@ namespace PickMeUp.WebAPI.Services.AccessManager
             {
                 Subject = new ClaimsIdentity(new[]
                 {
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
                     new Claim(ClaimNames.Id, user.Id.ToString()),
                     new Claim(ClaimNames.FirstName, user.FirstName ?? string.Empty),
                     new Claim(ClaimNames.LastName, user.LastName ?? string.Empty),

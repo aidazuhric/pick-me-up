@@ -1,3 +1,5 @@
+using Microsoft.IdentityModel.JsonWebTokens;
+using System.IdentityModel.Tokens.Jwt;
 using PickMeUp.Common.Services.Configuration;
 using PickMeUp.Common.Services.CryptoService;
 using PickMeUp.Model.Requests;
@@ -188,6 +190,7 @@ builder.Services.AddScoped<ISupportTicketStatusService, SupportTicketStatusServi
 builder.Services.AddScoped<IPaymentStatusService, PaymentStatusService>();
 
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+builder.Services.AddScoped<IAccessTokenRevocationService, AccessTokenRevocationService>();
 
 builder.Services.AddScoped<IAccessManager, AccessManager>();
 
@@ -255,6 +258,32 @@ builder.Services.AddAuthentication(options =>
             }
 
             return Task.CompletedTask;
+        },
+        OnTokenValidated = async context =>
+        {
+            var (tokenId, expiresAt) = context.SecurityToken switch
+            {
+                JsonWebToken jsonWebToken => (jsonWebToken.Id, jsonWebToken.ValidTo),
+                JwtSecurityToken jwtToken => (jwtToken.Id, jwtToken.ValidTo),
+                _ => (null, default(DateTime))
+            };
+
+            if (string.IsNullOrWhiteSpace(tokenId))
+            {
+                return;
+            }
+
+            var revocations = context.HttpContext.RequestServices
+                .GetRequiredService<IAccessTokenRevocationService>();
+
+            if (await revocations.IsRevokedAsync(tokenId, context.HttpContext.RequestAborted))
+            {
+                context.Fail("This token was signed out.");
+                return;
+            }
+
+            context.HttpContext.Items[TokenClaims.TokenIdItem] = tokenId;
+            context.HttpContext.Items[TokenClaims.TokenExpiresAtItem] = expiresAt;
         }
     };
 });
