@@ -317,18 +317,35 @@ namespace PickMeUp.Services
 
             await using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
+            var drivers = await _dbContext.Drivers
+                .Where(d => d.TaxiCompanyId == company.Id)
+                .ToListAsync();
+
+            var accountIds = drivers.Select(d => d.UserId).Append(company.UserId).ToList();
+
             await _dbContext.RefreshTokens
                 .IgnoreQueryFilters()
-                .Where(t => t.UserId == company.UserId)
+                .Where(t => accountIds.Contains(t.UserId))
                 .ExecuteDeleteAsync();
 
-            var owner = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == company.UserId);
+            var accounts = await _dbContext.Users
+                .Where(u => accountIds.Contains(u.Id))
+                .ToListAsync();
 
-            if (owner != null)
+            foreach (var account in accounts)
             {
-                owner.IsActive = false;
-                owner.IsDeleted = true;
-                owner.DeletedAt = deletedAt;
+                account.IsActive = false;
+                account.IsDeleted = true;
+                account.DeletedAt = deletedAt;
+            }
+
+            foreach (var driver in drivers)
+            {
+                driver.IsActive = false;
+                driver.IsDeleted = true;
+                driver.DeletedAt = deletedAt;
+                driver.ResignedAt ??= deletedAt;
+                driver.UpdatedAt = deletedAt;
             }
 
             company.IsDeleted = true;
