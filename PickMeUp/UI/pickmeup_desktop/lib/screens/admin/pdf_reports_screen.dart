@@ -23,7 +23,7 @@ class _PdfReportsScreenState extends State<PdfReportsScreen> {
 
   _ReportKind _kind = _ReportKind.ordersByPeriod;
   String _granularity = 'day';
-  late DateTime _from = DateTime.now().subtract(const Duration(days: 60));
+  late DateTime _from = _defaultReportStart();
   late DateTime _to = DateTime.now();
 
   Uint8List? _document;
@@ -348,4 +348,9 @@ class _DateRow extends StatelessWidget {
       ],
     );
   }
+}
+
+DateTime _defaultReportStart() {
+  final now = DateTime.now();
+  return DateTime(now.year, now.month - 5, 1);
 }
