@@ -642,6 +642,10 @@ class _SortMenu<T> extends StatelessWidget {
       ],
       child: OutlinedButton.icon(
         onPressed: null,
+        style: OutlinedButton.styleFrom(
+          disabledForegroundColor: AppColors.primaryIndigo,
+          disabledIconColor: AppColors.primaryIndigo,
+        ),
         icon: const Icon(Icons.sort, size: 16),
         label: Text(current == null ? 'Sort' : 'Sorted: $current'),
       ),
