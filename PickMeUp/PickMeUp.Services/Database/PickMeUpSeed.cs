@@ -432,7 +432,7 @@ namespace PickMeUp.Services.Database
                     HqAddress = "Mula Mustafe Baseskije 18",
                     CityId = 2,
                     ContactEmail = "info@bascarsijataxi.local",
-                    ContactPhone = "+38733555666",
+                    ContactPhone = "+38733777999",
                     OwnerName = "Kenan Bosna",
                     StartingPrice = 2.80m,
                     PricePerKm = 1.15m,

@@ -3381,6 +3381,10 @@ namespace PickMeUp.Services.Migrations
 
                     b.HasIndex("CityId");
 
+                    b.HasIndex("ContactPhone")
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
+
                     b.HasIndex("Name")
                         .IsUnique();
 
@@ -3445,7 +3449,7 @@ namespace PickMeUp.Services.Migrations
                             Id = 4,
                             CityId = 2,
                             ContactEmail = "info@bascarsijataxi.local",
-                            ContactPhone = "+38733555666",
+                            ContactPhone = "+38733777999",
                             CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
                             HqAddress = "Mula Mustafe Baseskije 18",
                             IsActive = true,
@@ -3562,6 +3566,18 @@ namespace PickMeUp.Services.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
+
+                    b.HasIndex("PhoneNumber")
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false AND \"PhoneNumber\" IS NOT NULL");
+
+                    b.HasIndex("Username")
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.ToTable("Users");
 

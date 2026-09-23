@@ -13,6 +13,24 @@ namespace PickMeUp.Services.Database
         public static bool IsUniqueViolation(this DbUpdateException exception) =>
             HasSqlState(exception, UniqueViolation);
 
+        public static string? ConstraintName(this DbUpdateException exception)
+        {
+            var inner = exception.InnerException;
+
+            while (inner != null)
+            {
+                if (inner.GetType().GetProperty("ConstraintName")?.GetValue(inner) is string name
+                    && !string.IsNullOrWhiteSpace(name))
+                {
+                    return name;
+                }
+
+                inner = inner.InnerException;
+            }
+
+            return null;
+        }
+
         private static bool HasSqlState(DbUpdateException exception, string sqlState)
         {
             var inner = exception.InnerException;

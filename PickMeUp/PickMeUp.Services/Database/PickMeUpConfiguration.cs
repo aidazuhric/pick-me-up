@@ -9,6 +9,21 @@ namespace PickMeUp.Services.Database
             modelBuilder.Entity<User>()
                 .HasQueryFilter(u => !u.IsDeleted);
 
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Username)
+                .IsUnique()
+                .HasFilter("\"IsDeleted\" = false");
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique()
+                .HasFilter("\"IsDeleted\" = false");
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.PhoneNumber)
+                .IsUnique()
+                .HasFilter("\"IsDeleted\" = false AND \"PhoneNumber\" IS NOT NULL");
+
             modelBuilder.Entity<UserRole>()
                 .HasQueryFilter(ur => !ur.User.IsDeleted);
 
@@ -80,6 +95,11 @@ namespace PickMeUp.Services.Database
             modelBuilder.Entity<TaxiCompany>()
                 .HasIndex(t => t.Name)
                 .IsUnique();
+
+            modelBuilder.Entity<TaxiCompany>()
+                .HasIndex(t => t.ContactPhone)
+                .IsUnique()
+                .HasFilter("\"IsDeleted\" = false");
 
             modelBuilder.Entity<TaxiCompany>()
                 .HasOne(t => t.City)
