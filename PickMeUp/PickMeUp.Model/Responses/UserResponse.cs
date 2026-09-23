@@ -1,3 +1,5 @@
+using PickMeUp.Model.Enums;
+
 namespace PickMeUp.Model.Responses
 {
     public class UserResponse
@@ -10,6 +12,8 @@ namespace PickMeUp.Model.Responses
         public string Role { get; set; } = string.Empty;
         public bool IsActive { get; set; }
         public bool TwoFactorEnabled { get; set; }
+        public TwoFactorModeEnum TwoFactorMode { get; set; }
+        public DateTime? TwoFactorConfirmedAt { get; set; }
         public bool MustChangePassword { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? LastLoginAt { get; set; }

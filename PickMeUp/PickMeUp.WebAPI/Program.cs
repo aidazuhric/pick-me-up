@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using PickMeUp.Common.Services.Configuration;
 using PickMeUp.Common.Services.CryptoService;
 using PickMeUp.Model.Requests;
+using PickMeUp.Model.Enums;
 using PickMeUp.Model.Responses;
 using PickMeUp.Services;
 using PickMeUp.Services.Database;
@@ -67,7 +68,10 @@ builder.Services.AddMapster();
 TypeAdapterConfig<User, UserResponse>.NewConfig()
     .Map(dest => dest.Role, src => src.UserRoles.Select(ur => ur.Role.Name).FirstOrDefault() ?? string.Empty)
     .Map(dest => dest.ProfileImageUrl, src => src.ProfileImagePath == null ? null : "Users/" + src.Id + "/Photo")
+    .Map(dest => dest.TwoFactorEnabled, src => src.TwoFactorMode != TwoFactorModeEnum.Off)
     .IgnoreNullValues(true);
+TypeAdapterConfig<User, UserSensitiveResponse>.NewConfig()
+    .Inherits<User, UserResponse>();
 TypeAdapterConfig<UserUpdateRequest, User>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<TaxiCompany, TaxiCompanyResponse>.NewConfig()
     .Map(dest => dest.CityName, src => src.City.Name)

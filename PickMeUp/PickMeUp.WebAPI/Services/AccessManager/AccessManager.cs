@@ -1,6 +1,7 @@
 using PickMeUp.Common.Services.Configuration;
 using PickMeUp.Common.Services.CryptoService;
 using PickMeUp.Model.Access;
+using PickMeUp.Model.Enums;
 using PickMeUp.Model.Exceptions;
 using PickMeUp.Model.Responses;
 using PickMeUp.Services;
@@ -44,7 +45,7 @@ namespace PickMeUp.WebAPI.Services.AccessManager
                 throw new BusinessException("Invalid username or password, or the account is not active.");
             }
 
-            if (user.TwoFactorEnabled)
+            if (ChallengeIsRequired(user))
             {
                 var challenge = await _twoFactorService.IssueChallengeAsync(user.Id);
 
@@ -63,7 +64,7 @@ namespace PickMeUp.WebAPI.Services.AccessManager
         {
             var user = await _userService.GetByUsernameAsync(request.Username);
 
-            if (user == null || !user.TwoFactorEnabled || !CanSignIn(user))
+            if (user == null || !ChallengeIsRequired(user) || !CanSignIn(user))
             {
                 throw new BusinessException("That code has expired. Sign in again to get a new one.");
             }
@@ -120,6 +121,13 @@ namespace PickMeUp.WebAPI.Services.AccessManager
         }
 
         private static bool CanSignIn(UserResponse user) => user.IsActive;
+
+        private static bool ChallengeIsRequired(UserResponse user) => user.TwoFactorMode switch
+        {
+            TwoFactorModeEnum.EveryLogin => true,
+            TwoFactorModeEnum.ConfirmOnce => user.TwoFactorConfirmedAt == null,
+            _ => false
+        };
 
         private async Task<UserLoginResponse> IssueSessionAsync(UserResponse user)
         {

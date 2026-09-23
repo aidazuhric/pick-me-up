@@ -3560,8 +3560,11 @@ namespace PickMeUp.Services.Migrations
                         .HasMaxLength(260)
                         .HasColumnType("character varying(260)");
 
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("boolean");
+                    b.Property<DateTime?>("TwoFactorConfirmedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("TwoFactorMode")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -3598,7 +3601,7 @@ namespace PickMeUp.Services.Migrations
                             PasswordHash = "w2ka8ahYEDcLTXF5tlMLcMfIjIA=",
                             PasswordSalt = "nlQ9pafmLDDgNQjCdCHDBA==",
                             ProfileImagePath = "user-photos/1.png",
-                            TwoFactorEnabled = false,
+                            TwoFactorMode = 0,
                             Username = "admin1"
                         },
                         new
@@ -3614,7 +3617,7 @@ namespace PickMeUp.Services.Migrations
                             PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
                             PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
                             ProfileImagePath = "user-photos/2.png",
-                            TwoFactorEnabled = false,
+                            TwoFactorMode = 0,
                             Username = "company1"
                         },
                         new
@@ -3630,7 +3633,7 @@ namespace PickMeUp.Services.Migrations
                             PasswordHash = "C2PEEH/Xup8N70SBm2JUe+0ZOgw=",
                             PasswordSalt = "JEexDUo3l4SMx/4mz4etmQ==",
                             ProfileImagePath = "user-photos/3.jpg",
-                            TwoFactorEnabled = false,
+                            TwoFactorMode = 0,
                             Username = "driver1"
                         },
                         new
@@ -3646,7 +3649,7 @@ namespace PickMeUp.Services.Migrations
                             PasswordHash = "052xFoGxDl/+S7j6ADYmEJRJj1k=",
                             PasswordSalt = "QtT/dkd9xeip5+bSeaA+4A==",
                             ProfileImagePath = "user-photos/4.jpg",
-                            TwoFactorEnabled = false,
+                            TwoFactorMode = 0,
                             Username = "passenger1"
                         },
                         new
@@ -3662,7 +3665,7 @@ namespace PickMeUp.Services.Migrations
                             PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
                             PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
                             ProfileImagePath = "user-photos/5.png",
-                            TwoFactorEnabled = false,
+                            TwoFactorMode = 2,
                             Username = "company2"
                         },
                         new
@@ -3678,7 +3681,7 @@ namespace PickMeUp.Services.Migrations
                             PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
                             PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
                             ProfileImagePath = "user-photos/6.jpg",
-                            TwoFactorEnabled = false,
+                            TwoFactorMode = 0,
                             Username = "company3"
                         },
                         new
@@ -3694,7 +3697,7 @@ namespace PickMeUp.Services.Migrations
                             PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
                             PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
                             ProfileImagePath = "user-photos/7.jpg",
-                            TwoFactorEnabled = false,
+                            TwoFactorMode = 0,
                             Username = "driver2"
                         },
                         new
@@ -3710,7 +3713,7 @@ namespace PickMeUp.Services.Migrations
                             PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
                             PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
                             ProfileImagePath = "user-photos/8.jpg",
-                            TwoFactorEnabled = false,
+                            TwoFactorMode = 0,
                             Username = "driver3"
                         },
                         new
@@ -3727,7 +3730,7 @@ namespace PickMeUp.Services.Migrations
                             PasswordSalt = "Rk9wYmJ2MnhLd0RlTHRRUQ==",
                             PhoneNumber = "+38761234567",
                             ProfileImagePath = "user-photos/9.jpg",
-                            TwoFactorEnabled = false,
+                            TwoFactorMode = 0,
                             Username = "passenger2"
                         },
                         new
@@ -3744,7 +3747,7 @@ namespace PickMeUp.Services.Migrations
                             PasswordSalt = "c1RtWnFYaDdOdkxrRWJVdA==",
                             PhoneNumber = "+38761765432",
                             ProfileImagePath = "user-photos/10.jpg",
-                            TwoFactorEnabled = false,
+                            TwoFactorMode = 0,
                             Username = "passenger3"
                         },
                         new
@@ -3761,7 +3764,7 @@ namespace PickMeUp.Services.Migrations
                             PasswordSalt = "WGpQdzRzTmhCcTJmVmRLYQ==",
                             PhoneNumber = "+38733555666",
                             ProfileImagePath = "user-photos/11.png",
-                            TwoFactorEnabled = true,
+                            TwoFactorMode = 1,
                             Username = "company4"
                         },
                         new
@@ -3778,7 +3781,7 @@ namespace PickMeUp.Services.Migrations
                             PasswordSalt = "THBjNXZLZ1J3TjhtWXNFag==",
                             PhoneNumber = "+38736777888",
                             ProfileImagePath = "user-photos/12.jpg",
-                            TwoFactorEnabled = false,
+                            TwoFactorMode = 0,
                             Username = "driver4"
                         },
                         new
@@ -3795,7 +3798,7 @@ namespace PickMeUp.Services.Migrations
                             PasswordSalt = "QjdrTndSdFhoTTJ2Q3BZZA==",
                             PhoneNumber = "+38733999000",
                             ProfileImagePath = "user-photos/13.png",
-                            TwoFactorEnabled = false,
+                            TwoFactorMode = 0,
                             Username = "driver5"
                         });
                 });

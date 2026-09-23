@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using PickMeUp.Model.Enums;
 
 namespace PickMeUp.Services.Database
 {
@@ -32,7 +33,9 @@ namespace PickMeUp.Services.Database
 
         public bool IsActive { get; set; } = true;
 
-        public bool TwoFactorEnabled { get; set; }
+        public TwoFactorModeEnum TwoFactorMode { get; set; }
+
+        public DateTime? TwoFactorConfirmedAt { get; set; }
 
         public bool MustChangePassword { get; set; }
 

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using PickMeUp.Common.Services.Configuration;
 using PickMeUp.Common.Services.CryptoService;
 using PickMeUp.Model.Access;
+using PickMeUp.Model.Enums;
 using PickMeUp.Model.Exceptions;
 using PickMeUp.Model.Messaging;
 using PickMeUp.Services.Database;
@@ -115,6 +116,14 @@ namespace PickMeUp.Services
             }
 
             challenge.ConsumedAt = now;
+
+            var user = await LoadUserAsync(userId);
+
+            if (user.TwoFactorMode == TwoFactorModeEnum.ConfirmOnce && user.TwoFactorConfirmedAt == null)
+            {
+                user.TwoFactorConfirmedAt = now;
+            }
+
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             return userId;
@@ -126,7 +135,7 @@ namespace PickMeUp.Services
 
             return new TwoFactorSettingResponse
             {
-                Enabled = user.TwoFactorEnabled,
+                Enabled = user.TwoFactorMode != TwoFactorModeEnum.Off,
                 MaskedEmail = MaskEmail(user.Email)
             };
         }
@@ -140,7 +149,8 @@ namespace PickMeUp.Services
                 throw new BusinessException("Add an email address to your account before you turn this on.");
             }
 
-            user.TwoFactorEnabled = enabled;
+            user.TwoFactorMode = enabled ? TwoFactorModeEnum.EveryLogin : TwoFactorModeEnum.Off;
+            user.TwoFactorConfirmedAt = null;
 
             if (!enabled)
             {
