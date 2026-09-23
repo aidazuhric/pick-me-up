@@ -59,13 +59,14 @@ namespace PickMeUp.Services
                 throw new BusinessException("That email address is already in use.");
             }
 
+            var phone = NormalizePhone(request.PhoneNumber);
+            await EnsurePhoneIsFreeAsync(phone, userId);
+
             user.FirstName = request.FirstName.Trim();
             user.LastName = request.LastName.Trim();
             user.Email = email;
-            user.PhoneNumber = string.IsNullOrWhiteSpace(request.PhoneNumber)
-                ? null
-                : request.PhoneNumber.Trim();
-            await _dbContext.SaveChangesAsync();
+            user.PhoneNumber = phone;
+            await SaveAccountAsync();
 
             return await GetOwnAsync();
         }
@@ -182,14 +183,17 @@ namespace PickMeUp.Services
                 throw new BusinessException($"Username '{request.Username}' is already in use.");
             }
 
+            await EnsurePhoneIsFreeAsync(NormalizePhone(request.PhoneNumber), null);
+
             var passengerRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == Roles.Passenger)
                 ?? throw new BusinessException($"Role '{Roles.Passenger}' is missing from the database.");
 
             var entity = MapInsertRequestToEntity(request);
             entity.CreatedAt = DateTime.UtcNow;
+            entity.PhoneNumber = NormalizePhone(entity.PhoneNumber);
 
             _dbContext.Users.Add(entity);
-            await _dbContext.SaveChangesAsync();
+            await SaveAccountAsync();
 
             _dbContext.UserRoles.Add(new UserRole
             {
@@ -227,12 +231,55 @@ namespace PickMeUp.Services
             }
 
             MapUpdateRequestToEntity(request, entity);
+            entity.PhoneNumber = NormalizePhone(entity.PhoneNumber);
+
+            await EnsurePhoneIsFreeAsync(entity.PhoneNumber, id);
 
             _dbContext.Users.Update(entity);
-            await _dbContext.SaveChangesAsync();
+            await SaveAccountAsync();
 
             return _mapper.Map<UserResponse>(entity);
         }
+
+        private static string? NormalizePhone(string? phone) =>
+            string.IsNullOrWhiteSpace(phone) ? null : phone.Trim();
+
+        private async Task EnsurePhoneIsFreeAsync(string? phone, int? excludeUserId)
+        {
+            if (phone == null)
+            {
+                return;
+            }
+
+            var taken = await _dbContext.Users
+                .AnyAsync(u => u.PhoneNumber == phone && (excludeUserId == null || u.Id != excludeUserId));
+
+            if (taken)
+            {
+                throw new BusinessException($"Phone number '{phone}' is already in use.");
+            }
+        }
+
+        private async Task SaveAccountAsync()
+        {
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (DbUpdateException exception) when (exception.IsUniqueViolation())
+            {
+                throw DuplicateAccountDetail(exception);
+            }
+        }
+
+        private static BusinessException DuplicateAccountDetail(DbUpdateException exception) =>
+            exception.ConstraintName() switch
+            {
+                "IX_Users_Username" => new BusinessException("That username is already in use."),
+                "IX_Users_Email" => new BusinessException("That email address is already in use."),
+                "IX_Users_PhoneNumber" => new BusinessException("That phone number is already in use."),
+                _ => new BusinessException("Those account details are already in use.")
+            };
 
         public Task MarkSignedInAsync(int userId) =>
             _dbContext.Users

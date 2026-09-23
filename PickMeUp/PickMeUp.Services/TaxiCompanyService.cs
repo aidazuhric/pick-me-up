@@ -142,6 +142,7 @@ namespace PickMeUp.Services
 
             await EnsureCityExistsAsync(request.CityId);
             await EnsureCompanyNameIsFreeAsync(request.Name, null);
+            await EnsureContactPhoneIsFreeAsync(request.ContactPhone, null);
 
             var loginEmail = string.IsNullOrWhiteSpace(request.LoginEmail)
                 ? request.ContactEmail
@@ -208,8 +209,7 @@ namespace PickMeUp.Services
             catch (DbUpdateException exception) when (exception.IsUniqueViolation())
             {
                 await transaction.RollbackAsync();
-                throw new BusinessException(
-                    $"A taxi company named '{request.Name}' already exists. Nothing was created.");
+                throw DuplicateCompanyDetail(exception, request.Name, request.ContactPhone);
             }
 
             await _dbContext.Entry(company).Reference(c => c.City).LoadAsync();
@@ -240,10 +240,23 @@ namespace PickMeUp.Services
                 await EnsureCompanyNameIsFreeAsync(request.Name, id);
             }
 
+            if (!string.IsNullOrWhiteSpace(request.ContactPhone))
+            {
+                await EnsureContactPhoneIsFreeAsync(request.ContactPhone, id);
+            }
+
             MapUpdateRequestToEntity(request, company);
             company.UpdatedAt = DateTime.UtcNow;
 
-            await _dbContext.SaveChangesAsync();
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (DbUpdateException exception) when (exception.IsUniqueViolation())
+            {
+                throw DuplicateCompanyDetail(exception, company.Name, company.ContactPhone);
+            }
+
             await _dbContext.Entry(company).Reference(c => c.City).LoadAsync();
 
             return _mapper.Map<TaxiCompanyResponse>(company);
@@ -294,6 +307,64 @@ namespace PickMeUp.Services
                 throw new BusinessException($"A taxi company named '{name}' already exists.");
             }
         }
+
+        public override async Task DeleteAsync(int id)
+        {
+            var company = await _dbContext.TaxiCompanies.FirstOrDefaultAsync(t => t.Id == id)
+                ?? throw new KeyNotFoundException($"TaxiCompany with id {id} not found.");
+
+            var deletedAt = DateTime.UtcNow;
+
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+            await _dbContext.RefreshTokens
+                .IgnoreQueryFilters()
+                .Where(t => t.UserId == company.UserId)
+                .ExecuteDeleteAsync();
+
+            var owner = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == company.UserId);
+
+            if (owner != null)
+            {
+                owner.IsActive = false;
+                owner.IsDeleted = true;
+                owner.DeletedAt = deletedAt;
+            }
+
+            company.IsDeleted = true;
+            company.DeletedAt = deletedAt;
+
+            await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+        }
+
+        private async Task EnsureContactPhoneIsFreeAsync(string phone, int? excludingId)
+        {
+            var taken = await _dbContext.TaxiCompanies
+                .AnyAsync(t => t.ContactPhone == phone && (excludingId == null || t.Id != excludingId));
+
+            if (taken)
+            {
+                throw new BusinessException($"Contact phone '{phone}' is already used by another taxi company.");
+            }
+        }
+
+        private static BusinessException DuplicateCompanyDetail(
+            DbUpdateException exception, string name, string contactPhone) =>
+            exception.ConstraintName() switch
+            {
+                "IX_TaxiCompanies_Name" =>
+                    new BusinessException($"A taxi company named '{name}' already exists."),
+                "IX_TaxiCompanies_ContactPhone" =>
+                    new BusinessException($"Contact phone '{contactPhone}' is already used by another taxi company."),
+                "IX_Users_Username" =>
+                    new BusinessException("That login username is already in use."),
+                "IX_Users_Email" =>
+                    new BusinessException("That login email address is already in use."),
+                "IX_Users_PhoneNumber" =>
+                    new BusinessException("That phone number is already in use."),
+                _ => new BusinessException("Those company details are already in use.")
+            };
 
         private async Task EnsureLoginIsFreeAsync(string username, string email)
         {
