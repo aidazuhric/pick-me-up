@@ -8,20 +8,14 @@ var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddEnvironmentConfiguration();
 
 var smtpHost = EnvironmentReader.Optional("SMTP_HOST");
-var smtpUsername = EnvironmentReader.Optional("SMTP_USERNAME");
-var smtpPassword = EnvironmentReader.Optional("SMTP_PASSWORD");
 
-var smtpIsUsable = !string.IsNullOrWhiteSpace(smtpHost)
-    && !string.IsNullOrWhiteSpace(smtpUsername)
-    && !string.IsNullOrWhiteSpace(smtpPassword);
-
-if (smtpIsUsable)
+if (string.IsNullOrWhiteSpace(smtpHost))
 {
-    builder.Services.AddSingleton<IEmailSender, SmtpEmailSender>();
+    builder.Services.AddSingleton<IEmailSender, DevelopmentEmailSender>();
 }
 else
 {
-    builder.Services.AddSingleton<IEmailSender, DevelopmentEmailSender>();
+    builder.Services.AddSingleton<IEmailSender, SmtpEmailSender>();
 }
 
 builder.Services.AddHostedService<NotificationConsumer>();
