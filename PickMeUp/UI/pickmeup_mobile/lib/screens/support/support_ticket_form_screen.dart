@@ -110,6 +110,7 @@ class _SupportTicketFormScreenState extends State<SupportTicketFormScreen> {
                 }
                 return null;
               },
+              autovalidateMode: AutovalidateMode.onUserInteraction,
             ),
             const SizedBox(height: AppSpacing.sm),
             TextFormField(
@@ -133,6 +134,7 @@ class _SupportTicketFormScreenState extends State<SupportTicketFormScreen> {
                 }
                 return null;
               },
+              autovalidateMode: AutovalidateMode.onUserInteraction,
             ),
             if (_submitError != null)
               Padding(
