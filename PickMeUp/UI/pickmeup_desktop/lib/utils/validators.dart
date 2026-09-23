@@ -11,6 +11,13 @@ class Validators {
     return null;
   }
 
+  static String? minLength(String? value, int min, String field) {
+    if (value != null && value.trim().length < min) {
+      return '$field must be at least $min characters.';
+    }
+    return null;
+  }
+
   static String? maxLength(String? value, int max, String field) {
     if (value != null && value.length > max) {
       return '$field must be at most $max characters.';

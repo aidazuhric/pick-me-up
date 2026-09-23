@@ -81,20 +81,18 @@ class _SupportTicketFormState extends State<SupportTicketForm> {
     }
   }
 
+  static const int _minSubjectLength = 5;
+  static const int _minBodyLength = 10;
+
   String? _subjectError(String? value) =>
       Validators.required(value, 'a subject') ??
+      Validators.minLength(value, _minSubjectLength, 'The subject') ??
       Validators.maxLength(value, 150, 'The subject');
 
-  String? _bodyError(String? value) {
-    final missing = Validators.required(value, 'a description');
-    if (missing != null) return missing;
-
-    if (value!.trim().length < 15) {
-      return 'Describe the problem in at least 15 characters.';
-    }
-
-    return Validators.maxLength(value, 2000, 'The description');
-  }
+  String? _bodyError(String? value) =>
+      Validators.required(value, 'a description') ??
+      Validators.minLength(value, _minBodyLength, 'The description') ??
+      Validators.maxLength(value, 2000, 'The description');
 
   @override
   Widget build(BuildContext context) {
@@ -116,6 +114,7 @@ class _SupportTicketFormState extends State<SupportTicketForm> {
             enabled: !_isSaving,
             decoration: const InputDecoration(hintText: 'What is this about?'),
             validator: _subjectError,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
           ),
         ),
         LabeledField(
@@ -132,6 +131,7 @@ class _SupportTicketFormState extends State<SupportTicketForm> {
               hintText: 'Describe the problem in your own words',
             ),
             validator: _bodyError,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
           ),
         ),
       ],
