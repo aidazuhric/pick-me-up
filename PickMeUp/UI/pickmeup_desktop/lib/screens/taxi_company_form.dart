@@ -57,6 +57,7 @@ class _TaxiCompanyFormState extends State<TaxiCompanyForm> {
   final _startingPrice = TextEditingController();
   final _pricePerKm = TextEditingController();
   final _loginUsername = TextEditingController();
+  final _loginPassword = TextEditingController();
 
   int? _cityId;
   bool _isActive = true;
@@ -73,6 +74,7 @@ class _TaxiCompanyFormState extends State<TaxiCompanyForm> {
       _startingPrice,
       _pricePerKm,
       _loginUsername,
+      _loginPassword,
     ]) {
       c.dispose();
     }
@@ -98,6 +100,7 @@ class _TaxiCompanyFormState extends State<TaxiCompanyForm> {
         'pricePerKm': double.parse(_pricePerKm.text.trim().replaceAll(',', '.')),
         'isActive': _isActive,
         'loginUsername': _loginUsername.text.trim(),
+        'loginPassword': _loginPassword.text,
       });
 
       if (!mounted) return;
@@ -112,14 +115,11 @@ class _TaxiCompanyFormState extends State<TaxiCompanyForm> {
   }
 
   void _announceCreated(TaxiCompany created) {
-    final password = created.initialLoginPassword;
-
     AppMessages.success(
       context,
-      password == null
-          ? '${created.name} was added in ${created.cityName}.'
-          : '${created.name} was added in ${created.cityName}. '
-              'Login ${created.initialLoginUsername} with temporary password $password.',
+      '${created.name} was added in ${created.cityName}. '
+      'They sign in as ${created.initialLoginUsername} and will be asked to '
+      'change the password on first login.',
     );
   }
 
@@ -211,6 +211,18 @@ class _TaxiCompanyFormState extends State<TaxiCompanyForm> {
             child: AppTextField(
               controller: _loginUsername,
               validator: (v) => Validators.required(v, 'Login username'),
+            ),
+          ),
+          LabeledField(
+            label: 'Initial password',
+            isRequired: true,
+            hint: 'The user will be asked to change this on first login.',
+            child: AppTextField(
+              controller: _loginPassword,
+              obscureText: true,
+              validator: (v) =>
+                  Validators.required(v, 'An initial password') ??
+                  Validators.minLength(v, 6, 'The password'),
             ),
           ),
           LabeledField(

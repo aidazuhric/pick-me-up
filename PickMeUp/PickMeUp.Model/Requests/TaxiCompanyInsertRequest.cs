@@ -14,6 +14,6 @@ namespace PickMeUp.Model.Requests
 
         public string LoginUsername { get; set; } = string.Empty;
         public string? LoginEmail { get; set; }
-        public string? LoginPassword { get; set; }
+        public string LoginPassword { get; set; } = string.Empty;
     }
 }

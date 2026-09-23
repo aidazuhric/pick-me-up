@@ -54,9 +54,12 @@ namespace PickMeUp.Services.Validators
                 .When(x => !string.IsNullOrWhiteSpace(x.LoginEmail))
                 .WithMessage("Enter a valid email address, for example name@company.com.");
 
-            RuleFor(x => x.LoginPassword).MinimumLength(6)
-                .When(x => !string.IsNullOrWhiteSpace(x.LoginPassword))
-                .WithMessage("Password must be at least 6 characters.");
+            RuleFor(x => x.LoginPassword).NotEmpty()
+                .WithMessage("Set an initial password for the company account.")
+                .MinimumLength(6)
+                .WithMessage("Password must be at least 6 characters.")
+                .MaximumLength(100)
+                .WithMessage("Password must be at most 100 characters.");
         }
     }
 }

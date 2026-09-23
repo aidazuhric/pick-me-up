@@ -7,5 +7,6 @@ namespace PickMeUp.Model.Access
         public bool RequiresTwoFactor { get; set; }
         public string? MaskedEmail { get; set; }
         public int? CodeExpiresInSeconds { get; set; }
+        public bool MustChangePassword { get; set; }
     }
 }

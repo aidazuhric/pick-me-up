@@ -140,7 +140,8 @@ namespace PickMeUp.WebAPI.Services.AccessManager
             return new UserLoginResponse
             {
                 Accesstoken = accessToken,
-                Refreshtoken = refreshTokenValue
+                Refreshtoken = refreshTokenValue,
+                MustChangePassword = user.MustChangePassword
             };
         }
 

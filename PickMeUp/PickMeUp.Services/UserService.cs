@@ -352,6 +352,7 @@ namespace PickMeUp.Services
 
             user.PasswordSalt = _cryptoService.GenerateSlat();
             user.PasswordHash = _cryptoService.GenerateHash(request.NewPassword, user.PasswordSalt);
+            user.MustChangePassword = false;
 
             _dbContext.Users.Update(user);
             await _dbContext.SaveChangesAsync();

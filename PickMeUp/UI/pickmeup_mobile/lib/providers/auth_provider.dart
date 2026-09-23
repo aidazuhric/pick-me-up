@@ -37,11 +37,18 @@ class AuthProvider with ChangeNotifier {
   String? _role;
   String? _displayName;
   int? _userId;
+  bool _mustChangePassword = false;
 
   String? get role => _role;
   String? get displayName => _displayName;
   int? get userId => _userId;
   bool get isAuthenticated => accessToken != null;
+  bool get mustChangePassword => _mustChangePassword;
+
+  void passwordChanged() {
+    _mustChangePassword = false;
+    notifyListeners();
+  }
 
   Future<TwoFactorChallenge?> login(String username, String password) {
     return _authenticate(
@@ -91,6 +98,7 @@ class AuthProvider with ChangeNotifier {
 
     accessToken = data['accesstoken'];
     refreshToken = data['refreshtoken'];
+    _mustChangePassword = data['mustChangePassword'] as bool? ?? false;
 
     _readClaims();
     notifyListeners();
@@ -221,6 +229,7 @@ class AuthProvider with ChangeNotifier {
     _role = null;
     _displayName = null;
     _userId = null;
+    _mustChangePassword = false;
     notifyListeners();
   }
 

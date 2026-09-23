@@ -3541,6 +3541,9 @@ namespace PickMeUp.Services.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<bool>("MustChangePassword")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
@@ -3591,6 +3594,7 @@ namespace PickMeUp.Services.Migrations
                             IsActive = true,
                             IsDeleted = false,
                             LastName = "Admin",
+                            MustChangePassword = false,
                             PasswordHash = "w2ka8ahYEDcLTXF5tlMLcMfIjIA=",
                             PasswordSalt = "nlQ9pafmLDDgNQjCdCHDBA==",
                             ProfileImagePath = "user-photos/1.png",
@@ -3606,6 +3610,7 @@ namespace PickMeUp.Services.Migrations
                             IsActive = true,
                             IsDeleted = false,
                             LastName = "Company",
+                            MustChangePassword = false,
                             PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
                             PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
                             ProfileImagePath = "user-photos/2.png",
@@ -3621,6 +3626,7 @@ namespace PickMeUp.Services.Migrations
                             IsActive = true,
                             IsDeleted = false,
                             LastName = "Driver",
+                            MustChangePassword = false,
                             PasswordHash = "C2PEEH/Xup8N70SBm2JUe+0ZOgw=",
                             PasswordSalt = "JEexDUo3l4SMx/4mz4etmQ==",
                             ProfileImagePath = "user-photos/3.jpg",
@@ -3636,6 +3642,7 @@ namespace PickMeUp.Services.Migrations
                             IsActive = true,
                             IsDeleted = false,
                             LastName = "Passenger",
+                            MustChangePassword = false,
                             PasswordHash = "052xFoGxDl/+S7j6ADYmEJRJj1k=",
                             PasswordSalt = "QtT/dkd9xeip5+bSeaA+4A==",
                             ProfileImagePath = "user-photos/4.jpg",
@@ -3651,6 +3658,7 @@ namespace PickMeUp.Services.Migrations
                             IsActive = true,
                             IsDeleted = false,
                             LastName = "Neretva",
+                            MustChangePassword = false,
                             PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
                             PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
                             ProfileImagePath = "user-photos/5.png",
@@ -3666,6 +3674,7 @@ namespace PickMeUp.Services.Migrations
                             IsActive = true,
                             IsDeleted = false,
                             LastName = "Express",
+                            MustChangePassword = false,
                             PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
                             PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
                             ProfileImagePath = "user-photos/6.jpg",
@@ -3681,6 +3690,7 @@ namespace PickMeUp.Services.Migrations
                             IsActive = true,
                             IsDeleted = false,
                             LastName = "Hodzic",
+                            MustChangePassword = false,
                             PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
                             PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
                             ProfileImagePath = "user-photos/7.jpg",
@@ -3696,6 +3706,7 @@ namespace PickMeUp.Services.Migrations
                             IsActive = true,
                             IsDeleted = false,
                             LastName = "Kovac",
+                            MustChangePassword = false,
                             PasswordHash = "AwJYxEEx8ikPN8F8vgy2oKAcjvE=",
                             PasswordSalt = "Li1IhzglTwqEbHNNdr/PuQ==",
                             ProfileImagePath = "user-photos/8.jpg",
@@ -3711,6 +3722,7 @@ namespace PickMeUp.Services.Migrations
                             IsActive = true,
                             IsDeleted = false,
                             LastName = "Selimovic",
+                            MustChangePassword = false,
                             PasswordHash = "56VoVY84Uv3DwxLzx4fwlU3IzrM=",
                             PasswordSalt = "Rk9wYmJ2MnhLd0RlTHRRUQ==",
                             PhoneNumber = "+38761234567",
@@ -3727,6 +3739,7 @@ namespace PickMeUp.Services.Migrations
                             IsActive = true,
                             IsDeleted = false,
                             LastName = "Maric",
+                            MustChangePassword = false,
                             PasswordHash = "pG3YU6itVrSMloQBg/eTd0NOfNo=",
                             PasswordSalt = "c1RtWnFYaDdOdkxrRWJVdA==",
                             PhoneNumber = "+38761765432",
@@ -3743,6 +3756,7 @@ namespace PickMeUp.Services.Migrations
                             IsActive = true,
                             IsDeleted = false,
                             LastName = "Bosna",
+                            MustChangePassword = false,
                             PasswordHash = "VryTRHSCv/ouQq2T4UhDu7VG8ow=",
                             PasswordSalt = "WGpQdzRzTmhCcTJmVmRLYQ==",
                             PhoneNumber = "+38733555666",
@@ -3759,6 +3773,7 @@ namespace PickMeUp.Services.Migrations
                             IsActive = true,
                             IsDeleted = false,
                             LastName = "Zovko",
+                            MustChangePassword = false,
                             PasswordHash = "NVrK8OXfEs43X/SeZ5ylkNrLeMg=",
                             PasswordSalt = "THBjNXZLZ1J3TjhtWXNFag==",
                             PhoneNumber = "+38736777888",
@@ -3775,6 +3790,7 @@ namespace PickMeUp.Services.Migrations
                             IsActive = true,
                             IsDeleted = false,
                             LastName = "Hadzic",
+                            MustChangePassword = false,
                             PasswordHash = "Yk+hY2PFplbc+iJLzo9GXPyQCXo=",
                             PasswordSalt = "QjdrTndSdFhoTTJ2Q3BZZA==",
                             PhoneNumber = "+38733999000",

@@ -165,6 +165,7 @@ namespace PickMeUp.Services
 
             user.PasswordSalt = salt;
             user.PasswordHash = _cryptoService.GenerateHash(newPassword, salt);
+            user.MustChangePassword = false;
 
             stored.ConsumedAt = now;
 

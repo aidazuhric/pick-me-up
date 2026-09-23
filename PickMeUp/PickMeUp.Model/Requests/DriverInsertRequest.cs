@@ -10,6 +10,6 @@ namespace PickMeUp.Model.Requests
         public bool IsActive { get; set; } = true;
 
         public string LoginUsername { get; set; } = string.Empty;
-        public string? LoginPassword { get; set; }
+        public string LoginPassword { get; set; } = string.Empty;
     }
 }

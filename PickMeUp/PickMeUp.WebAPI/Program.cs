@@ -72,16 +72,14 @@ TypeAdapterConfig<UserUpdateRequest, User>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<TaxiCompany, TaxiCompanyResponse>.NewConfig()
     .Map(dest => dest.CityName, src => src.City.Name)
     .Map(dest => dest.LogoImageUrl, src => src.LogoImagePath == null ? null : "TaxiCompanies/" + src.Id + "/Logo")
-    .Ignore(dest => dest.InitialLoginUsername!)
-    .Ignore(dest => dest.InitialLoginPassword!);
+    .Ignore(dest => dest.InitialLoginUsername!);
 TypeAdapterConfig<TaxiCompanyUpdateRequest, TaxiCompany>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<Driver, DriverResponse>.NewConfig()
     .Map(dest => dest.FullName, src => src.User.FirstName + " " + src.User.LastName)
     .Map(dest => dest.Email, src => src.User.Email)
     .Map(dest => dest.PhoneNumber, src => src.User.PhoneNumber)
     .Map(dest => dest.CompanyName, src => src.TaxiCompany.Name)
-    .Ignore(dest => dest.InitialLoginUsername!)
-    .Ignore(dest => dest.InitialLoginPassword!);
+    .Ignore(dest => dest.InitialLoginUsername!);
 TypeAdapterConfig<Car, CarResponse>.NewConfig()
     .Map(dest => dest.CategoryName, src => src.VehicleCategory.Name)
     .Map(dest => dest.CompanyName, src => src.TaxiCompany.Name)

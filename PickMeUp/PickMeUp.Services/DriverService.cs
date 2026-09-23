@@ -8,7 +8,6 @@ using PickMeUp.Model.SearchObjects;
 using PickMeUp.Services.Database;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
 
 namespace PickMeUp.Services
 {
@@ -83,11 +82,6 @@ namespace PickMeUp.Services
 
             await EnsureLoginIsFreeAsync(request.LoginUsername, request.Email);
 
-            var generatedPassword = string.IsNullOrWhiteSpace(request.LoginPassword)
-                ? GenerateTemporaryPassword()
-                : null;
-            var password = generatedPassword ?? request.LoginPassword!;
-
             await using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
             var driverRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == Roles.Driver)
@@ -103,8 +97,9 @@ namespace PickMeUp.Services
                 Username = request.LoginUsername,
                 PhoneNumber = request.PhoneNumber,
                 PasswordSalt = salt,
-                PasswordHash = _cryptoService.GenerateHash(password, salt),
+                PasswordHash = _cryptoService.GenerateHash(request.LoginPassword, salt),
                 IsActive = true,
+                MustChangePassword = true,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -145,7 +140,6 @@ namespace PickMeUp.Services
 
             var response = _mapper.Map<DriverResponse>(driver);
             response.InitialLoginUsername = user.Username;
-            response.InitialLoginPassword = generatedPassword;
 
             return response;
         }
@@ -422,7 +416,5 @@ namespace PickMeUp.Services
             }
         }
 
-        private static string GenerateTemporaryPassword() =>
-            Convert.ToBase64String(RandomNumberGenerator.GetBytes(9)).Replace("/", "x").Replace("+", "y");
     }
 }

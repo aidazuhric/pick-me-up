@@ -25,7 +25,6 @@ TaxiCompany _$TaxiCompanyFromJson(Map<String, dynamic> json) => TaxiCompany(
       ? null
       : DateTime.parse(json['updatedAt'] as String),
   initialLoginUsername: json['initialLoginUsername'] as String?,
-  initialLoginPassword: json['initialLoginPassword'] as String?,
 );
 
 Map<String, dynamic> _$TaxiCompanyToJson(TaxiCompany instance) =>
@@ -44,5 +43,4 @@ Map<String, dynamic> _$TaxiCompanyToJson(TaxiCompany instance) =>
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
       'initialLoginUsername': instance.initialLoginUsername,
-      'initialLoginPassword': instance.initialLoginPassword,
     };

@@ -50,6 +50,7 @@ class _DriverFormState extends State<DriverForm> {
   final _email = TextEditingController();
   final _phone = TextEditingController();
   final _username = TextEditingController();
+  final _password = TextEditingController();
 
   DateTime _hireDate = DateTime.now();
   bool _isActive = true;
@@ -74,7 +75,7 @@ class _DriverFormState extends State<DriverForm> {
 
   @override
   void dispose() {
-    for (final c in [_firstName, _lastName, _email, _phone, _username]) {
+    for (final c in [_firstName, _lastName, _email, _phone, _username, _password]) {
       c.dispose();
     }
     super.dispose();
@@ -110,6 +111,7 @@ class _DriverFormState extends State<DriverForm> {
           'hireDate': ApiDates.dayToUtc(_hireDate),
           'isActive': _isActive,
           'loginUsername': _username.text.trim(),
+          'loginPassword': _password.text,
         });
 
         if (!mounted) return;
@@ -125,15 +127,11 @@ class _DriverFormState extends State<DriverForm> {
   }
 
   void _announceCreated(Driver created) {
-    final password = created.initialLoginPassword;
-
     AppMessages.success(
       context,
-      password == null
-          ? '${created.fullName} joined the fleet.'
-          : '${created.fullName} joined the fleet. They sign in as '
-              '${created.initialLoginUsername} with the temporary password $password — '
-              'hand it over now, it is shown only this once.',
+      '${created.fullName} joined the fleet. They sign in as '
+      '${created.initialLoginUsername} and will be asked to change the '
+      'password on first login.',
     );
   }
 
@@ -143,7 +141,7 @@ class _DriverFormState extends State<DriverForm> {
       title: _isEditing ? 'Edit ${widget.existing!.fullName}' : 'New driver',
       subtitle: _isEditing
           ? 'Signs in with ${widget.existing!.email}'
-          : 'A sign-in is created for the driver and a one-time password is shown once you save.',
+          : 'A sign-in is created for the driver with the password you set below.',
       formKey: _formKey,
       isSaving: _isSaving,
       onBack: _isSaving ? null : () => Navigator.of(context).pop(false),
@@ -189,6 +187,19 @@ class _DriverFormState extends State<DriverForm> {
               controller: _username,
               hintText: 'For example driver6',
               validator: (v) => Validators.required(v, 'Sign-in username'),
+            ),
+          ),
+        if (!_isEditing)
+          LabeledField(
+            label: 'Initial password',
+            isRequired: true,
+            hint: 'The driver will be asked to change this on first login.',
+            child: AppTextField(
+              controller: _password,
+              obscureText: true,
+              validator: (v) =>
+                  Validators.required(v, 'An initial password') ??
+                  Validators.minLength(v, 6, 'The password'),
             ),
           ),
         LabeledField(

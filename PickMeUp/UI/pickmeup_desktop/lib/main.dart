@@ -7,6 +7,7 @@ import 'providers/auth_provider.dart';
 import 'providers/user_provider.dart';
 import 'screens/admin_shell.dart';
 import 'screens/company_shell.dart';
+import 'screens/force_password_change_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/unsupported_role_screen.dart';
 
@@ -43,6 +44,10 @@ class RootRouter extends StatelessWidget {
 
     if (!auth.isAuthenticated) {
       return const LoginScreen();
+    }
+
+    if (auth.mustChangePassword) {
+      return const ForcePasswordChangeScreen();
     }
 
     switch (auth.role) {

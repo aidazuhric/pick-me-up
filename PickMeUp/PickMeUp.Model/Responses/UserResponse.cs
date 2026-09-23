@@ -10,6 +10,7 @@ namespace PickMeUp.Model.Responses
         public string Role { get; set; } = string.Empty;
         public bool IsActive { get; set; }
         public bool TwoFactorEnabled { get; set; }
+        public bool MustChangePassword { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? LastLoginAt { get; set; }
         public string? PhoneNumber { get; set; }

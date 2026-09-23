@@ -20,7 +20,6 @@ Driver _$DriverFromJson(Map<String, dynamic> json) => Driver(
       : DateTime.parse(json['resignedAt'] as String),
   isActive: json['isActive'] as bool?,
   initialLoginUsername: json['initialLoginUsername'] as String?,
-  initialLoginPassword: json['initialLoginPassword'] as String?,
 );
 
 Map<String, dynamic> _$DriverToJson(Driver instance) => <String, dynamic>{
@@ -33,5 +32,4 @@ Map<String, dynamic> _$DriverToJson(Driver instance) => <String, dynamic>{
   'resignedAt': instance.resignedAt?.toIso8601String(),
   'isActive': instance.isActive,
   'initialLoginUsername': instance.initialLoginUsername,
-  'initialLoginPassword': instance.initialLoginPassword,
 };

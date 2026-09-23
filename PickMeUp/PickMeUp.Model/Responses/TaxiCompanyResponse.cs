@@ -18,6 +18,5 @@ namespace PickMeUp.Model.Responses
         public DateTime? UpdatedAt { get; set; }
 
         public string? InitialLoginUsername { get; set; }
-        public string? InitialLoginPassword { get; set; }
     }
 }

@@ -34,6 +34,8 @@ namespace PickMeUp.Services.Database
 
         public bool TwoFactorEnabled { get; set; }
 
+        public bool MustChangePassword { get; set; }
+
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

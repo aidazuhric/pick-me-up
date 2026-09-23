@@ -13,7 +13,6 @@ class Driver {
   DateTime? resignedAt;
   bool? isActive;
   String? initialLoginUsername;
-  String? initialLoginPassword;
 
   Driver({
     this.id,
@@ -25,7 +24,6 @@ class Driver {
     this.resignedAt,
     this.isActive,
     this.initialLoginUsername,
-    this.initialLoginPassword,
   });
 
   bool get hasResigned => resignedAt != null;

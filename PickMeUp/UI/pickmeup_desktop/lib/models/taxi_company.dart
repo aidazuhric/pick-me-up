@@ -18,7 +18,6 @@ class TaxiCompany {
   DateTime? createdAt;
   DateTime? updatedAt;
   String? initialLoginUsername;
-  String? initialLoginPassword;
 
   TaxiCompany({
     this.id,
@@ -35,7 +34,6 @@ class TaxiCompany {
     this.createdAt,
     this.updatedAt,
     this.initialLoginUsername,
-    this.initialLoginPassword,
   });
 
   factory TaxiCompany.fromJson(Map<String, dynamic> json) => _$TaxiCompanyFromJson(json);
