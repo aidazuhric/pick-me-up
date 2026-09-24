@@ -1,3 +1,5 @@
+using PickMeUp.Model.Emails;
+
 namespace PickMeUp.Model.Messaging
 {
     public abstract class IntegrationEvent
@@ -14,6 +16,10 @@ namespace PickMeUp.Model.Messaging
 
         public abstract string Subject { get; }
 
-        public abstract string Body { get; }
+        protected abstract EmailContent Content { get; }
+
+        public string Body => EmailTemplate.RenderText(Content);
+
+        public string HtmlBody => EmailTemplate.RenderHtml(Subject, Content);
     }
 }

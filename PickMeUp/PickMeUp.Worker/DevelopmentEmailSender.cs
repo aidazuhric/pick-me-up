@@ -11,7 +11,13 @@ namespace PickMeUp.Worker
             _logger = logger;
         }
 
-        public Task SendAsync(string toEmail, string toName, string subject, string body, CancellationToken cancellationToken)
+        public Task SendAsync(
+            string toEmail,
+            string toName,
+            string subject,
+            string body,
+            string htmlBody,
+            CancellationToken cancellationToken)
         {
             _logger.LogInformation(
                 "SMTP_HOST is not configured, so this message was written to the log instead of being sent.\nTo: {Name} <{Email}>\nSubject: {Subject}\n{Body}",

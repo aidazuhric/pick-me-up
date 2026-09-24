@@ -33,6 +33,7 @@ namespace PickMeUp.Services.Messaging
                 RecipientName = integrationEvent.RecipientName,
                 Subject = integrationEvent.Subject,
                 Body = integrationEvent.Body,
+                HtmlBody = integrationEvent.HtmlBody,
                 PayloadJson = JsonSerializer.Serialize(integrationEvent, integrationEvent.GetType())
             };
 

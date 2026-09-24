@@ -207,6 +207,7 @@ namespace PickMeUp.Services
                 {
                     Token = token,
                     ExpiresInMinutes = _options.ExpiryMinutes,
+                    MaxAttempts = _options.MaxAttempts,
                     RecipientEmail = user.Email,
                     RecipientName = $"{user.FirstName} {user.LastName}".Trim()
                 }, cancellationToken);

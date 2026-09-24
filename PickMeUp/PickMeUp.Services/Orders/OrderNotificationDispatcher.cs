@@ -47,6 +47,8 @@ namespace PickMeUp.Services.Orders
                 PickupAddress = order.PickupAddress,
                 DestinationAddress = order.DestinationAddress,
                 CompanyName = order.TaxiCompany?.Name,
+                Fare = order.Fare,
+                DistanceKm = order.DistanceKm,
                 RecipientEmail = order.Passenger.Email,
                 RecipientName = FullName(order.Passenger)
             });
@@ -79,6 +81,10 @@ namespace PickMeUp.Services.Orders
                 FromStatus = fromStatus,
                 ToStatus = toStatus,
                 DriverName = driverName,
+                CompanyName = order.TaxiCompany?.Name,
+                CarPlate = order.Car?.Plate,
+                PickupAddress = order.PickupAddress,
+                DestinationAddress = order.DestinationAddress,
                 RecipientEmail = order.Passenger.Email,
                 RecipientName = FullName(order.Passenger)
             });
@@ -117,6 +123,9 @@ namespace PickMeUp.Services.Orders
                 OrderId = order.Id,
                 Reason = reason,
                 CancelledBy = cancelledByPassenger ? "the passenger" : "the driver or an administrator",
+                PickupAddress = order.PickupAddress,
+                DestinationAddress = order.DestinationAddress,
+                WasPaid = order.IsPrepaid,
                 RecipientEmail = recipient?.Email ?? order.Passenger.Email,
                 RecipientName = recipient == null ? FullName(order.Passenger) : FullName(recipient)
             });
@@ -205,6 +214,7 @@ namespace PickMeUp.Services.Orders
                 .Include(o => o.Passenger)
                 .Include(o => o.TaxiCompany)
                 .Include(o => o.Driver).ThenInclude(d => d!.User)
+                .Include(o => o.Car)
                 .FirstOrDefaultAsync(o => o.Id == orderId);
 
         private static string FullName(User user) => $"{user.FirstName} {user.LastName}";

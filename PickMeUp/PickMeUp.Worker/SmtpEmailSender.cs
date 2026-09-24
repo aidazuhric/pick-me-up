@@ -2,6 +2,8 @@ using PickMeUp.Common.Services.Configuration;
 using Microsoft.Extensions.Options;
 using System.Net;
 using System.Net.Mail;
+using System.Net.Mime;
+using System.Text;
 
 namespace PickMeUp.Worker
 {
@@ -16,7 +18,13 @@ namespace PickMeUp.Worker
             _options = options.Value;
         }
 
-        public async Task SendAsync(string toEmail, string toName, string subject, string body, CancellationToken cancellationToken)
+        public async Task SendAsync(
+            string toEmail,
+            string toName,
+            string subject,
+            string body,
+            string htmlBody,
+            CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(_options.Host))
             {
@@ -45,6 +53,14 @@ namespace PickMeUp.Worker
             };
 
             message.To.Add(new MailAddress(toEmail, toName));
+
+            if (!string.IsNullOrWhiteSpace(htmlBody))
+            {
+                message.AlternateViews.Add(
+                    AlternateView.CreateAlternateViewFromString(body, Encoding.UTF8, MediaTypeNames.Text.Plain));
+                message.AlternateViews.Add(
+                    AlternateView.CreateAlternateViewFromString(htmlBody, Encoding.UTF8, MediaTypeNames.Text.Html));
+            }
 
             await client.SendMailAsync(message, cancellationToken);
         }

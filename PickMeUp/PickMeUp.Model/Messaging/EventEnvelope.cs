@@ -9,6 +9,7 @@ namespace PickMeUp.Model.Messaging
         public string RecipientName { get; set; } = string.Empty;
         public string Subject { get; set; } = string.Empty;
         public string Body { get; set; } = string.Empty;
+        public string HtmlBody { get; set; } = string.Empty;
         public string PayloadJson { get; set; } = string.Empty;
     }
 }

@@ -214,7 +214,8 @@ namespace PickMeUp.Services
                     RecipientEmail = user.Email,
                     RecipientName = $"{user.FirstName} {user.LastName}".Trim(),
                     Code = code,
-                    ExpiresInMinutes = _options.ExpiryMinutes
+                    ExpiresInMinutes = _options.ExpiryMinutes,
+                    MaxAttempts = _options.MaxAttempts
                 }, cancellationToken);
             }
             catch (Exception e)

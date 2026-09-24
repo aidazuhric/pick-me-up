@@ -93,7 +93,7 @@ namespace PickMeUp.Worker
                 try
                 {
                     await _emailSender.SendAsync(envelope.RecipientEmail, envelope.RecipientName,
-                        envelope.Subject, envelope.Body, CancellationToken.None);
+                        envelope.Subject, envelope.Body, envelope.HtmlBody, CancellationToken.None);
 
                     _logger.LogInformation("Delivered event {EventId} to {Recipient} on attempt {Attempt}",
                         envelope.EventId, envelope.RecipientEmail, attempt + 1);

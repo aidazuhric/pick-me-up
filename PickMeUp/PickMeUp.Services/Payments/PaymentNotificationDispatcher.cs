@@ -42,6 +42,11 @@ namespace PickMeUp.Services.Payments
                 OrderId = payment.OrderId,
                 Amount = payment.AmountCharged,
                 Currency = payment.Currency,
+                PickupAddress = payment.Order.PickupAddress,
+                DestinationAddress = payment.Order.DestinationAddress,
+                DistanceKm = payment.Order.DistanceKm,
+                CompanyName = payment.Order.TaxiCompany?.Name,
+                DriverName = payment.Order.Driver == null ? null : FullName(payment.Order.Driver.User),
                 RecipientEmail = payment.Order.Passenger.Email,
                 RecipientName = FullName(payment.Order.Passenger)
             });
@@ -69,6 +74,10 @@ namespace PickMeUp.Services.Payments
                 OrderId = payment.OrderId,
                 Amount = refundedAmount,
                 Currency = payment.Currency,
+                PickupAddress = payment.Order.PickupAddress,
+                DestinationAddress = payment.Order.DestinationAddress,
+                CompanyName = payment.Order.TaxiCompany?.Name,
+                Reason = payment.Order.CancellationReason,
                 RecipientEmail = payment.Order.Passenger.Email,
                 RecipientName = FullName(payment.Order.Passenger)
             });
@@ -114,6 +123,8 @@ namespace PickMeUp.Services.Payments
             _dbContext.Payments
                 .AsNoTracking()
                 .Include(p => p.Order).ThenInclude(o => o.Passenger)
+                .Include(p => p.Order).ThenInclude(o => o.TaxiCompany)
+                .Include(p => p.Order).ThenInclude(o => o.Driver).ThenInclude(d => d!.User)
                 .FirstOrDefaultAsync(p => p.Id == paymentId);
 
         private static string FullName(User user) => $"{user.FirstName} {user.LastName}";
