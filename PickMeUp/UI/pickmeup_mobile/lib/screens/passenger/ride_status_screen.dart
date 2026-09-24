@@ -163,7 +163,12 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
 
       if (!mounted) return;
 
-      AppMessages.success(context, 'Ride #${ride.id} is cancelled.');
+      AppMessages.success(
+        context,
+        _refundOnCancel(ride)
+            ? 'Ride #${ride.id} is cancelled and your payment is on its way back.'
+            : 'Ride #${ride.id} is cancelled.',
+      );
       await _load();
     } on ApiClientException catch (e) {
       if (!mounted) return;
@@ -286,9 +291,22 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
                     ),
                     icon: const Icon(Icons.cancel_outlined, size: 18),
                     label: Text(
-                      _isCancelling ? 'CANCELLING…' : 'CANCEL RIDE',
+                      _isCancelling
+                          ? 'CANCELLING…'
+                          : _refundOnCancel(ride)
+                          ? 'CANCEL & REFUND'
+                          : 'CANCEL RIDE',
                     ),
                   ),
+                  if (_refundOnCancel(ride))
+                    Padding(
+                      padding: const EdgeInsets.only(top: AppSpacing.xs),
+                      child: Text(
+                        'No driver has taken this ride yet, so cancelling returns '
+                        '${ride.fare == null ? 'what you paid' : Formats.money(ride.fare!)} to your card.',
+                        style: theme.textTheme.bodySmall,
+                      ),
+                    ),
                 ],
                 if (_otherActive > 0) ...[
                   const SizedBox(height: AppSpacing.lg),
@@ -307,14 +325,19 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
     );
   }
 
+  static bool _refundOnCancel(Order ride) =>
+      ride.isPrepaid == true && ride.status == 'Pending';
+
   static bool _isCancellable(Order ride) =>
       ride.id != null &&
       const ['Pending', 'Confirmed', 'InProgress'].contains(ride.status);
 
   String _headline(Order ride) => switch (ride.status) {
+    'Pending' when ride.isPrepaid != true =>
+      'Not paid yet — no driver sees this ride until it is paid.',
     'Pending' => ride.isGeneralOrder == true
-        ? 'Sent to every company. Waiting for a driver to accept.'
-        : 'Sent to ${ride.companyName ?? 'the company'}. Waiting for a driver to accept.',
+        ? 'Paid — waiting for a driver to accept.'
+        : 'Paid — waiting for a driver from ${ride.companyName ?? 'the company'} to accept.',
     'Confirmed' => 'Your driver is on the way.',
     'InProgress' => 'You have been picked up — heading to your destination.',
     'Completed' => 'Ride completed. Thanks for riding with us.',
@@ -368,9 +391,17 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
     ];
 
     final current = steps.indexOf(ride.status ?? '');
+    final isPaid = ride.isPrepaid == true;
 
     return Column(
       children: [
+        _TimelineStep(
+          label: isPaid ? 'Paid' : 'Awaiting payment',
+          moment: Formats.moment(ride.prepaidAt),
+          isDone: isPaid,
+          isCurrent: !isPaid,
+          isLast: false,
+        ),
         for (var i = 0; i < steps.length; i++)
           _TimelineStep(
             label: labels[i],

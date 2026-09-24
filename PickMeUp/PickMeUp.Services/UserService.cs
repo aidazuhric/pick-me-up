@@ -209,6 +209,8 @@ namespace PickMeUp.Services
 
             await _dbContext.SaveChangesAsync();
 
+            await _dbContext.Entry(entity).Reference(u => u.City).LoadAsync();
+
             var response = _mapper.Map<UserResponse>(entity);
             response.Role = passengerRole.Name;
 

@@ -5,12 +5,16 @@ import 'package:latlong2/latlong.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../models/order.dart';
+import '../../models/order_quote.dart';
 import '../../models/taxi_company.dart';
 import '../../providers/order_provider.dart';
+import '../../providers/payment_provider.dart';
 import '../../services/city_locator.dart';
+import '../../services/ride_payment_flow.dart';
 import '../../services/geocoding_service.dart';
 import '../../utils/api_error_handler.dart';
 import '../../utils/formats.dart';
+import '../../widgets/app_messages.dart';
 import 'address_search_sheet.dart';
 import 'company_picker_sheet.dart';
 
@@ -34,6 +38,7 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
   final _mapController = MapController();
   final _geocoding = GeocodingService();
   final _orders = OrderProvider();
+  final _payments = PaymentProvider();
 
   LatLng? _pickup;
   LatLng? _destination;
@@ -44,11 +49,28 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
   bool _isLocating = false;
   bool _isSubmitting = false;
   Order? _placed;
+  OrderQuote? _quote;
+  bool _isQuoting = false;
+  int _quoteToken = 0;
+  String? _gatewayNotice;
+  bool _isPaid = false;
 
   @override
   void initState() {
     super.initState();
     _company = widget.initialCompany;
+    _prepareGateway();
+  }
+
+  Future<void> _prepareGateway() async {
+    try {
+      final notice = await RidePaymentFlow.prepareGateway(_payments);
+      if (!mounted) return;
+      setState(() => _gatewayNotice = notice);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _gatewayNotice = null);
+    }
   }
 
   @override
@@ -70,18 +92,55 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
     return double.parse((metres / 1000).toStringAsFixed(2));
   }
 
-  double? get _fareEstimate {
-    final company = _company;
-    final distance = _distanceKm;
+  Map<String, dynamic>? _tripPayload() {
+    final pickup = _pickup;
 
-    if (company == null || distance == null) {
+    if (pickup == null) {
       return null;
     }
 
-    final start = company.startingPrice ?? 0;
-    final perKm = company.pricePerKm ?? 0;
+    return {
+      'taxiCompanyId': _company?.id,
+      'pickupLat': pickup.latitude,
+      'pickupLng': pickup.longitude,
+      'pickupAddress': _pickupAddress ?? _unnamedPoint,
+      'destinationLat': _destination?.latitude,
+      'destinationLng': _destination?.longitude,
+      'destinationAddress': _destination == null ? null : _destinationAddress,
+    };
+  }
 
-    return start + (distance * perKm);
+  Future<void> _refreshQuote() async {
+    final trip = _tripPayload();
+
+    if (trip == null) {
+      setState(() {
+        _quote = null;
+        _isQuoting = false;
+      });
+      return;
+    }
+
+    final token = ++_quoteToken;
+    setState(() => _isQuoting = true);
+
+    try {
+      final quote = await _orders.quote(trip);
+
+      if (!mounted || token != _quoteToken) return;
+
+      setState(() {
+        _quote = quote;
+        _isQuoting = false;
+      });
+    } catch (_) {
+      if (!mounted || token != _quoteToken) return;
+
+      setState(() {
+        _quote = null;
+        _isQuoting = false;
+      });
+    }
   }
 
   void _frameTrip() {
@@ -126,6 +185,7 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
     });
 
     _frameTrip();
+    _refreshQuote();
 
     String? label;
 
@@ -179,6 +239,8 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
     } else {
       _mapController.move(place.point, 15);
     }
+
+    _refreshQuote();
   }
 
   void _clear(_TripPoint target) {
@@ -191,6 +253,8 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
         _destinationAddress = null;
       }
     });
+
+    _refreshQuote();
   }
 
   int? _cityId;
@@ -204,6 +268,8 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
           _cityId = city.id;
           _company = null;
         });
+
+        _refreshQuote();
       }
     });
   }
@@ -220,6 +286,7 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
     }
 
     setState(() => _company = choice.company);
+    _refreshQuote();
   }
 
   Future<void> _submit() async {
@@ -231,28 +298,58 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
 
     setState(() => _isSubmitting = true);
 
+    Order order;
+
     try {
-      final order = await _orders.insert({
-        'taxiCompanyId': _company?.id,
-        'pickupLat': pickup.latitude,
-        'pickupLng': pickup.longitude,
-        'pickupAddress': _pickupAddress ?? _unnamedPoint,
-        'destinationLat': _destination?.latitude,
-        'destinationLng': _destination?.longitude,
-        'destinationAddress': _destination == null ? null : _destinationAddress,
-      });
-
-      if (!mounted) return;
-
-      setState(() {
-        _placed = order;
-        _isSubmitting = false;
-      });
+      order = await _orders.insert(_tripPayload()!);
     } catch (error) {
       if (!mounted) return;
 
       setState(() => _isSubmitting = false);
       ApiErrorHandler.surface(context, error);
+      return;
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      _placed = order;
+      _isPaid = false;
+    });
+
+    await _payForPlacedRide();
+  }
+
+  Future<void> _payForPlacedRide() async {
+    final order = _placed;
+    final orderId = order?.id;
+
+    if (orderId == null) {
+      setState(() => _isSubmitting = false);
+      return;
+    }
+
+    if (_gatewayNotice != null) {
+      setState(() => _isSubmitting = false);
+      AppMessages.failure(context, _gatewayNotice!);
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
+
+    final result = await RidePaymentFlow.pay(_payments, orderId);
+
+    if (!mounted) return;
+
+    setState(() {
+      _isSubmitting = false;
+      _isPaid = result.isPaid;
+    });
+
+    if (result.isPaid) {
+      AppMessages.success(context, result.message);
+    } else {
+      AppMessages.failure(context, result.message);
     }
   }
 
@@ -265,6 +362,8 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
       _destinationAddress = null;
       _company = widget.initialCompany;
       _picking = null;
+      _quote = null;
+      _isPaid = false;
     });
   }
 
@@ -435,8 +534,8 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
   Widget _buildOrderPanel() {
     final theme = Theme.of(context);
     final distance = _distanceKm;
-    final estimate = _fareEstimate;
-    final canOrder = _pickup != null && !_isSubmitting;
+    final quote = _quote;
+    final canOrder = _pickup != null && !_isSubmitting && quote != null;
 
     return _Card(
       child: ConstrainedBox(
@@ -502,19 +601,60 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
                 ),
               ),
               const Divider(height: AppSpacing.lg),
-              Text(
-                estimate != null
-                    ? 'Estimated fare ${Formats.money(estimate)}'
-                    : 'The company sets the final price when the ride ends.',
-                style: theme.textTheme.bodyMedium,
-              ),
-              if (estimate != null)
+              if (_isQuoting)
+                Row(
+                  children: [
+                    const SizedBox(
+                      height: 16,
+                      width: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Text('Working out the price…',
+                        style: theme.textTheme.bodyMedium),
+                  ],
+                )
+              else if (quote != null) ...[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Expanded(
+                      child: Text('Total to pay',
+                          style: theme.textTheme.bodyMedium),
+                    ),
+                    Text(
+                      Formats.money(quote.fare),
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        color: AppColors.mobileHeader,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
                 Padding(
                   padding: const EdgeInsets.only(top: AppSpacing.xs),
                   child: Text(
-                    'Estimate from this company\'s price list over the straight-line '
-                    'distance. The server prices the finished ride.',
+                    quote.isGeneralOrder
+                        ? 'Average price of the companies driving here. Paid now, '
+                              'before a driver takes the ride.'
+                        : '${quote.companyName ?? 'This company'}\'s price list. '
+                              'Paid now, before a driver takes the ride.',
                     style: theme.textTheme.bodySmall,
+                  ),
+                ),
+              ] else
+                Text(
+                  'Set your pick-up and destination to see the price.',
+                  style: theme.textTheme.bodyMedium,
+                ),
+              if (_gatewayNotice != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: AppSpacing.sm),
+                  child: Text(
+                    _gatewayNotice!,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColors.danger,
+                    ),
                   ),
                 ),
               const SizedBox(height: AppSpacing.md),
@@ -529,7 +669,9 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
                           color: Colors.white,
                         ),
                       )
-                    : const Text('ORDER TAXI'),
+                    : Text(quote == null
+                        ? 'ORDER TAXI'
+                        : 'PAY ${Formats.money(quote.fare)} AND ORDER'),
               ),
               if (_pickup == null)
                 Padding(
@@ -562,27 +704,46 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.check_circle, color: AppColors.toggleOn),
+                  Icon(
+                    _isPaid ? Icons.check_circle : Icons.payments_outlined,
+                    color: _isPaid ? AppColors.toggleOn : AppColors.danger,
+                  ),
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Text(
-                      'Ride #${order.id} requested',
+                      _isPaid ? 'Ride #${order.id} paid' : 'Ride #${order.id} not paid yet',
                       style: theme.textTheme.titleMedium,
                     ),
                   ),
-                  _Chip(
-                    icon: Icons.schedule,
-                    label: order.status ?? '',
-                  ),
+                  if (order.fare != null)
+                    _Chip(
+                      icon: Icons.payments,
+                      label: Formats.money(order.fare!),
+                    ),
                 ],
               ),
               const SizedBox(height: AppSpacing.sm),
               Text(
-                order.isGeneralOrder == true
-                    ? 'Sent to every company. Waiting for a driver to accept.'
-                    : 'Sent to ${order.companyName ?? 'the company'}. Waiting for a driver to accept.',
+                _isPaid
+                    ? (order.isGeneralOrder == true
+                          ? 'Paid — waiting for a driver to accept. Every company driving here can see it.'
+                          : 'Paid — waiting for a driver from ${order.companyName ?? 'the company'} to accept.')
+                    : 'No driver sees this ride until it is paid.',
                 style: theme.textTheme.bodyMedium,
               ),
+              if (!_isPaid)
+                Padding(
+                  padding: const EdgeInsets.only(top: AppSpacing.sm),
+                  child: FilledButton.icon(
+                    onPressed: _isSubmitting ? null : _payForPlacedRide,
+                    icon: const Icon(Icons.credit_card, size: 18),
+                    label: Text(
+                      order.fare == null
+                          ? 'PAY NOW'
+                          : 'PAY ${Formats.money(order.fare!)} NOW',
+                    ),
+                  ),
+                ),
               const Divider(height: AppSpacing.lg),
               _DetailRow(
                 icon: Icons.my_location,

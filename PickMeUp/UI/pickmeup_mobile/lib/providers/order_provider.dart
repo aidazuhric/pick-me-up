@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../models/order.dart';
+import '../models/order_quote.dart';
 import 'base_provider.dart';
 
 class OrderProvider extends BaseProvider<Order> {
@@ -10,6 +11,17 @@ class OrderProvider extends BaseProvider<Order> {
 
   @override
   Order fromJson(dynamic data) => Order.fromJson(data as Map<String, dynamic>);
+
+  Future<OrderQuote> quote(Map<String, dynamic> trip) async {
+    final response = await http.post(
+      Uri.parse('${BaseProvider.baseUrl}$endpoint/Quote'),
+      headers: createHeaders(),
+      body: jsonEncode(trip),
+    );
+    validateResponse(response);
+
+    return OrderQuote.fromJson(jsonDecode(response.body));
+  }
 
   Future<Order> accept(int orderId) => _post('$orderId/Accept');
 

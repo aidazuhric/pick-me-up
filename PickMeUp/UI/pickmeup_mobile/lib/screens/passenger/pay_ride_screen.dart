@@ -145,7 +145,7 @@ class _PayRideScreenState extends State<PayRideScreen> {
       AppMessages.failure(
         context,
         isCancelled
-            ? 'Payment cancelled. The ride is still unpaid.'
+            ? 'Payment cancelled. No driver sees the ride until it is paid.'
             : e.error.localizedMessage ??
                   e.error.message ??
                   'That card was declined. Try another card.',
@@ -185,7 +185,10 @@ class _PayRideScreenState extends State<PayRideScreen> {
             card.payment = payment;
           });
 
-          AppMessages.success(context, 'Ride #$orderId is paid. Thank you!');
+          AppMessages.success(
+            context,
+            'Ride #$orderId is paid — waiting for a driver to accept.',
+          );
           return;
         }
       } on ApiClientException catch (e) {
@@ -421,7 +424,7 @@ class _PaidFooter extends StatelessWidget {
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Text(
-              'Paid$stamp Nothing more is owed for this ride.',
+              'Paid$stamp Waiting for a driver to accept.',
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
@@ -524,7 +527,7 @@ class _EmptyState extends StatelessWidget {
           Text('Nothing to pay', style: theme.textTheme.headlineSmall),
           const SizedBox(height: AppSpacing.sm),
           Text(
-            'When a ride finishes, it shows up here so you can pay for it.',
+            'A ride you ordered but have not paid for yet shows up here.',
             textAlign: TextAlign.center,
             style: theme.textTheme.bodySmall,
           ),

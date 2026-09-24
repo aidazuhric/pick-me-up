@@ -43,6 +43,10 @@ Order _$OrderFromJson(Map<String, dynamic> json) => Order(
   destinationAddress: json['destinationAddress'] as String?,
   distanceKm: (json['distanceKm'] as num?)?.toDouble(),
   fare: (json['fare'] as num?)?.toDouble(),
+  isPrepaid: json['isPrepaid'] as bool?,
+  prepaidAt: json['prepaidAt'] == null
+      ? null
+      : DateTime.parse(json['prepaidAt'] as String),
   status: json['status'] as String?,
   isGeneralOrder: json['isGeneralOrder'] as bool?,
   createdAt: json['createdAt'] == null
@@ -80,6 +84,8 @@ Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
   'fare': instance.fare,
   'status': instance.status,
   'isGeneralOrder': instance.isGeneralOrder,
+  'isPrepaid': instance.isPrepaid,
+  'prepaidAt': instance.prepaidAt?.toIso8601String(),
   'createdAt': instance.createdAt?.toIso8601String(),
   'acceptedAt': instance.acceptedAt?.toIso8601String(),
   'completedAt': instance.completedAt?.toIso8601String(),

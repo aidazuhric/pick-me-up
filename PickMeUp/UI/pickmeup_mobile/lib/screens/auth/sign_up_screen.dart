@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/theme/app_spacing.dart';
+import '../../models/city.dart';
+import '../../providers/city_provider.dart';
 import '../../providers/user_provider.dart';
 import '../../utils/api_error_handler.dart';
 import '../../utils/validators.dart';
@@ -22,6 +24,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _phoneController = TextEditingController();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _cities = CityProvider();
+
+  List<City> _cityOptions = const [];
+  int? _cityId;
+  bool _isLoadingCities = true;
 
   bool _isSubmitting = false;
   bool _obscurePassword = true;
@@ -35,6 +42,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCities();
+  }
+
+  Future<void> _loadCities() async {
+    try {
+      final result = await _cities.get(
+        filter: {'PageSize': 100, 'IsActive': true},
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        _cityOptions = result.items ?? const [];
+        _isLoadingCities = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _isLoadingCities = false);
+    }
   }
 
   Future<void> _submit() async {
@@ -55,6 +86,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         'username': username,
         'password': _passwordController.text,
         'phoneNumber': _phoneController.text.trim(),
+        'cityId': _cityId,
         'isActive': true,
       });
 
@@ -137,6 +169,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         icon: Icons.phone_outlined,
                         keyboardType: TextInputType.phone,
                         validator: Validators.phone,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                        child: DropdownButtonFormField<int>(
+                          initialValue: _cityId,
+                          isExpanded: true,
+                          decoration: InputDecoration(
+                            hintText: _isLoadingCities
+                                ? 'Loading cities…'
+                                : 'City you ride in',
+                            prefixIcon: const Icon(Icons.location_city_outlined),
+                          ),
+                          items: _cityOptions
+                              .map((c) => DropdownMenuItem<int>(
+                                    value: c.id,
+                                    child: Text(c.name ?? ''),
+                                  ))
+                              .toList(),
+                          onChanged: _isLoadingCities
+                              ? null
+                              : (value) => setState(() => _cityId = value),
+                          validator: (value) => value == null
+                              ? 'Select the city you ride in.'
+                              : null,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                        ),
                       ),
                       _field(
                         controller: _usernameController,

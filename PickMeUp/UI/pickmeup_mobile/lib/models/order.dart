@@ -42,6 +42,8 @@ class Order {
   double? fare;
   String? status;
   bool? isGeneralOrder;
+  bool? isPrepaid;
+  DateTime? prepaidAt;
   DateTime? createdAt;
   DateTime? acceptedAt;
   DateTime? completedAt;
@@ -64,6 +66,8 @@ class Order {
     this.destinationAddress,
     this.distanceKm,
     this.fare,
+    this.isPrepaid,
+    this.prepaidAt,
     this.status,
     this.isGeneralOrder,
     this.createdAt,
