@@ -46,6 +46,10 @@ namespace PickMeUp.Services.Database
 
         public decimal? Fare { get; set; }
 
+        public bool IsPrepaid { get; set; }
+
+        public DateTime? PrepaidAt { get; set; }
+
         public int OrderStatusId { get; set; }
 
         public OrderStatus OrderStatus { get; set; } = null!;

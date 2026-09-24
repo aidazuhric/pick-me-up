@@ -16,6 +16,8 @@ namespace PickMeUp.Model.Responses
         public string? DestinationAddress { get; set; }
         public decimal? DistanceKm { get; set; }
         public decimal? Fare { get; set; }
+        public bool IsPrepaid { get; set; }
+        public DateTime? PrepaidAt { get; set; }
         public string Status { get; set; } = string.Empty;
         public bool IsGeneralOrder { get; set; }
         public DateTime CreatedAt { get; set; }

@@ -8,6 +8,8 @@ namespace PickMeUp.Services
     {
         Task<OrderResponse> CreateAsync(OrderInsertRequest request);
 
+        Task<OrderQuoteResponse> QuoteAsync(OrderInsertRequest request);
+
         Task<OrderResponse> AcceptAsync(int id, OrderAcceptRequest request);
 
         Task<OrderResponse> RejectAsync(int id);

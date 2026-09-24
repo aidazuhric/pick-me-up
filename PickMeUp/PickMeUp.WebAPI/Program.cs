@@ -69,6 +69,7 @@ TypeAdapterConfig<User, UserResponse>.NewConfig()
     .Map(dest => dest.Role, src => src.UserRoles.Select(ur => ur.Role.Name).FirstOrDefault() ?? string.Empty)
     .Map(dest => dest.ProfileImageUrl, src => src.ProfileImagePath == null ? null : "Users/" + src.Id + "/Photo")
     .Map(dest => dest.TwoFactorEnabled, src => src.TwoFactorMode != TwoFactorModeEnum.Off)
+    .Map(dest => dest.CityName, src => src.City == null ? null : src.City.Name)
     .IgnoreNullValues(true);
 TypeAdapterConfig<User, UserSensitiveResponse>.NewConfig()
     .Inherits<User, UserResponse>();

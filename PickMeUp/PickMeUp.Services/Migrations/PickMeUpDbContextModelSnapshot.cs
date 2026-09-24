@@ -1052,6 +1052,9 @@ namespace PickMeUp.Services.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsPrepaid")
+                        .HasColumnType("boolean");
+
                     b.Property<int>("OrderStatusId")
                         .HasColumnType("integer");
 
@@ -1071,6 +1074,9 @@ namespace PickMeUp.Services.Migrations
 
                     b.Property<double>("PickupLng")
                         .HasColumnType("double precision");
+
+                    b.Property<DateTime?>("PrepaidAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int?>("TaxiCompanyId")
                         .HasColumnType("integer");
@@ -1100,6 +1106,7 @@ namespace PickMeUp.Services.Migrations
                             Id = 1,
                             AcceptedAt = new DateTime(2026, 6, 11, 9, 5, 0, 0, DateTimeKind.Utc),
                             CarId = 1,
+                            CityId = 1,
                             CompletedAt = new DateTime(2026, 6, 11, 9, 35, 0, 0, DateTimeKind.Utc),
                             CreatedAt = new DateTime(2026, 6, 11, 9, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Bulevar 22",
@@ -1109,12 +1116,14 @@ namespace PickMeUp.Services.Migrations
                             DriverId = 1,
                             Fare = 6.34m,
                             IsDeleted = false,
+                            IsPrepaid = true,
                             OrderStatusId = 4,
                             PassengerId = 4,
                             PickedUpAt = new DateTime(2026, 6, 11, 9, 12, 0, 0, DateTimeKind.Utc),
                             PickupAddress = "Kralja Tomislava 3",
                             PickupLat = 43.343800000000002,
                             PickupLng = 17.8078,
+                            PrepaidAt = new DateTime(2026, 6, 11, 9, 0, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 1,
                             UpdatedAt = new DateTime(2026, 6, 11, 9, 35, 0, 0, DateTimeKind.Utc)
                         },
@@ -1123,6 +1132,7 @@ namespace PickMeUp.Services.Migrations
                             Id = 2,
                             AcceptedAt = new DateTime(2026, 6, 18, 9, 5, 0, 0, DateTimeKind.Utc),
                             CarId = 1,
+                            CityId = 1,
                             CompletedAt = new DateTime(2026, 6, 18, 9, 35, 0, 0, DateTimeKind.Utc),
                             CreatedAt = new DateTime(2026, 6, 18, 9, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Rondo 1",
@@ -1132,12 +1142,14 @@ namespace PickMeUp.Services.Migrations
                             DriverId = 1,
                             Fare = 9.22m,
                             IsDeleted = false,
+                            IsPrepaid = true,
                             OrderStatusId = 4,
                             PassengerId = 4,
                             PickedUpAt = new DateTime(2026, 6, 18, 9, 12, 0, 0, DateTimeKind.Utc),
                             PickupAddress = "Marsala Tita 40",
                             PickupLat = 43.3401,
                             PickupLng = 17.813500000000001,
+                            PrepaidAt = new DateTime(2026, 6, 18, 9, 0, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 1,
                             UpdatedAt = new DateTime(2026, 6, 18, 9, 35, 0, 0, DateTimeKind.Utc)
                         },
@@ -1146,6 +1158,7 @@ namespace PickMeUp.Services.Migrations
                             Id = 3,
                             AcceptedAt = new DateTime(2026, 6, 25, 9, 5, 0, 0, DateTimeKind.Utc),
                             CarId = 2,
+                            CityId = 1,
                             CompletedAt = new DateTime(2026, 6, 25, 9, 35, 0, 0, DateTimeKind.Utc),
                             CreatedAt = new DateTime(2026, 6, 25, 9, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Aerodrom Mostar",
@@ -1155,12 +1168,14 @@ namespace PickMeUp.Services.Migrations
                             DriverId = 2,
                             Fare = 12.58m,
                             IsDeleted = false,
+                            IsPrepaid = true,
                             OrderStatusId = 4,
                             PassengerId = 4,
                             PickedUpAt = new DateTime(2026, 6, 25, 9, 12, 0, 0, DateTimeKind.Utc),
                             PickupAddress = "Splitska 5",
                             PickupLat = 43.335000000000001,
                             PickupLng = 17.802099999999999,
+                            PrepaidAt = new DateTime(2026, 6, 25, 9, 0, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 1,
                             UpdatedAt = new DateTime(2026, 6, 25, 9, 35, 0, 0, DateTimeKind.Utc)
                         },
@@ -1169,6 +1184,7 @@ namespace PickMeUp.Services.Migrations
                             Id = 4,
                             AcceptedAt = new DateTime(2026, 7, 2, 9, 5, 0, 0, DateTimeKind.Utc),
                             CarId = 1,
+                            CityId = 1,
                             CompletedAt = new DateTime(2026, 7, 2, 9, 35, 0, 0, DateTimeKind.Utc),
                             CreatedAt = new DateTime(2026, 7, 2, 9, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Stari Most",
@@ -1178,12 +1194,14 @@ namespace PickMeUp.Services.Migrations
                             DriverId = 1,
                             Fare = 7.42m,
                             IsDeleted = false,
+                            IsPrepaid = true,
                             OrderStatusId = 4,
                             PassengerId = 4,
                             PickedUpAt = new DateTime(2026, 7, 2, 9, 12, 0, 0, DateTimeKind.Utc),
                             PickupAddress = "Bulevar 22",
                             PickupLat = 43.350200000000001,
                             PickupLng = 17.814,
+                            PrepaidAt = new DateTime(2026, 7, 2, 9, 0, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 1,
                             UpdatedAt = new DateTime(2026, 7, 2, 9, 35, 0, 0, DateTimeKind.Utc)
                         },
@@ -1192,6 +1210,7 @@ namespace PickMeUp.Services.Migrations
                             Id = 5,
                             AcceptedAt = new DateTime(2026, 7, 9, 9, 5, 0, 0, DateTimeKind.Utc),
                             CarId = 2,
+                            CityId = 1,
                             CompletedAt = new DateTime(2026, 7, 9, 9, 35, 0, 0, DateTimeKind.Utc),
                             CreatedAt = new DateTime(2026, 7, 9, 9, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Kampus Sveucilista",
@@ -1201,12 +1220,14 @@ namespace PickMeUp.Services.Migrations
                             DriverId = 2,
                             Fare = 10.78m,
                             IsDeleted = false,
+                            IsPrepaid = true,
                             OrderStatusId = 4,
                             PassengerId = 4,
                             PickedUpAt = new DateTime(2026, 7, 9, 9, 12, 0, 0, DateTimeKind.Utc),
                             PickupAddress = "Kneza Domagoja 12",
                             PickupLat = 43.347700000000003,
                             PickupLng = 17.796099999999999,
+                            PrepaidAt = new DateTime(2026, 7, 9, 9, 0, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 1,
                             UpdatedAt = new DateTime(2026, 7, 9, 9, 35, 0, 0, DateTimeKind.Utc)
                         },
@@ -1215,6 +1236,7 @@ namespace PickMeUp.Services.Migrations
                             Id = 6,
                             AcceptedAt = new DateTime(2026, 6, 14, 9, 5, 0, 0, DateTimeKind.Utc),
                             CarId = 4,
+                            CityId = 1,
                             CompletedAt = new DateTime(2026, 6, 14, 9, 35, 0, 0, DateTimeKind.Utc),
                             CreatedAt = new DateTime(2026, 6, 14, 9, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Zeljeznicka stanica",
@@ -1224,12 +1246,14 @@ namespace PickMeUp.Services.Migrations
                             DriverId = 4,
                             Fare = 8.75m,
                             IsDeleted = false,
+                            IsPrepaid = true,
                             OrderStatusId = 4,
                             PassengerId = 4,
                             PickedUpAt = new DateTime(2026, 6, 14, 9, 12, 0, 0, DateTimeKind.Utc),
                             PickupAddress = "Fejiceva 9",
                             PickupLat = 43.338999999999999,
                             PickupLng = 17.815799999999999,
+                            PrepaidAt = new DateTime(2026, 6, 14, 9, 0, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 2,
                             UpdatedAt = new DateTime(2026, 6, 14, 9, 35, 0, 0, DateTimeKind.Utc)
                         },
@@ -1238,6 +1262,7 @@ namespace PickMeUp.Services.Migrations
                             Id = 7,
                             AcceptedAt = new DateTime(2026, 7, 16, 9, 5, 0, 0, DateTimeKind.Utc),
                             CarId = 4,
+                            CityId = 1,
                             CompletedAt = new DateTime(2026, 7, 16, 9, 35, 0, 0, DateTimeKind.Utc),
                             CreatedAt = new DateTime(2026, 7, 16, 9, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Blagaj",
@@ -1247,12 +1272,14 @@ namespace PickMeUp.Services.Migrations
                             DriverId = 4,
                             Fare = 11.86m,
                             IsDeleted = false,
+                            IsPrepaid = true,
                             OrderStatusId = 4,
                             PassengerId = 4,
                             PickedUpAt = new DateTime(2026, 7, 16, 9, 12, 0, 0, DateTimeKind.Utc),
                             PickupAddress = "Rondo 1",
                             PickupLat = 43.3489,
                             PickupLng = 17.799499999999998,
+                            PrepaidAt = new DateTime(2026, 7, 16, 9, 0, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 2,
                             UpdatedAt = new DateTime(2026, 7, 16, 9, 35, 0, 0, DateTimeKind.Utc)
                         },
@@ -1261,6 +1288,7 @@ namespace PickMeUp.Services.Migrations
                             Id = 8,
                             AcceptedAt = new DateTime(2026, 6, 12, 9, 5, 0, 0, DateTimeKind.Utc),
                             CarId = 5,
+                            CityId = 2,
                             CompletedAt = new DateTime(2026, 6, 12, 9, 35, 0, 0, DateTimeKind.Utc),
                             CreatedAt = new DateTime(2026, 6, 12, 9, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Skenderija",
@@ -1270,12 +1298,14 @@ namespace PickMeUp.Services.Migrations
                             DriverId = 3,
                             Fare = 7.95m,
                             IsDeleted = false,
+                            IsPrepaid = true,
                             OrderStatusId = 4,
                             PassengerId = 9,
                             PickedUpAt = new DateTime(2026, 6, 12, 9, 12, 0, 0, DateTimeKind.Utc),
                             PickupAddress = "Ferhadija 10",
                             PickupLat = 43.859000000000002,
                             PickupLng = 18.420999999999999,
+                            PrepaidAt = new DateTime(2026, 6, 12, 9, 0, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 3,
                             UpdatedAt = new DateTime(2026, 6, 12, 9, 35, 0, 0, DateTimeKind.Utc)
                         },
@@ -1284,6 +1314,7 @@ namespace PickMeUp.Services.Migrations
                             Id = 9,
                             AcceptedAt = new DateTime(2026, 6, 20, 9, 5, 0, 0, DateTimeKind.Utc),
                             CarId = 5,
+                            CityId = 2,
                             CompletedAt = new DateTime(2026, 6, 20, 9, 35, 0, 0, DateTimeKind.Utc),
                             CreatedAt = new DateTime(2026, 6, 20, 9, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Ilidza",
@@ -1293,12 +1324,14 @@ namespace PickMeUp.Services.Migrations
                             DriverId = 3,
                             Fare = 13.12m,
                             IsDeleted = false,
+                            IsPrepaid = true,
                             OrderStatusId = 4,
                             PassengerId = 9,
                             PickedUpAt = new DateTime(2026, 6, 20, 9, 12, 0, 0, DateTimeKind.Utc),
                             PickupAddress = "Bascarsija",
                             PickupLat = 43.859499999999997,
                             PickupLng = 18.431000000000001,
+                            PrepaidAt = new DateTime(2026, 6, 20, 9, 0, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 3,
                             UpdatedAt = new DateTime(2026, 6, 20, 9, 35, 0, 0, DateTimeKind.Utc)
                         },
@@ -1307,6 +1340,7 @@ namespace PickMeUp.Services.Migrations
                             Id = 10,
                             AcceptedAt = new DateTime(2026, 7, 4, 9, 5, 0, 0, DateTimeKind.Utc),
                             CarId = 5,
+                            CityId = 2,
                             CompletedAt = new DateTime(2026, 7, 4, 9, 35, 0, 0, DateTimeKind.Utc),
                             CreatedAt = new DateTime(2026, 7, 4, 9, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Vogosca",
@@ -1316,12 +1350,14 @@ namespace PickMeUp.Services.Migrations
                             DriverId = 3,
                             Fare = 9.71m,
                             IsDeleted = false,
+                            IsPrepaid = true,
                             OrderStatusId = 4,
                             PassengerId = 9,
                             PickedUpAt = new DateTime(2026, 7, 4, 9, 12, 0, 0, DateTimeKind.Utc),
                             PickupAddress = "Marijin Dvor",
                             PickupLat = 43.856000000000002,
                             PickupLng = 18.402999999999999,
+                            PrepaidAt = new DateTime(2026, 7, 4, 9, 0, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 3,
                             UpdatedAt = new DateTime(2026, 7, 4, 9, 35, 0, 0, DateTimeKind.Utc)
                         },
@@ -1330,6 +1366,7 @@ namespace PickMeUp.Services.Migrations
                             Id = 11,
                             AcceptedAt = new DateTime(2026, 7, 11, 9, 5, 0, 0, DateTimeKind.Utc),
                             CarId = 5,
+                            CityId = 2,
                             CompletedAt = new DateTime(2026, 7, 11, 9, 35, 0, 0, DateTimeKind.Utc),
                             CreatedAt = new DateTime(2026, 7, 11, 9, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Kosevo",
@@ -1339,12 +1376,14 @@ namespace PickMeUp.Services.Migrations
                             DriverId = 3,
                             Fare = 7.18m,
                             IsDeleted = false,
+                            IsPrepaid = true,
                             OrderStatusId = 4,
                             PassengerId = 9,
                             PickedUpAt = new DateTime(2026, 7, 11, 9, 12, 0, 0, DateTimeKind.Utc),
                             PickupAddress = "Grbavica",
                             PickupLat = 43.847999999999999,
                             PickupLng = 18.395,
+                            PrepaidAt = new DateTime(2026, 7, 11, 9, 0, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 3,
                             UpdatedAt = new DateTime(2026, 7, 11, 9, 35, 0, 0, DateTimeKind.Utc)
                         },
@@ -1353,6 +1392,7 @@ namespace PickMeUp.Services.Migrations
                             Id = 12,
                             AcceptedAt = new DateTime(2026, 6, 28, 9, 5, 0, 0, DateTimeKind.Utc),
                             CarId = 6,
+                            CityId = 2,
                             CompletedAt = new DateTime(2026, 6, 28, 9, 35, 0, 0, DateTimeKind.Utc),
                             CreatedAt = new DateTime(2026, 6, 28, 9, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Dobrinja",
@@ -1362,45 +1402,55 @@ namespace PickMeUp.Services.Migrations
                             DriverId = 5,
                             Fare = 9.01m,
                             IsDeleted = false,
+                            IsPrepaid = true,
                             OrderStatusId = 4,
                             PassengerId = 9,
                             PickedUpAt = new DateTime(2026, 6, 28, 9, 12, 0, 0, DateTimeKind.Utc),
                             PickupAddress = "Alipasina 14",
                             PickupLat = 43.861499999999999,
                             PickupLng = 18.4055,
+                            PrepaidAt = new DateTime(2026, 6, 28, 9, 0, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 4,
                             UpdatedAt = new DateTime(2026, 6, 28, 9, 35, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 13,
+                            CityId = 1,
                             CreatedAt = new DateTime(2026, 8, 3, 8, 30, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Kampus Sveucilista",
                             DestinationLat = 43.341900000000003,
                             DestinationLng = 17.804300000000001,
                             DistanceKm = 5.50m,
+                            Fare = 9.10m,
                             IsDeleted = false,
+                            IsPrepaid = true,
                             OrderStatusId = 1,
                             PassengerId = 4,
                             PickupAddress = "Rondo 1",
                             PickupLat = 43.3489,
                             PickupLng = 17.799499999999998,
+                            PrepaidAt = new DateTime(2026, 8, 3, 8, 30, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 1
                         },
                         new
                         {
                             Id = 14,
+                            CityId = 2,
                             CreatedAt = new DateTime(2026, 8, 4, 17, 10, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Marijin Dvor",
                             DestinationLat = 43.856000000000002,
                             DestinationLng = 18.402999999999999,
                             DistanceKm = 3.90m,
+                            Fare = 7.29m,
                             IsDeleted = false,
+                            IsPrepaid = true,
                             OrderStatusId = 1,
                             PassengerId = 9,
                             PickupAddress = "Ferhadija 10",
                             PickupLat = 43.859000000000002,
                             PickupLng = 18.420999999999999,
+                            PrepaidAt = new DateTime(2026, 8, 4, 17, 10, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 3
                         },
                         new
@@ -1408,18 +1458,22 @@ namespace PickMeUp.Services.Migrations
                             Id = 15,
                             AcceptedAt = new DateTime(2026, 8, 5, 7, 50, 0, 0, DateTimeKind.Utc),
                             CarId = 1,
+                            CityId = 1,
                             CreatedAt = new DateTime(2026, 8, 5, 7, 45, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Stari Most",
                             DestinationLat = 43.337400000000002,
                             DestinationLng = 17.815100000000001,
                             DistanceKm = 6.70m,
                             DriverId = 1,
+                            Fare = 10.54m,
                             IsDeleted = false,
+                            IsPrepaid = true,
                             OrderStatusId = 2,
                             PassengerId = 4,
                             PickupAddress = "Splitska 5",
                             PickupLat = 43.335000000000001,
                             PickupLng = 17.802099999999999,
+                            PrepaidAt = new DateTime(2026, 8, 5, 7, 45, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 1,
                             UpdatedAt = new DateTime(2026, 8, 5, 7, 50, 0, 0, DateTimeKind.Utc)
                         },
@@ -1428,19 +1482,23 @@ namespace PickMeUp.Services.Migrations
                             Id = 16,
                             AcceptedAt = new DateTime(2026, 8, 5, 18, 9, 0, 0, DateTimeKind.Utc),
                             CarId = 5,
+                            CityId = 2,
                             CreatedAt = new DateTime(2026, 8, 5, 18, 5, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Ilidza",
                             DestinationLat = 43.828000000000003,
                             DestinationLng = 18.309999999999999,
                             DistanceKm = 8.20m,
                             DriverId = 3,
+                            Fare = 12.02m,
                             IsDeleted = false,
+                            IsPrepaid = true,
                             OrderStatusId = 3,
                             PassengerId = 9,
                             PickedUpAt = new DateTime(2026, 8, 5, 18, 16, 0, 0, DateTimeKind.Utc),
                             PickupAddress = "Bascarsija",
                             PickupLat = 43.859499999999997,
                             PickupLng = 18.431000000000001,
+                            PrepaidAt = new DateTime(2026, 8, 5, 18, 5, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 3,
                             UpdatedAt = new DateTime(2026, 8, 5, 18, 16, 0, 0, DateTimeKind.Utc)
                         },
@@ -1449,17 +1507,21 @@ namespace PickMeUp.Services.Migrations
                             Id = 17,
                             CancellationReason = "Passenger found another ride before a driver accepted.",
                             CancelledAt = new DateTime(2026, 7, 20, 12, 6, 0, 0, DateTimeKind.Utc),
+                            CityId = 1,
                             CreatedAt = new DateTime(2026, 7, 20, 12, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Zeljeznicka stanica",
                             DestinationLat = 43.347999999999999,
                             DestinationLng = 17.808499999999999,
                             DistanceKm = 4.40m,
+                            Fare = 7.78m,
                             IsDeleted = false,
+                            IsPrepaid = true,
                             OrderStatusId = 5,
                             PassengerId = 4,
                             PickupAddress = "Marsala Tita 40",
                             PickupLat = 43.3401,
                             PickupLng = 17.813500000000001,
+                            PrepaidAt = new DateTime(2026, 7, 20, 12, 0, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 1,
                             UpdatedAt = new DateTime(2026, 7, 20, 12, 6, 0, 0, DateTimeKind.Utc)
                         },
@@ -1470,18 +1532,22 @@ namespace PickMeUp.Services.Migrations
                             CancellationReason = "Driver could not reach the pick-up point because of a closed road.",
                             CancelledAt = new DateTime(2026, 7, 22, 9, 31, 0, 0, DateTimeKind.Utc),
                             CarId = 5,
+                            CityId = 2,
                             CreatedAt = new DateTime(2026, 7, 22, 9, 15, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Vogosca",
                             DestinationLat = 43.899999999999999,
                             DestinationLng = 18.343,
                             DistanceKm = 6.10m,
                             DriverId = 3,
+                            Fare = 9.71m,
                             IsDeleted = false,
+                            IsPrepaid = true,
                             OrderStatusId = 5,
                             PassengerId = 9,
                             PickupAddress = "Grbavica",
                             PickupLat = 43.847999999999999,
                             PickupLng = 18.395,
+                            PrepaidAt = new DateTime(2026, 7, 22, 9, 15, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 3,
                             UpdatedAt = new DateTime(2026, 7, 22, 9, 31, 0, 0, DateTimeKind.Utc)
                         });
@@ -3511,6 +3577,9 @@ namespace PickMeUp.Services.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("CityId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -3572,6 +3641,8 @@ namespace PickMeUp.Services.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CityId");
 
                     b.HasIndex("Email")
                         .IsUnique()
@@ -3639,6 +3710,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 4,
+                            CityId = 1,
                             CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "passenger1@pickmeup.local",
                             FirstName = "Petra",
@@ -3719,6 +3791,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 9,
+                            CityId = 2,
                             CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "passenger2@pickmeup.local",
                             FirstName = "Amar",
@@ -3736,6 +3809,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 10,
+                            CityId = 1,
                             CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "passenger3@pickmeup.local",
                             FirstName = "Ines",
@@ -4378,6 +4452,15 @@ namespace PickMeUp.Services.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PickMeUp.Services.Database.User", b =>
+                {
+                    b.HasOne("PickMeUp.Services.Database.City", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId");
+
+                    b.Navigation("City");
                 });
 
             modelBuilder.Entity("PickMeUp.Services.Database.UserRole", b =>

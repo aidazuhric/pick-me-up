@@ -120,7 +120,7 @@ namespace PickMeUp.Services
 
         protected override Task<IQueryable<User>> IncludeRelatedEntitiesAsync(UserSearch? search, IQueryable<User> query)
         {
-            IQueryable<User> result = query.Include(u => u.UserRoles).ThenInclude(ur => ur.Role);
+            IQueryable<User> result = query.Include(u => u.UserRoles).ThenInclude(ur => ur.Role).Include(u => u.City);
             return Task.FromResult(result);
         }
 
@@ -184,6 +184,11 @@ namespace PickMeUp.Services
             }
 
             await EnsurePhoneIsFreeAsync(NormalizePhone(request.PhoneNumber), null);
+
+            if (!await _dbContext.Cities.AnyAsync(c => c.Id == request.CityId && c.IsActive))
+            {
+                throw new BusinessException("The selected city does not exist. Pick a city from the list.");
+            }
 
             var passengerRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == Roles.Passenger)
                 ?? throw new BusinessException($"Role '{Roles.Passenger}' is missing from the database.");
@@ -292,6 +297,7 @@ namespace PickMeUp.Services
                 .AsNoTracking()
                 .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
+                .Include(u => u.City)
                 .FirstOrDefaultAsync(u => u.Username == username);
 
             UserSensitiveResponse? response = null;
@@ -311,6 +317,7 @@ namespace PickMeUp.Services
                .AsNoTracking()
                .Include(u => u.UserRoles)
                .ThenInclude(ur => ur.Role)
+               .Include(u => u.City)
                .FirstOrDefaultAsync(u => u.Id == id);
 
             UserResponse? response = null;

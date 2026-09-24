@@ -5,6 +5,7 @@ using PickMeUp.Model.Requests;
 using PickMeUp.Model.Responses;
 using PickMeUp.Model.SearchObjects;
 using PickMeUp.Services.Database;
+using PickMeUp.Services.Orders;
 using PickMeUp.Services.Payments;
 using PickMeUp.Common.Services.Configuration;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ namespace PickMeUp.Services
         private readonly IAuthenticatedUserAccessor _userAccessor;
         private readonly IStripeGateway _stripeGateway;
         private readonly IPaymentNotificationDispatcher _dispatcher;
+        private readonly IOrderNotificationDispatcher _orderDispatcher;
         private readonly StripeOptions _stripeOptions;
         private readonly ILogger<PaymentService> _logger;
 
@@ -31,6 +33,7 @@ namespace PickMeUp.Services
             IAuthenticatedUserAccessor userAccessor,
             IStripeGateway stripeGateway,
             IPaymentNotificationDispatcher dispatcher,
+            IOrderNotificationDispatcher orderDispatcher,
             IOptions<StripeOptions> stripeOptions,
             ILogger<PaymentService> logger)
             : base(mapper, dbContext)
@@ -38,6 +41,7 @@ namespace PickMeUp.Services
             _userAccessor = userAccessor;
             _stripeGateway = stripeGateway;
             _dispatcher = dispatcher;
+            _orderDispatcher = orderDispatcher;
             _stripeOptions = stripeOptions.Value;
             _logger = logger;
         }
@@ -65,9 +69,9 @@ namespace PickMeUp.Services
                 throw new KeyNotFoundException($"Order with id {request.OrderId} not found.");
             }
 
-            if (order.OrderStatusId != (int)OrderStatusEnum.Completed)
+            if (order.OrderStatusId != (int)OrderStatusEnum.Pending)
             {
-                throw new BusinessException("Only a completed ride can be paid for.");
+                throw new BusinessException("Only a ride that is still waiting for a driver can be paid for.");
             }
 
             var amount = order.Fare
@@ -171,15 +175,31 @@ namespace PickMeUp.Services
 
             await using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
+            var paidAt = DateTime.UtcNow;
+
             payment.IsPaid = true;
             payment.PaymentStatusId = (int)PaymentStatusEnum.Paid;
-            payment.PaidAt = DateTime.UtcNow;
-            payment.UpdatedAt = DateTime.UtcNow;
+            payment.PaidAt = paidAt;
+            payment.UpdatedAt = paidAt;
+
+            var order = await _dbContext.Orders.FirstOrDefaultAsync(o => o.Id == payment.OrderId);
+
+            if (order != null && !order.IsPrepaid)
+            {
+                order.IsPrepaid = true;
+                order.PrepaidAt = paidAt;
+                order.UpdatedAt = paidAt;
+            }
 
             await _dbContext.SaveChangesAsync();
             await transaction.CommitAsync();
 
             await _dispatcher.PaymentConfirmedAsync(payment.Id);
+
+            if (order != null && order.OrderStatusId == (int)OrderStatusEnum.Pending)
+            {
+                await _orderDispatcher.OrderBecameAvailableAsync(order.Id, excludeDriverId: null);
+            }
 
             return true;
         }
@@ -246,6 +266,49 @@ namespace PickMeUp.Services
             return await LoadResponseAsync(payment.Id);
         }
 
+        public async Task<bool> RefundCancelledOrderAsync(int orderId, string reason)
+        {
+            var payment = await _dbContext.Payments
+                .Include(p => p.Refunds)
+                .FirstOrDefaultAsync(p => p.OrderId == orderId && p.IsPaid);
+
+            if (payment == null)
+            {
+                return false;
+            }
+
+            var remaining = payment.AmountCharged - payment.Refunds.Sum(r => r.RefundedAmount);
+
+            if (remaining <= 0m)
+            {
+                return false;
+            }
+
+            var stripeRefund = await _stripeGateway.RefundAsync(
+                payment.StripePaymentIntentId ?? string.Empty, remaining, reason);
+
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+            _dbContext.PaymentRefunds.Add(new PaymentRefund
+            {
+                PaymentId = payment.Id,
+                RefundedAmount = stripeRefund.Amount,
+                StripeRefundId = stripeRefund.RefundId,
+                Reason = reason,
+                RefundedAt = DateTime.UtcNow
+            });
+
+            payment.PaymentStatusId = (int)PaymentStatusEnum.Refunded;
+            payment.UpdatedAt = DateTime.UtcNow;
+
+            await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            await _dispatcher.PaymentRefundedAsync(payment.Id, stripeRefund.Amount);
+
+            return true;
+        }
+
         public async Task<PaymentResponse> GetByOrderAsync(int orderId)
         {
             await ResolveScopeAsync();
@@ -267,10 +330,11 @@ namespace PickMeUp.Services
             return await _dbContext.Orders
                 .AsNoTracking()
                 .Where(o => o.PassengerId == userId)
-                .Where(o => o.OrderStatusId == (int)OrderStatusEnum.Completed)
+                .Where(o => o.OrderStatusId == (int)OrderStatusEnum.Pending)
+                .Where(o => !o.IsPrepaid)
                 .Where(o => o.Fare != null)
                 .Where(o => !_dbContext.Payments.Any(p => p.OrderId == o.Id && (p.IsPaid || p.PaymentStatusId != (int)PaymentStatusEnum.Unpaid)))
-                .OrderByDescending(o => o.CompletedAt)
+                .OrderByDescending(o => o.CreatedAt)
                 .Select(o => new PayableOrderResponse
                 {
                     OrderId = o.Id,

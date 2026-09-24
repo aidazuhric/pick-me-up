@@ -20,6 +20,7 @@ namespace PickMeUp.Services
         private readonly IShiftService _shiftService;
         private readonly IOrderNotificationDispatcher _dispatcher;
         private readonly IInteractionRecorder _interactions;
+        private readonly IPaymentService _payments;
         private readonly IValidator<OrderInsertRequest> _insertValidator;
         private readonly IValidator<OrderCancelRequest> _cancelValidator;
 
@@ -34,6 +35,7 @@ namespace PickMeUp.Services
             IShiftService shiftService,
             IOrderNotificationDispatcher dispatcher,
             IInteractionRecorder interactions,
+            IPaymentService payments,
             IValidator<OrderInsertRequest> insertValidator,
             IValidator<OrderCancelRequest> cancelValidator)
             : base(mapper, dbContext)
@@ -44,6 +46,7 @@ namespace PickMeUp.Services
             _shiftService = shiftService;
             _dispatcher = dispatcher;
             _interactions = interactions;
+            _payments = payments;
             _insertValidator = insertValidator;
             _cancelValidator = cancelValidator;
         }
@@ -90,6 +93,7 @@ namespace PickMeUp.Services
             };
 
             order.DistanceKm = DeriveDistanceKm(order);
+            order.Fare = await ComputeFareAsync(order);
 
             await using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
@@ -110,6 +114,42 @@ namespace PickMeUp.Services
             await _dispatcher.OrderCreatedAsync(order.Id);
 
             return await LoadResponseAsync(order.Id);
+        }
+
+        public async Task<OrderQuoteResponse> QuoteAsync(OrderInsertRequest request)
+        {
+            await _insertValidator.ValidateAndThrowAsync(request);
+
+            RequireUserId();
+
+            var cityId = await ResolveNearestCityIdAsync(request.PickupLat, request.PickupLng);
+
+            var probe = new Order
+            {
+                CityId = cityId,
+                TaxiCompanyId = request.TaxiCompanyId,
+                PickupLat = request.PickupLat,
+                PickupLng = request.PickupLng,
+                DestinationLat = request.DestinationLat,
+                DestinationLng = request.DestinationLng
+            };
+
+            probe.DistanceKm = DeriveDistanceKm(probe);
+
+            var companyName = request.TaxiCompanyId == null
+                ? null
+                : await _dbContext.TaxiCompanies
+                    .Where(t => t.Id == request.TaxiCompanyId.Value)
+                    .Select(t => t.Name)
+                    .FirstOrDefaultAsync();
+
+            return new OrderQuoteResponse
+            {
+                DistanceKm = probe.DistanceKm,
+                Fare = await ComputeFareAsync(probe),
+                IsGeneralOrder = request.TaxiCompanyId == null,
+                CompanyName = companyName
+            };
         }
 
         public async Task<OrderResponse> AcceptAsync(int id, OrderAcceptRequest request)
@@ -240,8 +280,6 @@ namespace PickMeUp.Services
 
             await using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
-            order.DistanceKm = DeriveDistanceKm(order);
-            order.Fare = await ComputeFareAsync(order);
             order.CompletedAt = DateTime.UtcNow;
             ApplyStatus(order, target);
 
@@ -284,6 +322,11 @@ namespace PickMeUp.Services
             await RecordHistoryAsync(order.Id, from, target, userId, request.Reason);
             await _dbContext.SaveChangesAsync();
             await transaction.CommitAsync();
+
+            if (order.IsPrepaid && from != OrderStatusEnum.Completed)
+            {
+                await _payments.RefundCancelledOrderAsync(order.Id, $"Ride cancelled: {request.Reason}");
+            }
 
             await _dispatcher.OrderCancelledAsync(order.Id, request.Reason, userId);
 
@@ -418,11 +461,15 @@ namespace PickMeUp.Services
             var eligibleDriverIds = _shiftService.QueryDispatchEligibleDriverIds();
 
             return query.Where(o => o.OrderStatusId == (int)OrderStatusEnum.Pending
+                && o.IsPrepaid
                 && o.DriverId == null
                 && (o.TaxiCompanyId == null || o.TaxiCompanyId == companyId)
                 && (o.CityId == null || o.CityId == cityId)
                 && !o.Rejections.Any(r => r.DriverId == driverId)
-                && eligibleDriverIds.Contains(driverId));
+                && eligibleDriverIds.Contains(driverId)
+                && !_dbContext.Orders.Any(active => active.DriverId == driverId
+                    && (active.OrderStatusId == (int)OrderStatusEnum.Confirmed
+                        || active.OrderStatusId == (int)OrderStatusEnum.InProgress)));
         }
 
         private static DateTime? PeriodStart(ShiftPeriod? period) => period switch
@@ -458,16 +505,51 @@ namespace PickMeUp.Services
 
         private async Task<decimal> ComputeFareAsync(Order order)
         {
-            var companyId = order.TaxiCompanyId
-                ?? throw new BusinessException("The order has no company, so no price list applies.");
+            var (startingPrice, pricePerKm) = order.TaxiCompanyId.HasValue
+                ? await ReadCompanyRateAsync(order.TaxiCompanyId.Value)
+                : await ReadCityAverageRateAsync(order.CityId);
 
+            return _fareCalculator.Calculate(startingPrice, pricePerKm, order.DistanceKm);
+        }
+
+        private async Task<(decimal StartingPrice, decimal PricePerKm)> ReadCompanyRateAsync(int companyId)
+        {
             var pricing = await _dbContext.TaxiCompanies
                 .Where(t => t.Id == companyId)
                 .Select(t => new { t.StartingPrice, t.PricePerKm })
                 .FirstOrDefaultAsync()
                 ?? throw new BusinessException("The company price list could not be found.");
 
-            return _fareCalculator.Calculate(pricing.StartingPrice, pricing.PricePerKm, order.DistanceKm);
+            return (pricing.StartingPrice, pricing.PricePerKm);
+        }
+
+        private async Task<(decimal StartingPrice, decimal PricePerKm)> ReadCityAverageRateAsync(int? cityId)
+        {
+            if (cityId == null)
+            {
+                throw new BusinessException(
+                    "We could not work out which city this pick-up is in, so we cannot price the ride.");
+            }
+
+            var rate = await _dbContext.TaxiCompanies
+                .Where(t => t.CityId == cityId.Value && t.IsActive)
+                .GroupBy(t => 1)
+                .Select(g => new
+                {
+                    StartingPrice = g.Average(t => t.StartingPrice),
+                    PricePerKm = g.Average(t => t.PricePerKm)
+                })
+                .FirstOrDefaultAsync();
+
+            if (rate == null)
+            {
+                throw new BusinessException(
+                    "No taxi company operates in this city yet, so the ride cannot be ordered.");
+            }
+
+            return (
+                Math.Round(rate.StartingPrice, 2, MidpointRounding.AwayFromZero),
+                Math.Round(rate.PricePerKm, 2, MidpointRounding.AwayFromZero));
         }
 
         private async Task IncrementShiftOrderCountAsync(int driverId)

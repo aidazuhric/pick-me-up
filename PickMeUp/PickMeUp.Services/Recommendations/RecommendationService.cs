@@ -41,7 +41,13 @@ namespace PickMeUp.Services.Recommendations
                     RatingTotal = g.Sum(i => i.SignalTypeId == reviewed ? i.Value : 0m)
                 });
 
-            var cityId = search?.CityId;
+            var registeredCityId = await _dbContext.Users
+                .AsNoTracking()
+                .Where(u => u.Id == userId)
+                .Select(u => u.CityId)
+                .FirstOrDefaultAsync();
+
+            var cityId = registeredCityId ?? search?.CityId;
 
             var candidates = await (from company in _dbContext.TaxiCompanies.AsNoTracking()
                                     where company.IsActive

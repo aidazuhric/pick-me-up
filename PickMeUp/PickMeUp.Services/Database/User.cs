@@ -51,6 +51,10 @@ namespace PickMeUp.Services.Database
         [MaxLength(260)]
         public string? ProfileImagePath { get; set; }
 
+        public int? CityId { get; set; }
+
+        public City? City { get; set; }
+
         public bool IsDeleted { get; set; }
 
         public DateTime? DeletedAt { get; set; }

@@ -21,6 +21,8 @@ namespace PickMeUp.Services
         private readonly IImageFileStore _imageFileStore;
         private readonly IAuthenticatedUserAccessor _userAccessor;
 
+        private int? _passengerHomeCityId;
+
         public TaxiCompanyService(
             PickMeUpDbContext dbContext,
             MapsterMapper.IMapper mapper,
@@ -103,8 +105,39 @@ namespace PickMeUp.Services
             return Task.FromResult(result);
         }
 
+        public override async Task<PageResult<TaxiCompanyResponse>> GetAllAsync(TaxiCompanySearch? search = null)
+        {
+            _passengerHomeCityId = await ResolvePassengerHomeCityIdAsync();
+            return await base.GetAllAsync(search);
+        }
+
+        private async Task<int?> ResolvePassengerHomeCityIdAsync()
+        {
+            if (!_userAccessor.IsInRole(Roles.Passenger))
+            {
+                return null;
+            }
+
+            var userId = _userAccessor.GetUserId();
+
+            if (userId == null)
+            {
+                return null;
+            }
+
+            return await _dbContext.Users
+                .Where(u => u.Id == userId.Value)
+                .Select(u => u.CityId)
+                .FirstOrDefaultAsync();
+        }
+
         protected override IQueryable<TaxiCompany> ApplyFilters(IQueryable<TaxiCompany> query, TaxiCompanySearch? search)
         {
+            if (_passengerHomeCityId.HasValue)
+            {
+                query = query.Where(t => t.CityId == _passengerHomeCityId.Value);
+            }
+
             if (search == null)
             {
                 return query;

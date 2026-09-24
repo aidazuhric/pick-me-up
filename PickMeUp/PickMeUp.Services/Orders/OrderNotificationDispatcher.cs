@@ -1,4 +1,5 @@
 using PickMeUp.Model.Constants;
+using PickMeUp.Model.Enums;
 using PickMeUp.Model.Messaging;
 using PickMeUp.Model.Responses;
 using PickMeUp.Services.Database;
@@ -49,11 +50,9 @@ namespace PickMeUp.Services.Orders
                 RecipientEmail = order.Passenger.Email,
                 RecipientName = FullName(order.Passenger)
             });
-
-            await PushAvailabilityAsync(order, excludeDriverId: null);
         }
 
-        public async Task OrderBecameAvailableAsync(int orderId, int excludeDriverId)
+        public async Task OrderBecameAvailableAsync(int orderId, int? excludeDriverId)
         {
             var order = await LoadAsync(orderId);
 
@@ -146,6 +145,9 @@ namespace PickMeUp.Services.Orders
                     .Where(d => excludeDriverId == null || d.Id != excludeDriverId.Value)
                     .Where(d => eligibleDriverIds.Contains(d.Id))
                     .Where(d => !_dbContext.OrderRejections.Any(r => r.OrderId == order.Id && r.DriverId == d.Id))
+                    .Where(d => !_dbContext.Orders.Any(active => active.DriverId == d.Id
+                        && (active.OrderStatusId == (int)OrderStatusEnum.Confirmed
+                            || active.OrderStatusId == (int)OrderStatusEnum.InProgress)))
                     .Select(d => d.UserId)
                     .ToListAsync();
 

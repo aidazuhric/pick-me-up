@@ -30,6 +30,10 @@ namespace PickMeUp.Services.Validators
                 .MinimumLength(6).WithMessage("Password must be at least 6 characters.")
                 .MaximumLength(100).WithMessage("Password cannot exceed 100 characters.");
 
+            RuleFor(x => x.CityId)
+                .NotNull().WithMessage("Select the city you ride in from the list.")
+                .GreaterThan(0).WithMessage("Select the city you ride in from the list.");
+
             RuleFor(x => x.PhoneNumber)
                 .MaximumLength(20).WithMessage("Phone number cannot exceed 20 characters.")
                 .When(x => !string.IsNullOrEmpty(x.PhoneNumber));

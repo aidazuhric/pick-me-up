@@ -29,8 +29,22 @@ public class OrdersController : BaseReadController<OrderResponse, OrderSearch, I
     }
 
     /// <summary>
-    /// Places a pending order. The fare is never accepted from the caller — the server
-    /// computes it from the company's price list once the ride completes.
+    /// The price this trip would cost, worked out exactly as it will be when the order is
+    /// placed, so the passenger sees the amount they are about to pay. A ride is billed for at
+    /// least one kilometre. With a company chosen its own price list applies; without one the
+    /// average price list of the active companies in the pick-up city is used.
+    /// </summary>
+    [Authorization(Roles.Passenger)]
+    [HttpPost("Quote")]
+    public async Task<ActionResult<OrderQuoteResponse>> Quote([FromBody] OrderInsertRequest request)
+    {
+        return await _service.QuoteAsync(request);
+    }
+
+    /// <summary>
+    /// Places a pending order. The fare is never accepted from the caller — the server fixes it
+    /// when the order is placed, and the passenger pays that amount before any driver sees the
+    /// ride.
     /// </summary>
     [Authorization(Roles.Passenger)]
     [HttpPost]

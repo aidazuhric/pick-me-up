@@ -4,13 +4,15 @@ namespace PickMeUp.Services.Orders
     {
         public const int DistanceDecimals = 2;
 
+        public const decimal MinimumBilledKm = 1.0m;
+
         public decimal Calculate(decimal startingPrice, decimal pricePerKm, decimal? distanceKm)
         {
             var distance = distanceKm.HasValue ? RoundDistance(distanceKm.Value) : 0m;
 
-            if (distance < 0m)
+            if (distance < MinimumBilledKm)
             {
-                distance = 0m;
+                distance = MinimumBilledKm;
             }
 
             var fare = startingPrice + (distance * pricePerKm);

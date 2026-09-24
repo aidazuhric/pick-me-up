@@ -4,7 +4,7 @@ namespace PickMeUp.Services.Orders
     {
         Task OrderCreatedAsync(int orderId);
 
-        Task OrderBecameAvailableAsync(int orderId, int excludeDriverId);
+        Task OrderBecameAvailableAsync(int orderId, int? excludeDriverId);
 
         Task OrderStatusChangedAsync(int orderId, string fromStatus, string toStatus);
 
