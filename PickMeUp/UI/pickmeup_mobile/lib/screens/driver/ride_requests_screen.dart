@@ -412,52 +412,68 @@ class _RequestCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(
-                Icons.person_outline,
-                size: 18,
-                color: AppColors.textMuted,
-              ),
-              const SizedBox(width: AppSpacing.sm),
               Expanded(
-                child: Text(
-                  order.passengerName ?? '',
-                  style: theme.textTheme.titleMedium,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      order.passengerName ?? '',
+                      style: theme.textTheme.titleMedium,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Asked ${Formats.moment(order.createdAt)}',
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  ],
                 ),
               ),
-              _SourcePill(isGeneral: isGeneral, companyName: order.companyName),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    order.fare == null ? '—' : Formats.money(order.fare!),
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.mobileHeader,
+                    ),
+                  ),
+                  Text('already paid', style: theme.textTheme.bodySmall),
+                ],
+              ),
             ],
           ),
+          const SizedBox(height: AppSpacing.sm),
+          _SourcePill(isGeneral: isGeneral, companyName: order.companyName),
           const SizedBox(height: AppSpacing.sm),
           _Line(
             icon: Icons.my_location,
             colour: AppColors.toggleOn,
             text: order.pickupAddress ?? '',
           ),
-          if ((order.destinationAddress ?? '').isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: AppSpacing.xs),
-              child: _Line(
-                icon: Icons.flag,
-                colour: AppColors.danger,
-                text: order.destinationAddress!,
-              ),
+          Padding(
+            padding: const EdgeInsets.only(top: AppSpacing.xs),
+            child: _Line(
+              icon: Icons.flag,
+              colour: AppColors.danger,
+              text: (order.destinationAddress ?? '').isEmpty
+                  ? 'No destination given'
+                  : order.destinationAddress!,
             ),
+          ),
           const SizedBox(height: AppSpacing.sm),
           Row(
             children: [
-              Expanded(
-                child: Text(
-                  order.distanceKm == null
-                      ? 'Distance not recorded'
-                      : Formats.distance(order.distanceKm),
-                  style: theme.textTheme.bodySmall,
-                ),
-              ),
+              Icon(Icons.straighten, size: 15, color: AppColors.textMuted),
+              const SizedBox(width: AppSpacing.xs),
               Text(
-                Formats.moment(order.createdAt),
+                order.distanceKm == null
+                    ? 'Distance not recorded'
+                    : Formats.distance(order.distanceKm),
                 style: theme.textTheme.bodySmall,
               ),
             ],
