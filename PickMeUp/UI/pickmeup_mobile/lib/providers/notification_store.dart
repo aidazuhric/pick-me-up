@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../models/notification_item.dart';
@@ -11,6 +13,8 @@ class NotificationStore with ChangeNotifier {
   final _provider = NotificationProvider();
   final _hub = NotificationHubClient();
 
+  final _pushes = StreamController<NotificationItem>.broadcast();
+
   List<NotificationItem> _items = const [];
   int _unreadCount = 0;
   bool _isLoading = false;
@@ -21,10 +25,17 @@ class NotificationStore with ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
   bool get isLive => _hub.isConnected;
+  Stream<NotificationItem> get pushes => _pushes.stream;
 
   Future<void> connect() async {
     await _hub.start(_onPushed);
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _pushes.close();
+    super.dispose();
   }
 
   Future<void> disconnect() async {
@@ -44,6 +55,10 @@ class NotificationStore with ChangeNotifier {
 
     if (pushed.isRead != true) {
       _unreadCount += 1;
+    }
+
+    if (!_pushes.isClosed) {
+      _pushes.add(pushed);
     }
 
     notifyListeners();
