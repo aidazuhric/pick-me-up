@@ -20,6 +20,7 @@ mono_crash.*
 
 # Build results
 [Dd]ebug/
+!/PickMeUp/UI/*/android/app/src/debug/
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
@@ -412,4 +413,6 @@ Projekat/
 .DS_Store
 
 PickMeUp/seed-assets/images/README.md
-storage/
+/PickMeUp/PickMeUp.WebAPI/storage/
+/PickMeUp/PickMeUp.Worker/storage/
+!/PickMeUp/PickMeUp.Services/Storage/
