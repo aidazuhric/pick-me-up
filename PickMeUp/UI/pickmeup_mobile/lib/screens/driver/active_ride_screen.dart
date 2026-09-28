@@ -12,6 +12,7 @@ import '../../utils/api_client_exception.dart';
 import '../../utils/formats.dart';
 import '../../widgets/app_messages.dart';
 import '../../widgets/status_pill.dart';
+import '../../widgets/map_attribution.dart';
 
 class ActiveRideScreen extends StatefulWidget {
   const ActiveRideScreen({super.key});
@@ -356,7 +357,7 @@ class _ActiveRideCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _buildMap(),
+          _buildMap(context),
           Padding(
             padding: const EdgeInsets.all(AppSpacing.md),
             child: Column(
@@ -410,10 +411,7 @@ class _ActiveRideCard extends StatelessWidget {
                       ),
                     ),
                     if ((order.carPlate ?? '').isNotEmpty)
-                      Text(
-                        order.carPlate!,
-                        style: theme.textTheme.bodySmall,
-                      ),
+                      Text(order.carPlate!, style: theme.textTheme.bodySmall),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.md),
@@ -444,7 +442,7 @@ class _ActiveRideCard extends StatelessWidget {
     );
   }
 
-  Widget _buildMap() {
+  Widget _buildMap(BuildContext context) {
     final pickup = order.pickupLat != null && order.pickupLng != null
         ? LatLng(order.pickupLat!, order.pickupLng!)
         : null;
@@ -458,7 +456,7 @@ class _ActiveRideCard extends StatelessWidget {
     }
 
     return SizedBox(
-      height: 170,
+      height: (MediaQuery.of(context).size.height * 0.22).clamp(130.0, 220.0),
       child: FlutterMap(
         options: MapOptions(
           initialCenter: pickup,
@@ -496,6 +494,7 @@ class _ActiveRideCard extends StatelessWidget {
                 _marker(destination, AppColors.danger, Icons.flag),
             ],
           ),
+          const MapAttribution(),
         ],
       ),
     );

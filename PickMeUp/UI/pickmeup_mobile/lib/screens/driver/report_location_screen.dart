@@ -13,6 +13,7 @@ import '../../providers/shift_provider.dart';
 import '../../utils/api_client_exception.dart';
 import '../../utils/formats.dart';
 import '../../widgets/app_messages.dart';
+import '../../widgets/map_attribution.dart';
 
 class ReportLocationScreen extends StatefulWidget {
   const ReportLocationScreen({super.key});
@@ -219,6 +220,7 @@ class _ReportLocationScreenState extends State<ReportLocationScreen> {
               _marker(picked, AppColors.mobileHeader, Icons.place),
           ],
         ),
+        const MapAttribution(),
       ],
     );
   }

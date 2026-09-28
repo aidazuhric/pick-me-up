@@ -9,6 +9,7 @@ import '../../providers/order_provider.dart';
 import '../../utils/api_client_exception.dart';
 import '../../utils/formats.dart';
 import '../../widgets/status_pill.dart';
+import '../../widgets/map_attribution.dart';
 
 class DriverRideDetailScreen extends StatefulWidget {
   const DriverRideDetailScreen({super.key, required this.orderId});
@@ -166,10 +167,7 @@ class _DriverRideDetailScreenState extends State<DriverRideDetailScreen> {
                   ),
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
-                    child: _Stat(
-                      label: 'Vehicle',
-                      value: ride.carPlate ?? '—',
-                    ),
+                    child: _Stat(label: 'Vehicle', value: ride.carPlate ?? '—'),
                   ),
                 ],
               ),
@@ -194,7 +192,7 @@ class _DriverRideDetailScreenState extends State<DriverRideDetailScreen> {
     }
 
     return SizedBox(
-      height: 230,
+      height: (MediaQuery.of(context).size.height * 0.28).clamp(150.0, 280.0),
       child: FlutterMap(
         options: MapOptions(
           initialCenter: pickup,
@@ -232,6 +230,7 @@ class _DriverRideDetailScreenState extends State<DriverRideDetailScreen> {
                 _marker(destination, AppColors.danger, Icons.flag),
             ],
           ),
+          const MapAttribution(),
         ],
       ),
     );
