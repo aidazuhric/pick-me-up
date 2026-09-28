@@ -11,32 +11,46 @@ class AuthHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final viewport = MediaQuery.of(context).size.height;
+    final isShort = viewport < 520;
+
+    final height = isShort
+        ? (viewport * 0.38).clamp(150.0, AppSpacing.headerHeight)
+        : AppSpacing.headerHeight;
+
     return ClipPath(
       clipper: _CloudClipper(),
       child: Container(
         width: double.infinity,
-        height: AppSpacing.headerHeight,
+        height: height,
         color: AppColors.mobileHeader,
-        padding: const EdgeInsets.only(bottom: 42),
+        padding: EdgeInsets.only(bottom: isShort ? 24 : 42),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.local_taxi, size: 56, color: Colors.white),
-            const SizedBox(height: AppSpacing.md),
+            Icon(
+              Icons.local_taxi,
+              size: isShort ? 34 : 56,
+              color: Colors.white,
+            ),
+            SizedBox(height: isShort ? AppSpacing.xs : AppSpacing.md),
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.white,
-                fontSize: 28,
+                fontSize: isShort ? 22 : 28,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.4,
               ),
             ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              subtitle,
-              style: const TextStyle(color: Colors.white70, fontSize: 14),
-            ),
+            if (!isShort) ...[
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                subtitle,
+                style: const TextStyle(color: Colors.white70, fontSize: 14),
+              ),
+            ],
           ],
         ),
       ),
