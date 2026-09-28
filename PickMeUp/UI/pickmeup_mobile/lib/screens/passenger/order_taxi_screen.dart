@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -17,6 +19,7 @@ import '../../utils/formats.dart';
 import '../../widgets/app_messages.dart';
 import 'address_search_sheet.dart';
 import 'company_picker_sheet.dart';
+import '../../widgets/map_attribution.dart';
 
 enum _TripPoint { pickup, destination }
 
@@ -371,36 +374,48 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
   Widget build(BuildContext context) {
     final placed = _placed;
 
-    return Stack(
-      children: [
-        _buildMap(),
-        if (placed == null)
-          Positioned(
-            top: AppSpacing.md,
-            left: AppSpacing.md,
-            right: AppSpacing.md,
-            child: _buildTripCard(),
-          ),
-        if (placed == null && _picking != null)
-          Positioned(
-            top: 150,
-            left: AppSpacing.md,
-            right: AppSpacing.md,
-            child: _buildPickingBanner(),
-          ),
-        Positioned(
-          left: AppSpacing.md,
-          right: AppSpacing.md,
-          bottom: AppSpacing.md,
-          child: placed == null
-              ? _buildOrderPanel()
-              : _buildConfirmation(placed),
-        ),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isShort = constraints.maxHeight < _shortViewport;
+        final panelOwnsTripCard = isShort && placed == null;
+        final panelMax = _panelMaxHeight(
+          constraints.maxHeight,
+          placed != null,
+          panelOwnsTripCard,
+        );
+
+        return Stack(
+          children: [
+            _buildMap(panelMax + AppSpacing.md),
+            if (placed == null && !panelOwnsTripCard)
+              Positioned(
+                top: AppSpacing.md,
+                left: AppSpacing.md,
+                right: AppSpacing.md,
+                child: _buildTripCard(),
+              ),
+            if (placed == null && _picking != null)
+              Positioned(
+                top: 150,
+                left: AppSpacing.md,
+                right: AppSpacing.md,
+                child: _buildPickingBanner(),
+              ),
+            Positioned(
+              left: AppSpacing.md,
+              right: AppSpacing.md,
+              bottom: AppSpacing.md,
+              child: placed == null
+                  ? _buildOrderPanel(panelMax, panelOwnsTripCard)
+                  : _buildConfirmation(placed, panelMax),
+            ),
+          ],
+        );
+      },
     );
   }
 
-  Widget _buildMap() {
+  Widget _buildMap(double bottomInset) {
     final pickup = _pickup;
     final destination = _destination;
 
@@ -437,6 +452,7 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
               _marker(destination, AppColors.danger, Icons.flag),
           ],
         ),
+        MapAttribution(bottomInset: bottomInset),
       ],
     );
   }
@@ -531,7 +547,25 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
     );
   }
 
-  Widget _buildOrderPanel() {
+
+  static const double _shortViewport = 420.0;
+  static const double _tripCardHeight = 156.0;
+
+  static double _panelMaxHeight(
+    double available,
+    bool isConfirmation,
+    bool ownsTripCard,
+  ) {
+    if (ownsTripCard) {
+      return available - AppSpacing.md * 2;
+    }
+
+    final preferred = available * (isConfirmation ? 0.55 : 0.42);
+
+    return math.min(preferred, available - _tripCardHeight - AppSpacing.md * 2);
+  }
+
+  Widget _buildOrderPanel(double maxHeight, bool includeTripCard) {
     final theme = Theme.of(context);
     final distance = _distanceKm;
     final quote = _quote;
@@ -539,15 +573,17 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
 
     return _Card(
       child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.42,
-        ),
+        constraints: BoxConstraints(maxHeight: maxHeight),
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(AppSpacing.md),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              if (includeTripCard) ...[
+                _buildTripCard(),
+                const SizedBox(height: AppSpacing.sm),
+              ],
               Row(
                 children: [
                   Expanded(
@@ -688,14 +724,12 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
     );
   }
 
-  Widget _buildConfirmation(Order order) {
+  Widget _buildConfirmation(Order order, double maxHeight) {
     final theme = Theme.of(context);
 
     return _Card(
       child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.55,
-        ),
+        constraints: BoxConstraints(maxHeight: maxHeight),
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(AppSpacing.md),
           child: Column(
