@@ -15,6 +15,7 @@ import '../../widgets/status_pill.dart';
 import 'cancel_ride_dialog.dart';
 import 'pay_ride_screen.dart';
 import 'ride_detail_screen.dart';
+import '../../widgets/map_attribution.dart';
 
 class RideStatusScreen extends StatefulWidget {
   const RideStatusScreen({super.key});
@@ -335,9 +336,10 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
   String _headline(Order ride) => switch (ride.status) {
     'Pending' when ride.isPrepaid != true =>
       'Not paid yet — no driver sees this ride until it is paid.',
-    'Pending' => ride.isGeneralOrder == true
-        ? 'Paid — waiting for a driver to accept.'
-        : 'Paid — waiting for a driver from ${ride.companyName ?? 'the company'} to accept.',
+    'Pending' =>
+      ride.isGeneralOrder == true
+          ? 'Paid — waiting for a driver to accept.'
+          : 'Paid — waiting for a driver from ${ride.companyName ?? 'the company'} to accept.',
     'Confirmed' => 'Your driver is on the way.',
     'InProgress' => 'You have been picked up — heading to your destination.',
     'Completed' => 'Ride completed. Thanks for riding with us.',
@@ -383,12 +385,7 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
 
   Widget _buildTimeline(Order ride) {
     const steps = ['Pending', 'Confirmed', 'InProgress', 'Completed'];
-    const labels = [
-      'Requested',
-      'Driver accepted',
-      'Picked up',
-      'Completed',
-    ];
+    const labels = ['Requested', 'Driver accepted', 'Picked up', 'Completed'];
 
     final current = steps.indexOf(ride.status ?? '');
     final isPaid = ride.isPrepaid == true;
@@ -496,10 +493,7 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
                 border: Border.all(color: AppColors.border),
                 borderRadius: BorderRadius.circular(AppSpacing.controlRadius),
               ),
-              child: Text(
-                ride.carPlate!,
-                style: theme.textTheme.titleSmall,
-              ),
+              child: Text(ride.carPlate!, style: theme.textTheme.titleSmall),
             ),
         ],
       ),
@@ -550,15 +544,10 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
           child: Row(
             children: [
               Expanded(
-                child: Text(
-                  'What you owe',
-                  style: theme.textTheme.bodyMedium,
-                ),
+                child: Text('What you owe', style: theme.textTheme.bodyMedium),
               ),
               Text(
-                ride.fare == null
-                    ? 'Not priced yet'
-                    : Formats.money(ride.fare),
+                ride.fare == null ? 'Not priced yet' : Formats.money(ride.fare),
                 style: theme.textTheme.headlineSmall,
               ),
             ],
@@ -594,7 +583,7 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
     }
 
     return SizedBox(
-      height: 230,
+      height: (MediaQuery.of(context).size.height * 0.28).clamp(150.0, 280.0),
       child: FlutterMap(
         options: MapOptions(
           initialCenter: pickup,
@@ -632,6 +621,7 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
                 _marker(destination, AppColors.danger, Icons.flag),
             ],
           ),
+          const MapAttribution(),
         ],
       ),
     );
@@ -712,9 +702,7 @@ class _TimelineStep extends StatelessWidget {
                   Text(
                     label,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: isCurrent
-                          ? FontWeight.w700
-                          : FontWeight.w400,
+                      fontWeight: isCurrent ? FontWeight.w700 : FontWeight.w400,
                       color: isDone
                           ? AppColors.textPrimary
                           : AppColors.textMuted,

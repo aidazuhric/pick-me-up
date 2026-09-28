@@ -17,6 +17,7 @@ import '../../widgets/rating_stars.dart';
 import '../../widgets/status_pill.dart';
 import 'cancel_ride_dialog.dart';
 import 'review_form_screen.dart';
+import '../../widgets/map_attribution.dart';
 
 class RideDetailScreen extends StatefulWidget {
   const RideDetailScreen({super.key, required this.orderId});
@@ -36,7 +37,8 @@ class RideDetailScreen extends StatefulWidget {
 }
 
 class _RideDetailScreenState extends State<RideDetailScreen> {
-  static const String _tileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+  static const String _tileUrl =
+      'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
   static const String _userAgent = 'ba.fit.pickmeup_mobile';
 
   final _orders = OrderProvider();
@@ -230,7 +232,10 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
               _buildPaymentRow(theme),
               if ((ride.cancellationReason ?? '').isNotEmpty) ...[
                 const Divider(height: AppSpacing.xl),
-                Text('Why it was cancelled', style: theme.textTheme.titleMedium),
+                Text(
+                  'Why it was cancelled',
+                  style: theme.textTheme.titleMedium,
+                ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
                   ride.cancellationReason!,
@@ -346,7 +351,9 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
             label: Text(
               _myReviews.isEmpty
                   ? 'LEAVE A REVIEW'
-                  : (canReviewDriver ? 'REVIEW THE DRIVER' : 'REVIEW THE COMPANY'),
+                  : (canReviewDriver
+                        ? 'REVIEW THE DRIVER'
+                        : 'REVIEW THE COMPANY'),
             ),
           )
         else
@@ -452,7 +459,8 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
     final pickup = ride.pickupLat != null && ride.pickupLng != null
         ? LatLng(ride.pickupLat!, ride.pickupLng!)
         : null;
-    final destination = ride.destinationLat != null && ride.destinationLng != null
+    final destination =
+        ride.destinationLat != null && ride.destinationLng != null
         ? LatLng(ride.destinationLat!, ride.destinationLng!)
         : null;
 
@@ -465,7 +473,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
         : LatLngBounds(pickup, destination);
 
     return SizedBox(
-      height: 260,
+      height: (MediaQuery.of(context).size.height * 0.3).clamp(160.0, 320.0),
       child: FlutterMap(
         options: MapOptions(
           initialCenter: pickup,
@@ -503,6 +511,7 @@ class _RideDetailScreenState extends State<RideDetailScreen> {
                 _marker(destination, AppColors.danger, Icons.flag),
             ],
           ),
+          const MapAttribution(),
         ],
       ),
     );
