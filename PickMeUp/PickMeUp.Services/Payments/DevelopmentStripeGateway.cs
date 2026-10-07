@@ -34,10 +34,10 @@ namespace PickMeUp.Services.Payments
             return Task.FromResult(new StripeIntent(id, $"{id}_secret"));
         }
 
-        public Task<StripeIntent?> FindOpenIntentAsync(string paymentIntentId, CancellationToken cancellationToken = default)
+        public Task<StripeIntentState?> ReadIntentAsync(string paymentIntentId, CancellationToken cancellationToken = default)
         {
-            return Task.FromResult<StripeIntent?>(
-                new StripeIntent(paymentIntentId, $"{paymentIntentId}_secret"));
+            return Task.FromResult<StripeIntentState?>(
+                new StripeIntentState(paymentIntentId, $"{paymentIntentId}_secret", "requires_payment_method"));
         }
 
         public Task<StripeRefund> RefundAsync(string paymentIntentId, decimal amount, string? reason, CancellationToken cancellationToken = default)
@@ -75,9 +75,15 @@ namespace PickMeUp.Services.Payments
                 throw new BusinessException($"The webhook payload could not be read: {exception.Message}");
             }
 
-            var intentId = stripeEvent.Data.Object is PaymentIntent intent ? intent.Id : null;
+            var intent = stripeEvent.Data.Object as PaymentIntent;
 
-            return new StripeWebhookEvent(stripeEvent.Type, intentId);
+            var orderId = intent?.Metadata != null
+                && intent.Metadata.TryGetValue("orderId", out var raw)
+                && int.TryParse(raw, out var parsed)
+                    ? parsed
+                    : (int?)null;
+
+            return new StripeWebhookEvent(stripeEvent.Type, intent?.Id, orderId);
         }
     }
 }

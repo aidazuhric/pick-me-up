@@ -17,6 +17,7 @@ namespace PickMeUp.Services
     public class PaymentService : BaseReadService<Payment, PaymentResponse, PaymentSearch>, IPaymentService
     {
         private const string PaymentSucceededEvent = "payment_intent.succeeded";
+        private const string AlreadyPaidMessage = "This ride has already been paid for.";
 
         private readonly IAuthenticatedUserAccessor _userAccessor;
         private readonly IStripeGateway _stripeGateway;
@@ -69,6 +70,11 @@ namespace PickMeUp.Services
                 throw new KeyNotFoundException($"Order with id {request.OrderId} not found.");
             }
 
+            if (order.IsPrepaid)
+            {
+                throw new BusinessException(AlreadyPaidMessage);
+            }
+
             if (order.OrderStatusId != (int)OrderStatusEnum.Pending)
             {
                 throw new BusinessException("Only a ride that is still waiting for a driver can be paid for.");
@@ -85,24 +91,43 @@ namespace PickMeUp.Services
             {
                 if (existing.IsPaid)
                 {
-                    throw new BusinessException("This ride has already been paid for.");
+                    throw new BusinessException(AlreadyPaidMessage);
                 }
 
-                var open = await _stripeGateway.FindOpenIntentAsync(existing.StripePaymentIntentId!);
+                var state = await _stripeGateway.ReadIntentAsync(existing.StripePaymentIntentId!);
 
-                if (open != null)
+                if (state != null && state.IsSucceeded)
                 {
+                    _logger.LogWarning(
+                        "Intent {IntentId} for order {OrderId} already succeeded at Stripe but was never confirmed. "
+                        + "Settling it now instead of charging a second time.",
+                        state.PaymentIntentId, order.Id);
+
+                    await SettleAsync(existing);
+
+                    throw new BusinessException(AlreadyPaidMessage);
+                }
+
+                if (state != null && state.IsReusable)
+                {
+                    _logger.LogInformation(
+                        "Reusing open intent {IntentId} for order {OrderId}.", state.PaymentIntentId, order.Id);
+
                     return new PaymentIntentResponse
                     {
                         PaymentId = existing.Id,
                         OrderId = order.Id,
                         AmountCharged = existing.AmountCharged,
                         Currency = existing.Currency,
-                        ClientSecret = open.ClientSecret
+                        ClientSecret = state.ClientSecret
                     };
                 }
 
                 var replacement = await _stripeGateway.CreateIntentAsync(amount, existing.Currency, order.Id);
+
+                _logger.LogInformation(
+                    "Intent {PreviousIntentId} for order {OrderId} is no longer usable; replacing it with {IntentId}.",
+                    existing.StripePaymentIntentId, order.Id, replacement.PaymentIntentId);
 
                 existing.AmountCharged = amount;
                 existing.StripePaymentIntentId = replacement.PaymentIntentId;
@@ -138,6 +163,10 @@ namespace PickMeUp.Services
             payment.UpdatedAt = DateTime.UtcNow;
             await _dbContext.SaveChangesAsync();
 
+            _logger.LogInformation(
+                "Started intent {IntentId} for order {OrderId} ({Amount} {Currency}).",
+                intent.PaymentIntentId, order.Id, amount, payment.Currency);
+
             return new PaymentIntentResponse
             {
                 PaymentId = payment.Id,
@@ -150,29 +179,94 @@ namespace PickMeUp.Services
 
         public async Task<bool> HandleWebhookAsync(string payload, string signatureHeader)
         {
-            var stripeEvent = _stripeGateway.ReadWebhook(payload, signatureHeader);
+            StripeWebhookEvent stripeEvent;
 
-            if (stripeEvent.Type != PaymentSucceededEvent || string.IsNullOrWhiteSpace(stripeEvent.PaymentIntentId))
+            try
+            {
+                stripeEvent = _stripeGateway.ReadWebhook(payload, signatureHeader);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception,
+                    "Rejected a Stripe webhook: the signature could not be verified. "
+                    + "Check that STRIPE_WEBHOOK_SECRET matches the secret of the listener that sent it.");
+                throw;
+            }
+
+            _logger.LogInformation(
+                "Stripe webhook accepted: signature valid, type {Type}, intent {IntentId}, order {OrderId}.",
+                stripeEvent.Type, stripeEvent.PaymentIntentId, stripeEvent.OrderId);
+
+            if (stripeEvent.Type != PaymentSucceededEvent)
             {
                 _logger.LogInformation("Ignoring Stripe event {Type}", stripeEvent.Type);
                 return false;
             }
 
-            var payment = await _dbContext.Payments
-                .FirstOrDefaultAsync(p => p.StripePaymentIntentId == stripeEvent.PaymentIntentId);
+            var payment = await FindPaymentForEventAsync(stripeEvent);
 
             if (payment == null)
             {
-                _logger.LogWarning("No payment matches Stripe intent {IntentId}", stripeEvent.PaymentIntentId);
+                _logger.LogWarning(
+                    "No payment matches Stripe intent {IntentId} or order {OrderId}; nothing was confirmed.",
+                    stripeEvent.PaymentIntentId, stripeEvent.OrderId);
                 return false;
             }
 
             if (payment.IsPaid)
             {
-                _logger.LogInformation("Payment {PaymentId} is already paid; webhook replay had no effect.", payment.Id);
+                _logger.LogInformation(
+                    "Payment {PaymentId} for order {OrderId} is already paid; webhook replay had no effect.",
+                    payment.Id, payment.OrderId);
                 return false;
             }
 
+            if (!string.IsNullOrWhiteSpace(stripeEvent.PaymentIntentId)
+                && payment.StripePaymentIntentId != stripeEvent.PaymentIntentId)
+            {
+                _logger.LogWarning(
+                    "Payment {PaymentId} was recorded against intent {StoredIntentId} but order {OrderId} was paid "
+                    + "with {IntentId}; settling against the intent that actually charged.",
+                    payment.Id, payment.StripePaymentIntentId, payment.OrderId, stripeEvent.PaymentIntentId);
+
+                payment.StripePaymentIntentId = stripeEvent.PaymentIntentId;
+            }
+
+            await SettleAsync(payment);
+
+            _logger.LogInformation(
+                "Confirmed payment {PaymentId}: order {OrderId} is prepaid and visible to drivers.",
+                payment.Id, payment.OrderId);
+
+            return true;
+        }
+
+        private async Task<Payment?> FindPaymentForEventAsync(StripeWebhookEvent stripeEvent)
+        {
+            if (!string.IsNullOrWhiteSpace(stripeEvent.PaymentIntentId))
+            {
+                var byIntent = await _dbContext.Payments
+                    .FirstOrDefaultAsync(p => p.StripePaymentIntentId == stripeEvent.PaymentIntentId);
+
+                if (byIntent != null)
+                {
+                    return byIntent;
+                }
+            }
+
+            if (stripeEvent.OrderId == null)
+            {
+                return null;
+            }
+
+            return await _dbContext.Payments
+                .Where(p => p.OrderId == stripeEvent.OrderId.Value)
+                .OrderByDescending(p => p.Id)
+                .FirstOrDefaultAsync();
+        }
+
+        private async Task SettleAsync(Payment payment)
+        {
             await using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
             var paidAt = DateTime.UtcNow;
@@ -200,8 +294,6 @@ namespace PickMeUp.Services
             {
                 await _orderDispatcher.OrderBecameAvailableAsync(order.Id, excludeDriverId: null);
             }
-
-            return true;
         }
 
         public async Task<PaymentResponse> RefundAsync(int id, PaymentRefundRequest request)
