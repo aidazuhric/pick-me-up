@@ -514,347 +514,17 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 6, 11, 9, 0, 0, 0, DateTimeKind.Utc),
-                            OrderId = 1,
+                            CreatedAt = new DateTime(2026, 10, 4, 18, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 19,
                             SignalTypeId = 1,
-                            TaxiCompanyId = 1,
-                            UserId = 4,
+                            TaxiCompanyId = 2,
+                            UserId = 10,
                             Value = 1m
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2026, 6, 11, 9, 35, 0, 0, DateTimeKind.Utc),
-                            OrderId = 1,
-                            SignalTypeId = 2,
-                            TaxiCompanyId = 1,
-                            UserId = 4,
-                            Value = 1m
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAt = new DateTime(2026, 6, 18, 9, 0, 0, 0, DateTimeKind.Utc),
-                            OrderId = 2,
-                            SignalTypeId = 1,
-                            TaxiCompanyId = 1,
-                            UserId = 4,
-                            Value = 1m
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreatedAt = new DateTime(2026, 6, 18, 9, 35, 0, 0, DateTimeKind.Utc),
-                            OrderId = 2,
-                            SignalTypeId = 2,
-                            TaxiCompanyId = 1,
-                            UserId = 4,
-                            Value = 1m
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CreatedAt = new DateTime(2026, 6, 25, 9, 0, 0, 0, DateTimeKind.Utc),
-                            OrderId = 3,
-                            SignalTypeId = 1,
-                            TaxiCompanyId = 1,
-                            UserId = 4,
-                            Value = 1m
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CreatedAt = new DateTime(2026, 6, 25, 9, 35, 0, 0, DateTimeKind.Utc),
-                            OrderId = 3,
-                            SignalTypeId = 2,
-                            TaxiCompanyId = 1,
-                            UserId = 4,
-                            Value = 1m
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CreatedAt = new DateTime(2026, 7, 2, 9, 0, 0, 0, DateTimeKind.Utc),
-                            OrderId = 4,
-                            SignalTypeId = 1,
-                            TaxiCompanyId = 1,
-                            UserId = 4,
-                            Value = 1m
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CreatedAt = new DateTime(2026, 7, 2, 9, 35, 0, 0, DateTimeKind.Utc),
-                            OrderId = 4,
-                            SignalTypeId = 2,
-                            TaxiCompanyId = 1,
-                            UserId = 4,
-                            Value = 1m
-                        },
-                        new
-                        {
-                            Id = 9,
-                            CreatedAt = new DateTime(2026, 7, 9, 9, 0, 0, 0, DateTimeKind.Utc),
-                            OrderId = 5,
-                            SignalTypeId = 1,
-                            TaxiCompanyId = 1,
-                            UserId = 4,
-                            Value = 1m
-                        },
-                        new
-                        {
-                            Id = 10,
-                            CreatedAt = new DateTime(2026, 7, 9, 9, 35, 0, 0, DateTimeKind.Utc),
-                            OrderId = 5,
-                            SignalTypeId = 2,
-                            TaxiCompanyId = 1,
-                            UserId = 4,
-                            Value = 1m
-                        },
-                        new
-                        {
-                            Id = 11,
-                            CreatedAt = new DateTime(2026, 6, 14, 9, 0, 0, 0, DateTimeKind.Utc),
-                            OrderId = 6,
-                            SignalTypeId = 1,
-                            TaxiCompanyId = 2,
-                            UserId = 4,
-                            Value = 1m
-                        },
-                        new
-                        {
-                            Id = 12,
-                            CreatedAt = new DateTime(2026, 6, 14, 9, 35, 0, 0, DateTimeKind.Utc),
-                            OrderId = 6,
-                            SignalTypeId = 2,
-                            TaxiCompanyId = 2,
-                            UserId = 4,
-                            Value = 1m
-                        },
-                        new
-                        {
-                            Id = 13,
-                            CreatedAt = new DateTime(2026, 7, 16, 9, 0, 0, 0, DateTimeKind.Utc),
-                            OrderId = 7,
-                            SignalTypeId = 1,
-                            TaxiCompanyId = 2,
-                            UserId = 4,
-                            Value = 1m
-                        },
-                        new
-                        {
-                            Id = 14,
-                            CreatedAt = new DateTime(2026, 7, 16, 9, 35, 0, 0, DateTimeKind.Utc),
-                            OrderId = 7,
-                            SignalTypeId = 2,
-                            TaxiCompanyId = 2,
-                            UserId = 4,
-                            Value = 1m
-                        },
-                        new
-                        {
-                            Id = 15,
-                            CreatedAt = new DateTime(2026, 6, 12, 9, 0, 0, 0, DateTimeKind.Utc),
-                            OrderId = 8,
-                            SignalTypeId = 1,
-                            TaxiCompanyId = 3,
-                            UserId = 9,
-                            Value = 1m
-                        },
-                        new
-                        {
-                            Id = 16,
-                            CreatedAt = new DateTime(2026, 6, 12, 9, 35, 0, 0, DateTimeKind.Utc),
-                            OrderId = 8,
-                            SignalTypeId = 2,
-                            TaxiCompanyId = 3,
-                            UserId = 9,
-                            Value = 1m
-                        },
-                        new
-                        {
-                            Id = 17,
-                            CreatedAt = new DateTime(2026, 6, 20, 9, 0, 0, 0, DateTimeKind.Utc),
-                            OrderId = 9,
-                            SignalTypeId = 1,
-                            TaxiCompanyId = 3,
-                            UserId = 9,
-                            Value = 1m
-                        },
-                        new
-                        {
-                            Id = 18,
-                            CreatedAt = new DateTime(2026, 6, 20, 9, 35, 0, 0, DateTimeKind.Utc),
-                            OrderId = 9,
-                            SignalTypeId = 2,
-                            TaxiCompanyId = 3,
-                            UserId = 9,
-                            Value = 1m
-                        },
-                        new
-                        {
-                            Id = 19,
-                            CreatedAt = new DateTime(2026, 7, 4, 9, 0, 0, 0, DateTimeKind.Utc),
-                            OrderId = 10,
-                            SignalTypeId = 1,
-                            TaxiCompanyId = 3,
-                            UserId = 9,
-                            Value = 1m
-                        },
-                        new
-                        {
-                            Id = 20,
-                            CreatedAt = new DateTime(2026, 7, 4, 9, 35, 0, 0, DateTimeKind.Utc),
-                            OrderId = 10,
-                            SignalTypeId = 2,
-                            TaxiCompanyId = 3,
-                            UserId = 9,
-                            Value = 1m
-                        },
-                        new
-                        {
-                            Id = 21,
-                            CreatedAt = new DateTime(2026, 7, 11, 9, 0, 0, 0, DateTimeKind.Utc),
-                            OrderId = 11,
-                            SignalTypeId = 1,
-                            TaxiCompanyId = 3,
-                            UserId = 9,
-                            Value = 1m
-                        },
-                        new
-                        {
-                            Id = 22,
-                            CreatedAt = new DateTime(2026, 7, 11, 9, 35, 0, 0, DateTimeKind.Utc),
-                            OrderId = 11,
-                            SignalTypeId = 2,
-                            TaxiCompanyId = 3,
-                            UserId = 9,
-                            Value = 1m
-                        },
-                        new
-                        {
-                            Id = 23,
-                            CreatedAt = new DateTime(2026, 6, 28, 9, 0, 0, 0, DateTimeKind.Utc),
-                            OrderId = 12,
-                            SignalTypeId = 1,
-                            TaxiCompanyId = 4,
-                            UserId = 9,
-                            Value = 1m
-                        },
-                        new
-                        {
-                            Id = 24,
-                            CreatedAt = new DateTime(2026, 6, 28, 9, 35, 0, 0, DateTimeKind.Utc),
-                            OrderId = 12,
-                            SignalTypeId = 2,
-                            TaxiCompanyId = 4,
-                            UserId = 9,
-                            Value = 1m
-                        },
-                        new
-                        {
-                            Id = 25,
-                            CreatedAt = new DateTime(2026, 6, 11, 10, 35, 0, 0, DateTimeKind.Utc),
-                            OrderId = 1,
-                            SignalTypeId = 3,
-                            TaxiCompanyId = 1,
-                            UserId = 4,
-                            Value = 5m
-                        },
-                        new
-                        {
-                            Id = 26,
-                            CreatedAt = new DateTime(2026, 6, 18, 10, 35, 0, 0, DateTimeKind.Utc),
-                            OrderId = 2,
-                            SignalTypeId = 3,
-                            TaxiCompanyId = 1,
-                            UserId = 4,
-                            Value = 5m
-                        },
-                        new
-                        {
-                            Id = 27,
-                            CreatedAt = new DateTime(2026, 6, 25, 10, 35, 0, 0, DateTimeKind.Utc),
-                            OrderId = 3,
-                            SignalTypeId = 3,
-                            TaxiCompanyId = 1,
-                            UserId = 4,
-                            Value = 4m
-                        },
-                        new
-                        {
-                            Id = 28,
-                            CreatedAt = new DateTime(2026, 6, 14, 10, 35, 0, 0, DateTimeKind.Utc),
-                            OrderId = 6,
-                            SignalTypeId = 3,
-                            TaxiCompanyId = 2,
-                            UserId = 4,
-                            Value = 2m
-                        },
-                        new
-                        {
-                            Id = 29,
-                            CreatedAt = new DateTime(2026, 6, 12, 10, 35, 0, 0, DateTimeKind.Utc),
-                            OrderId = 8,
-                            SignalTypeId = 3,
-                            TaxiCompanyId = 3,
-                            UserId = 9,
-                            Value = 4m
-                        },
-                        new
-                        {
-                            Id = 30,
-                            CreatedAt = new DateTime(2026, 6, 20, 10, 35, 0, 0, DateTimeKind.Utc),
-                            OrderId = 9,
-                            SignalTypeId = 3,
-                            TaxiCompanyId = 3,
-                            UserId = 9,
-                            Value = 5m
-                        },
-                        new
-                        {
-                            Id = 31,
-                            CreatedAt = new DateTime(2026, 6, 28, 10, 35, 0, 0, DateTimeKind.Utc),
-                            OrderId = 12,
-                            SignalTypeId = 3,
-                            TaxiCompanyId = 4,
-                            UserId = 9,
-                            Value = 3m
-                        },
-                        new
-                        {
-                            Id = 32,
-                            CreatedAt = new DateTime(2026, 8, 3, 8, 30, 0, 0, DateTimeKind.Utc),
-                            OrderId = 13,
-                            SignalTypeId = 1,
-                            TaxiCompanyId = 1,
-                            UserId = 4,
-                            Value = 1m
-                        },
-                        new
-                        {
-                            Id = 33,
-                            CreatedAt = new DateTime(2026, 8, 4, 17, 10, 0, 0, DateTimeKind.Utc),
-                            OrderId = 14,
-                            SignalTypeId = 1,
-                            TaxiCompanyId = 3,
-                            UserId = 9,
-                            Value = 1m
-                        },
-                        new
-                        {
-                            Id = 34,
-                            CreatedAt = new DateTime(2026, 8, 5, 7, 45, 0, 0, DateTimeKind.Utc),
-                            OrderId = 15,
-                            SignalTypeId = 1,
-                            TaxiCompanyId = 1,
-                            UserId = 4,
-                            Value = 1m
-                        },
-                        new
-                        {
-                            Id = 35,
-                            CreatedAt = new DateTime(2026, 8, 5, 18, 5, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 10, 4, 8, 0, 0, 0, DateTimeKind.Utc),
                             OrderId = 16,
                             SignalTypeId = 1,
                             TaxiCompanyId = 3,
@@ -863,9 +533,129 @@ namespace PickMeUp.Services.Migrations
                         },
                         new
                         {
-                            Id = 36,
-                            CreatedAt = new DateTime(2026, 7, 20, 12, 0, 0, 0, DateTimeKind.Utc),
-                            OrderId = 17,
+                            Id = 3,
+                            CreatedAt = new DateTime(2026, 9, 24, 14, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 12,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 4,
+                            UserId = 9,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2026, 9, 24, 14, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 12,
+                            SignalTypeId = 2,
+                            TaxiCompanyId = 4,
+                            UserId = 9,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2026, 9, 24, 14, 55, 0, 0, DateTimeKind.Utc),
+                            OrderId = 12,
+                            SignalTypeId = 3,
+                            TaxiCompanyId = 4,
+                            UserId = 9,
+                            Value = 3m
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAt = new DateTime(2026, 9, 22, 9, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 11,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 3,
+                            UserId = 9,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedAt = new DateTime(2026, 9, 22, 9, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 11,
+                            SignalTypeId = 2,
+                            TaxiCompanyId = 3,
+                            UserId = 9,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CreatedAt = new DateTime(2026, 9, 21, 13, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 7,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 2,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CreatedAt = new DateTime(2026, 9, 21, 13, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 7,
+                            SignalTypeId = 2,
+                            TaxiCompanyId = 2,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CreatedAt = new DateTime(2026, 9, 19, 9, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 6,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 2,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CreatedAt = new DateTime(2026, 9, 19, 9, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 6,
+                            SignalTypeId = 2,
+                            TaxiCompanyId = 2,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CreatedAt = new DateTime(2026, 9, 19, 9, 55, 0, 0, DateTimeKind.Utc),
+                            OrderId = 6,
+                            SignalTypeId = 3,
+                            TaxiCompanyId = 2,
+                            UserId = 4,
+                            Value = 2m
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CreatedAt = new DateTime(2026, 9, 18, 12, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 10,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 3,
+                            UserId = 9,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CreatedAt = new DateTime(2026, 9, 18, 12, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 10,
+                            SignalTypeId = 2,
+                            TaxiCompanyId = 3,
+                            UserId = 9,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 15,
+                            CreatedAt = new DateTime(2026, 9, 17, 11, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 5,
                             SignalTypeId = 1,
                             TaxiCompanyId = 1,
                             UserId = 4,
@@ -873,12 +663,212 @@ namespace PickMeUp.Services.Migrations
                         },
                         new
                         {
-                            Id = 37,
-                            CreatedAt = new DateTime(2026, 7, 22, 9, 15, 0, 0, DateTimeKind.Utc),
+                            Id = 16,
+                            CreatedAt = new DateTime(2026, 9, 17, 11, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 5,
+                            SignalTypeId = 2,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 17,
+                            CreatedAt = new DateTime(2026, 10, 3, 9, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 15,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 1,
+                            UserId = 10,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 18,
+                            CreatedAt = new DateTime(2026, 9, 15, 8, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 4,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 19,
+                            CreatedAt = new DateTime(2026, 9, 15, 8, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 4,
+                            SignalTypeId = 2,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 20,
+                            CreatedAt = new DateTime(2026, 9, 14, 10, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 9,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 3,
+                            UserId = 9,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 21,
+                            CreatedAt = new DateTime(2026, 9, 14, 10, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 9,
+                            SignalTypeId = 2,
+                            TaxiCompanyId = 3,
+                            UserId = 9,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 22,
+                            CreatedAt = new DateTime(2026, 9, 14, 10, 55, 0, 0, DateTimeKind.Utc),
+                            OrderId = 9,
+                            SignalTypeId = 3,
+                            TaxiCompanyId = 3,
+                            UserId = 9,
+                            Value = 5m
+                        },
+                        new
+                        {
+                            Id = 23,
+                            CreatedAt = new DateTime(2026, 9, 13, 10, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 3,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 24,
+                            CreatedAt = new DateTime(2026, 9, 13, 10, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 3,
+                            SignalTypeId = 2,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 25,
+                            CreatedAt = new DateTime(2026, 9, 13, 10, 55, 0, 0, DateTimeKind.Utc),
+                            OrderId = 3,
+                            SignalTypeId = 3,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 4m
+                        },
+                        new
+                        {
+                            Id = 26,
+                            CreatedAt = new DateTime(2026, 9, 11, 9, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 2,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 27,
+                            CreatedAt = new DateTime(2026, 9, 11, 9, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 2,
+                            SignalTypeId = 2,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 28,
+                            CreatedAt = new DateTime(2026, 9, 11, 9, 55, 0, 0, DateTimeKind.Utc),
+                            OrderId = 2,
+                            SignalTypeId = 3,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 5m
+                        },
+                        new
+                        {
+                            Id = 29,
+                            CreatedAt = new DateTime(2026, 9, 10, 8, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 8,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 3,
+                            UserId = 9,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 30,
+                            CreatedAt = new DateTime(2026, 9, 10, 8, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 8,
+                            SignalTypeId = 2,
+                            TaxiCompanyId = 3,
+                            UserId = 9,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 31,
+                            CreatedAt = new DateTime(2026, 9, 10, 8, 55, 0, 0, DateTimeKind.Utc),
+                            OrderId = 8,
+                            SignalTypeId = 3,
+                            TaxiCompanyId = 3,
+                            UserId = 9,
+                            Value = 4m
+                        },
+                        new
+                        {
+                            Id = 32,
+                            CreatedAt = new DateTime(2026, 9, 9, 8, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 1,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 33,
+                            CreatedAt = new DateTime(2026, 9, 9, 8, 35, 0, 0, DateTimeKind.Utc),
+                            OrderId = 1,
+                            SignalTypeId = 2,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 34,
+                            CreatedAt = new DateTime(2026, 9, 9, 8, 55, 0, 0, DateTimeKind.Utc),
+                            OrderId = 1,
+                            SignalTypeId = 3,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
+                            Value = 5m
+                        },
+                        new
+                        {
+                            Id = 35,
+                            CreatedAt = new DateTime(2026, 9, 28, 11, 0, 0, 0, DateTimeKind.Utc),
                             OrderId = 18,
                             SignalTypeId = 1,
                             TaxiCompanyId = 3,
                             UserId = 9,
+                            Value = 1m
+                        },
+                        new
+                        {
+                            Id = 36,
+                            CreatedAt = new DateTime(2026, 9, 26, 10, 0, 0, 0, DateTimeKind.Utc),
+                            OrderId = 17,
+                            SignalTypeId = 1,
+                            TaxiCompanyId = 1,
+                            UserId = 4,
                             Value = 1m
                         });
                 });
@@ -941,7 +931,7 @@ namespace PickMeUp.Services.Migrations
                             Id = 1,
                             Body = "Order your first ride straight from the home screen.",
                             Category = "order-status",
-                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 10, 4, 7, 0, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
                             IsRead = false,
                             Title = "Welcome to PickMeUp",
@@ -952,10 +942,10 @@ namespace PickMeUp.Services.Migrations
                             Id = 2,
                             Body = "Your card is ready, so paying for a ride now takes one tap.",
                             Category = "payment",
-                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 10, 4, 7, 0, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
                             IsRead = true,
-                            ReadAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            ReadAt = new DateTime(2026, 10, 4, 8, 0, 0, 0, DateTimeKind.Utc),
                             Title = "Payment method saved",
                             UserId = 4
                         },
@@ -964,10 +954,10 @@ namespace PickMeUp.Services.Migrations
                             Id = 3,
                             Body = "Reason: the driver could not reach the pick-up point.",
                             Category = "order-cancelled",
-                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 10, 4, 7, 0, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
                             IsRead = true,
-                            ReadAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            ReadAt = new DateTime(2026, 10, 4, 8, 0, 0, 0, DateTimeKind.Utc),
                             Title = "A ride was cancelled",
                             UserId = 4
                         },
@@ -976,7 +966,7 @@ namespace PickMeUp.Services.Migrations
                             Id = 4,
                             Body = "Pick-up at Kralja Tomislava 1.",
                             Category = "order-available",
-                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 10, 4, 7, 0, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
                             IsRead = false,
                             Title = "New ride available",
@@ -987,7 +977,7 @@ namespace PickMeUp.Services.Migrations
                             Id = 5,
                             Body = "You completed four rides on your last shift.",
                             Category = "order-status",
-                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 10, 4, 7, 0, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
                             IsRead = false,
                             Title = "Your shift summary is ready",
@@ -1104,411 +1094,322 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 1,
-                            AcceptedAt = new DateTime(2026, 6, 11, 9, 5, 0, 0, DateTimeKind.Utc),
+                            AcceptedAt = new DateTime(2026, 9, 9, 8, 5, 0, 0, DateTimeKind.Utc),
                             CarId = 1,
                             CityId = 1,
-                            CompletedAt = new DateTime(2026, 6, 11, 9, 35, 0, 0, DateTimeKind.Utc),
-                            CreatedAt = new DateTime(2026, 6, 11, 9, 0, 0, 0, DateTimeKind.Utc),
+                            CompletedAt = new DateTime(2026, 9, 9, 8, 35, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 9, 8, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Bulevar 22",
                             DestinationLat = 43.350200000000001,
                             DestinationLng = 17.814,
-                            DistanceKm = 3.2m,
+                            DistanceKm = 3.20m,
                             DriverId = 1,
                             Fare = 6.34m,
                             IsDeleted = false,
                             IsPrepaid = true,
                             OrderStatusId = 4,
                             PassengerId = 4,
-                            PickedUpAt = new DateTime(2026, 6, 11, 9, 12, 0, 0, DateTimeKind.Utc),
+                            PickedUpAt = new DateTime(2026, 9, 9, 8, 12, 0, 0, DateTimeKind.Utc),
                             PickupAddress = "Kralja Tomislava 3",
                             PickupLat = 43.343800000000002,
                             PickupLng = 17.8078,
-                            PrepaidAt = new DateTime(2026, 6, 11, 9, 0, 0, 0, DateTimeKind.Utc),
+                            PrepaidAt = new DateTime(2026, 9, 9, 8, 2, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 11, 9, 35, 0, 0, DateTimeKind.Utc)
+                            UpdatedAt = new DateTime(2026, 9, 9, 8, 35, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 2,
-                            AcceptedAt = new DateTime(2026, 6, 18, 9, 5, 0, 0, DateTimeKind.Utc),
+                            AcceptedAt = new DateTime(2026, 9, 11, 9, 5, 0, 0, DateTimeKind.Utc),
                             CarId = 1,
                             CityId = 1,
-                            CompletedAt = new DateTime(2026, 6, 18, 9, 35, 0, 0, DateTimeKind.Utc),
-                            CreatedAt = new DateTime(2026, 6, 18, 9, 0, 0, 0, DateTimeKind.Utc),
+                            CompletedAt = new DateTime(2026, 9, 11, 9, 35, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 11, 9, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Rondo 1",
                             DestinationLat = 43.3489,
                             DestinationLng = 17.799499999999998,
-                            DistanceKm = 5.6m,
+                            DistanceKm = 5.60m,
                             DriverId = 1,
                             Fare = 9.22m,
                             IsDeleted = false,
                             IsPrepaid = true,
                             OrderStatusId = 4,
                             PassengerId = 4,
-                            PickedUpAt = new DateTime(2026, 6, 18, 9, 12, 0, 0, DateTimeKind.Utc),
+                            PickedUpAt = new DateTime(2026, 9, 11, 9, 12, 0, 0, DateTimeKind.Utc),
                             PickupAddress = "Marsala Tita 40",
                             PickupLat = 43.3401,
                             PickupLng = 17.813500000000001,
-                            PrepaidAt = new DateTime(2026, 6, 18, 9, 0, 0, 0, DateTimeKind.Utc),
+                            PrepaidAt = new DateTime(2026, 9, 11, 9, 2, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 18, 9, 35, 0, 0, DateTimeKind.Utc)
+                            UpdatedAt = new DateTime(2026, 9, 11, 9, 35, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 3,
-                            AcceptedAt = new DateTime(2026, 6, 25, 9, 5, 0, 0, DateTimeKind.Utc),
+                            AcceptedAt = new DateTime(2026, 9, 13, 10, 5, 0, 0, DateTimeKind.Utc),
                             CarId = 2,
                             CityId = 1,
-                            CompletedAt = new DateTime(2026, 6, 25, 9, 35, 0, 0, DateTimeKind.Utc),
-                            CreatedAt = new DateTime(2026, 6, 25, 9, 0, 0, 0, DateTimeKind.Utc),
+                            CompletedAt = new DateTime(2026, 9, 13, 10, 35, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 13, 10, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Aerodrom Mostar",
                             DestinationLat = 43.282899999999998,
                             DestinationLng = 17.8459,
-                            DistanceKm = 8.4m,
+                            DistanceKm = 8.40m,
                             DriverId = 2,
                             Fare = 12.58m,
                             IsDeleted = false,
                             IsPrepaid = true,
                             OrderStatusId = 4,
                             PassengerId = 4,
-                            PickedUpAt = new DateTime(2026, 6, 25, 9, 12, 0, 0, DateTimeKind.Utc),
+                            PickedUpAt = new DateTime(2026, 9, 13, 10, 12, 0, 0, DateTimeKind.Utc),
                             PickupAddress = "Splitska 5",
                             PickupLat = 43.335000000000001,
                             PickupLng = 17.802099999999999,
-                            PrepaidAt = new DateTime(2026, 6, 25, 9, 0, 0, 0, DateTimeKind.Utc),
+                            PrepaidAt = new DateTime(2026, 9, 13, 10, 2, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 25, 9, 35, 0, 0, DateTimeKind.Utc)
+                            UpdatedAt = new DateTime(2026, 9, 13, 10, 35, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 4,
-                            AcceptedAt = new DateTime(2026, 7, 2, 9, 5, 0, 0, DateTimeKind.Utc),
+                            AcceptedAt = new DateTime(2026, 9, 15, 8, 5, 0, 0, DateTimeKind.Utc),
                             CarId = 1,
                             CityId = 1,
-                            CompletedAt = new DateTime(2026, 7, 2, 9, 35, 0, 0, DateTimeKind.Utc),
-                            CreatedAt = new DateTime(2026, 7, 2, 9, 0, 0, 0, DateTimeKind.Utc),
+                            CompletedAt = new DateTime(2026, 9, 15, 8, 35, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 15, 8, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Stari Most",
                             DestinationLat = 43.337400000000002,
                             DestinationLng = 17.815100000000001,
-                            DistanceKm = 4.1m,
+                            DistanceKm = 4.10m,
                             DriverId = 1,
                             Fare = 7.42m,
                             IsDeleted = false,
                             IsPrepaid = true,
                             OrderStatusId = 4,
                             PassengerId = 4,
-                            PickedUpAt = new DateTime(2026, 7, 2, 9, 12, 0, 0, DateTimeKind.Utc),
+                            PickedUpAt = new DateTime(2026, 9, 15, 8, 12, 0, 0, DateTimeKind.Utc),
                             PickupAddress = "Bulevar 22",
                             PickupLat = 43.350200000000001,
                             PickupLng = 17.814,
-                            PrepaidAt = new DateTime(2026, 7, 2, 9, 0, 0, 0, DateTimeKind.Utc),
+                            PrepaidAt = new DateTime(2026, 9, 15, 8, 2, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 1,
-                            UpdatedAt = new DateTime(2026, 7, 2, 9, 35, 0, 0, DateTimeKind.Utc)
+                            UpdatedAt = new DateTime(2026, 9, 15, 8, 35, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 5,
-                            AcceptedAt = new DateTime(2026, 7, 9, 9, 5, 0, 0, DateTimeKind.Utc),
+                            AcceptedAt = new DateTime(2026, 9, 17, 11, 5, 0, 0, DateTimeKind.Utc),
                             CarId = 2,
                             CityId = 1,
-                            CompletedAt = new DateTime(2026, 7, 9, 9, 35, 0, 0, DateTimeKind.Utc),
-                            CreatedAt = new DateTime(2026, 7, 9, 9, 0, 0, 0, DateTimeKind.Utc),
+                            CompletedAt = new DateTime(2026, 9, 17, 11, 35, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 17, 11, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Kampus Sveucilista",
                             DestinationLat = 43.341900000000003,
                             DestinationLng = 17.804300000000001,
-                            DistanceKm = 6.9m,
+                            DistanceKm = 6.90m,
                             DriverId = 2,
                             Fare = 10.78m,
                             IsDeleted = false,
                             IsPrepaid = true,
                             OrderStatusId = 4,
                             PassengerId = 4,
-                            PickedUpAt = new DateTime(2026, 7, 9, 9, 12, 0, 0, DateTimeKind.Utc),
+                            PickedUpAt = new DateTime(2026, 9, 17, 11, 12, 0, 0, DateTimeKind.Utc),
                             PickupAddress = "Kneza Domagoja 12",
                             PickupLat = 43.347700000000003,
                             PickupLng = 17.796099999999999,
-                            PrepaidAt = new DateTime(2026, 7, 9, 9, 0, 0, 0, DateTimeKind.Utc),
+                            PrepaidAt = new DateTime(2026, 9, 17, 11, 2, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 1,
-                            UpdatedAt = new DateTime(2026, 7, 9, 9, 35, 0, 0, DateTimeKind.Utc)
+                            UpdatedAt = new DateTime(2026, 9, 17, 11, 35, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 6,
-                            AcceptedAt = new DateTime(2026, 6, 14, 9, 5, 0, 0, DateTimeKind.Utc),
+                            AcceptedAt = new DateTime(2026, 9, 19, 9, 5, 0, 0, DateTimeKind.Utc),
                             CarId = 4,
                             CityId = 1,
-                            CompletedAt = new DateTime(2026, 6, 14, 9, 35, 0, 0, DateTimeKind.Utc),
-                            CreatedAt = new DateTime(2026, 6, 14, 9, 0, 0, 0, DateTimeKind.Utc),
+                            CompletedAt = new DateTime(2026, 9, 19, 9, 35, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 19, 9, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Zeljeznicka stanica",
                             DestinationLat = 43.347999999999999,
                             DestinationLng = 17.808499999999999,
-                            DistanceKm = 5.0m,
+                            DistanceKm = 5.00m,
                             DriverId = 4,
                             Fare = 8.75m,
                             IsDeleted = false,
                             IsPrepaid = true,
                             OrderStatusId = 4,
                             PassengerId = 4,
-                            PickedUpAt = new DateTime(2026, 6, 14, 9, 12, 0, 0, DateTimeKind.Utc),
+                            PickedUpAt = new DateTime(2026, 9, 19, 9, 12, 0, 0, DateTimeKind.Utc),
                             PickupAddress = "Fejiceva 9",
                             PickupLat = 43.338999999999999,
                             PickupLng = 17.815799999999999,
-                            PrepaidAt = new DateTime(2026, 6, 14, 9, 0, 0, 0, DateTimeKind.Utc),
+                            PrepaidAt = new DateTime(2026, 9, 19, 9, 2, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 2,
-                            UpdatedAt = new DateTime(2026, 6, 14, 9, 35, 0, 0, DateTimeKind.Utc)
+                            UpdatedAt = new DateTime(2026, 9, 19, 9, 35, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 7,
-                            AcceptedAt = new DateTime(2026, 7, 16, 9, 5, 0, 0, DateTimeKind.Utc),
+                            AcceptedAt = new DateTime(2026, 9, 21, 13, 5, 0, 0, DateTimeKind.Utc),
                             CarId = 4,
                             CityId = 1,
-                            CompletedAt = new DateTime(2026, 7, 16, 9, 35, 0, 0, DateTimeKind.Utc),
-                            CreatedAt = new DateTime(2026, 7, 16, 9, 0, 0, 0, DateTimeKind.Utc),
+                            CompletedAt = new DateTime(2026, 9, 21, 13, 35, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 21, 13, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Blagaj",
                             DestinationLat = 43.256999999999998,
                             DestinationLng = 17.888999999999999,
-                            DistanceKm = 7.3m,
+                            DistanceKm = 7.30m,
                             DriverId = 4,
                             Fare = 11.86m,
                             IsDeleted = false,
                             IsPrepaid = true,
                             OrderStatusId = 4,
                             PassengerId = 4,
-                            PickedUpAt = new DateTime(2026, 7, 16, 9, 12, 0, 0, DateTimeKind.Utc),
+                            PickedUpAt = new DateTime(2026, 9, 21, 13, 12, 0, 0, DateTimeKind.Utc),
                             PickupAddress = "Rondo 1",
                             PickupLat = 43.3489,
                             PickupLng = 17.799499999999998,
-                            PrepaidAt = new DateTime(2026, 7, 16, 9, 0, 0, 0, DateTimeKind.Utc),
+                            PrepaidAt = new DateTime(2026, 9, 21, 13, 2, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 2,
-                            UpdatedAt = new DateTime(2026, 7, 16, 9, 35, 0, 0, DateTimeKind.Utc)
+                            UpdatedAt = new DateTime(2026, 9, 21, 13, 35, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 8,
-                            AcceptedAt = new DateTime(2026, 6, 12, 9, 5, 0, 0, DateTimeKind.Utc),
+                            AcceptedAt = new DateTime(2026, 9, 10, 8, 5, 0, 0, DateTimeKind.Utc),
                             CarId = 5,
                             CityId = 2,
-                            CompletedAt = new DateTime(2026, 6, 12, 9, 35, 0, 0, DateTimeKind.Utc),
-                            CreatedAt = new DateTime(2026, 6, 12, 9, 0, 0, 0, DateTimeKind.Utc),
+                            CompletedAt = new DateTime(2026, 9, 10, 8, 35, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 10, 8, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Skenderija",
                             DestinationLat = 43.856000000000002,
                             DestinationLng = 18.411000000000001,
-                            DistanceKm = 4.5m,
+                            DistanceKm = 4.50m,
                             DriverId = 3,
                             Fare = 7.95m,
                             IsDeleted = false,
                             IsPrepaid = true,
                             OrderStatusId = 4,
                             PassengerId = 9,
-                            PickedUpAt = new DateTime(2026, 6, 12, 9, 12, 0, 0, DateTimeKind.Utc),
+                            PickedUpAt = new DateTime(2026, 9, 10, 8, 12, 0, 0, DateTimeKind.Utc),
                             PickupAddress = "Ferhadija 10",
                             PickupLat = 43.859000000000002,
                             PickupLng = 18.420999999999999,
-                            PrepaidAt = new DateTime(2026, 6, 12, 9, 0, 0, 0, DateTimeKind.Utc),
+                            PrepaidAt = new DateTime(2026, 9, 10, 8, 2, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 3,
-                            UpdatedAt = new DateTime(2026, 6, 12, 9, 35, 0, 0, DateTimeKind.Utc)
+                            UpdatedAt = new DateTime(2026, 9, 10, 8, 35, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 9,
-                            AcceptedAt = new DateTime(2026, 6, 20, 9, 5, 0, 0, DateTimeKind.Utc),
+                            AcceptedAt = new DateTime(2026, 9, 14, 10, 5, 0, 0, DateTimeKind.Utc),
                             CarId = 5,
                             CityId = 2,
-                            CompletedAt = new DateTime(2026, 6, 20, 9, 35, 0, 0, DateTimeKind.Utc),
-                            CreatedAt = new DateTime(2026, 6, 20, 9, 0, 0, 0, DateTimeKind.Utc),
+                            CompletedAt = new DateTime(2026, 9, 14, 10, 35, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 14, 10, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Ilidza",
                             DestinationLat = 43.828000000000003,
                             DestinationLng = 18.309999999999999,
-                            DistanceKm = 9.2m,
+                            DistanceKm = 9.20m,
                             DriverId = 3,
                             Fare = 13.12m,
                             IsDeleted = false,
                             IsPrepaid = true,
                             OrderStatusId = 4,
                             PassengerId = 9,
-                            PickedUpAt = new DateTime(2026, 6, 20, 9, 12, 0, 0, DateTimeKind.Utc),
+                            PickedUpAt = new DateTime(2026, 9, 14, 10, 12, 0, 0, DateTimeKind.Utc),
                             PickupAddress = "Bascarsija",
                             PickupLat = 43.859499999999997,
                             PickupLng = 18.431000000000001,
-                            PrepaidAt = new DateTime(2026, 6, 20, 9, 0, 0, 0, DateTimeKind.Utc),
+                            PrepaidAt = new DateTime(2026, 9, 14, 10, 2, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 3,
-                            UpdatedAt = new DateTime(2026, 6, 20, 9, 35, 0, 0, DateTimeKind.Utc)
+                            UpdatedAt = new DateTime(2026, 9, 14, 10, 35, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 10,
-                            AcceptedAt = new DateTime(2026, 7, 4, 9, 5, 0, 0, DateTimeKind.Utc),
+                            AcceptedAt = new DateTime(2026, 9, 18, 12, 5, 0, 0, DateTimeKind.Utc),
                             CarId = 5,
                             CityId = 2,
-                            CompletedAt = new DateTime(2026, 7, 4, 9, 35, 0, 0, DateTimeKind.Utc),
-                            CreatedAt = new DateTime(2026, 7, 4, 9, 0, 0, 0, DateTimeKind.Utc),
+                            CompletedAt = new DateTime(2026, 9, 18, 12, 35, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 18, 12, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Vogosca",
                             DestinationLat = 43.899999999999999,
                             DestinationLng = 18.343,
-                            DistanceKm = 6.1m,
+                            DistanceKm = 6.10m,
                             DriverId = 3,
                             Fare = 9.71m,
                             IsDeleted = false,
                             IsPrepaid = true,
                             OrderStatusId = 4,
                             PassengerId = 9,
-                            PickedUpAt = new DateTime(2026, 7, 4, 9, 12, 0, 0, DateTimeKind.Utc),
+                            PickedUpAt = new DateTime(2026, 9, 18, 12, 12, 0, 0, DateTimeKind.Utc),
                             PickupAddress = "Marijin Dvor",
                             PickupLat = 43.856000000000002,
                             PickupLng = 18.402999999999999,
-                            PrepaidAt = new DateTime(2026, 7, 4, 9, 0, 0, 0, DateTimeKind.Utc),
+                            PrepaidAt = new DateTime(2026, 9, 18, 12, 2, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 3,
-                            UpdatedAt = new DateTime(2026, 7, 4, 9, 35, 0, 0, DateTimeKind.Utc)
+                            UpdatedAt = new DateTime(2026, 9, 18, 12, 35, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 11,
-                            AcceptedAt = new DateTime(2026, 7, 11, 9, 5, 0, 0, DateTimeKind.Utc),
+                            AcceptedAt = new DateTime(2026, 9, 22, 9, 5, 0, 0, DateTimeKind.Utc),
                             CarId = 5,
                             CityId = 2,
-                            CompletedAt = new DateTime(2026, 7, 11, 9, 35, 0, 0, DateTimeKind.Utc),
-                            CreatedAt = new DateTime(2026, 7, 11, 9, 0, 0, 0, DateTimeKind.Utc),
+                            CompletedAt = new DateTime(2026, 9, 22, 9, 35, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 22, 9, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Kosevo",
                             DestinationLat = 43.868000000000002,
                             DestinationLng = 18.413,
-                            DistanceKm = 3.8m,
+                            DistanceKm = 3.80m,
                             DriverId = 3,
                             Fare = 7.18m,
                             IsDeleted = false,
                             IsPrepaid = true,
                             OrderStatusId = 4,
                             PassengerId = 9,
-                            PickedUpAt = new DateTime(2026, 7, 11, 9, 12, 0, 0, DateTimeKind.Utc),
+                            PickedUpAt = new DateTime(2026, 9, 22, 9, 12, 0, 0, DateTimeKind.Utc),
                             PickupAddress = "Grbavica",
                             PickupLat = 43.847999999999999,
                             PickupLng = 18.395,
-                            PrepaidAt = new DateTime(2026, 7, 11, 9, 0, 0, 0, DateTimeKind.Utc),
+                            PrepaidAt = new DateTime(2026, 9, 22, 9, 2, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 3,
-                            UpdatedAt = new DateTime(2026, 7, 11, 9, 35, 0, 0, DateTimeKind.Utc)
+                            UpdatedAt = new DateTime(2026, 9, 22, 9, 35, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 12,
-                            AcceptedAt = new DateTime(2026, 6, 28, 9, 5, 0, 0, DateTimeKind.Utc),
+                            AcceptedAt = new DateTime(2026, 9, 24, 14, 5, 0, 0, DateTimeKind.Utc),
                             CarId = 6,
                             CityId = 2,
-                            CompletedAt = new DateTime(2026, 6, 28, 9, 35, 0, 0, DateTimeKind.Utc),
-                            CreatedAt = new DateTime(2026, 6, 28, 9, 0, 0, 0, DateTimeKind.Utc),
+                            CompletedAt = new DateTime(2026, 9, 24, 14, 35, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 24, 14, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Dobrinja",
                             DestinationLat = 43.823,
                             DestinationLng = 18.338999999999999,
-                            DistanceKm = 5.4m,
+                            DistanceKm = 5.40m,
                             DriverId = 5,
                             Fare = 9.01m,
                             IsDeleted = false,
                             IsPrepaid = true,
                             OrderStatusId = 4,
                             PassengerId = 9,
-                            PickedUpAt = new DateTime(2026, 6, 28, 9, 12, 0, 0, DateTimeKind.Utc),
+                            PickedUpAt = new DateTime(2026, 9, 24, 14, 12, 0, 0, DateTimeKind.Utc),
                             PickupAddress = "Alipasina 14",
                             PickupLat = 43.861499999999999,
                             PickupLng = 18.4055,
-                            PrepaidAt = new DateTime(2026, 6, 28, 9, 0, 0, 0, DateTimeKind.Utc),
+                            PrepaidAt = new DateTime(2026, 9, 24, 14, 2, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 4,
-                            UpdatedAt = new DateTime(2026, 6, 28, 9, 35, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 13,
-                            CityId = 1,
-                            CreatedAt = new DateTime(2026, 8, 3, 8, 30, 0, 0, DateTimeKind.Utc),
-                            DestinationAddress = "Kampus Sveucilista",
-                            DestinationLat = 43.341900000000003,
-                            DestinationLng = 17.804300000000001,
-                            DistanceKm = 5.50m,
-                            Fare = 9.10m,
-                            IsDeleted = false,
-                            IsPrepaid = true,
-                            OrderStatusId = 1,
-                            PassengerId = 4,
-                            PickupAddress = "Rondo 1",
-                            PickupLat = 43.3489,
-                            PickupLng = 17.799499999999998,
-                            PrepaidAt = new DateTime(2026, 8, 3, 8, 30, 0, 0, DateTimeKind.Utc),
-                            TaxiCompanyId = 1
-                        },
-                        new
-                        {
-                            Id = 14,
-                            CityId = 2,
-                            CreatedAt = new DateTime(2026, 8, 4, 17, 10, 0, 0, DateTimeKind.Utc),
-                            DestinationAddress = "Marijin Dvor",
-                            DestinationLat = 43.856000000000002,
-                            DestinationLng = 18.402999999999999,
-                            DistanceKm = 3.90m,
-                            Fare = 7.29m,
-                            IsDeleted = false,
-                            IsPrepaid = true,
-                            OrderStatusId = 1,
-                            PassengerId = 9,
-                            PickupAddress = "Ferhadija 10",
-                            PickupLat = 43.859000000000002,
-                            PickupLng = 18.420999999999999,
-                            PrepaidAt = new DateTime(2026, 8, 4, 17, 10, 0, 0, DateTimeKind.Utc),
-                            TaxiCompanyId = 3
-                        },
-                        new
-                        {
-                            Id = 15,
-                            AcceptedAt = new DateTime(2026, 8, 5, 7, 50, 0, 0, DateTimeKind.Utc),
-                            CarId = 1,
-                            CityId = 1,
-                            CreatedAt = new DateTime(2026, 8, 5, 7, 45, 0, 0, DateTimeKind.Utc),
-                            DestinationAddress = "Stari Most",
-                            DestinationLat = 43.337400000000002,
-                            DestinationLng = 17.815100000000001,
-                            DistanceKm = 6.70m,
-                            DriverId = 1,
-                            Fare = 10.54m,
-                            IsDeleted = false,
-                            IsPrepaid = true,
-                            OrderStatusId = 2,
-                            PassengerId = 4,
-                            PickupAddress = "Splitska 5",
-                            PickupLat = 43.335000000000001,
-                            PickupLng = 17.802099999999999,
-                            PrepaidAt = new DateTime(2026, 8, 5, 7, 45, 0, 0, DateTimeKind.Utc),
-                            TaxiCompanyId = 1,
-                            UpdatedAt = new DateTime(2026, 8, 5, 7, 50, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 16,
-                            AcceptedAt = new DateTime(2026, 8, 5, 18, 9, 0, 0, DateTimeKind.Utc),
-                            CarId = 5,
-                            CityId = 2,
-                            CreatedAt = new DateTime(2026, 8, 5, 18, 5, 0, 0, DateTimeKind.Utc),
-                            DestinationAddress = "Ilidza",
-                            DestinationLat = 43.828000000000003,
-                            DestinationLng = 18.309999999999999,
-                            DistanceKm = 8.20m,
-                            DriverId = 3,
-                            Fare = 12.02m,
-                            IsDeleted = false,
-                            IsPrepaid = true,
-                            OrderStatusId = 3,
-                            PassengerId = 9,
-                            PickedUpAt = new DateTime(2026, 8, 5, 18, 16, 0, 0, DateTimeKind.Utc),
-                            PickupAddress = "Bascarsija",
-                            PickupLat = 43.859499999999997,
-                            PickupLng = 18.431000000000001,
-                            PrepaidAt = new DateTime(2026, 8, 5, 18, 5, 0, 0, DateTimeKind.Utc),
-                            TaxiCompanyId = 3,
-                            UpdatedAt = new DateTime(2026, 8, 5, 18, 16, 0, 0, DateTimeKind.Utc)
+                            UpdatedAt = new DateTime(2026, 9, 24, 14, 35, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 17,
                             CancellationReason = "Passenger found another ride before a driver accepted.",
-                            CancelledAt = new DateTime(2026, 7, 20, 12, 6, 0, 0, DateTimeKind.Utc),
+                            CancelledAt = new DateTime(2026, 9, 26, 10, 20, 0, 0, DateTimeKind.Utc),
                             CityId = 1,
-                            CreatedAt = new DateTime(2026, 7, 20, 12, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 26, 10, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Zeljeznicka stanica",
                             DestinationLat = 43.347999999999999,
                             DestinationLng = 17.808499999999999,
@@ -1521,19 +1422,19 @@ namespace PickMeUp.Services.Migrations
                             PickupAddress = "Marsala Tita 40",
                             PickupLat = 43.3401,
                             PickupLng = 17.813500000000001,
-                            PrepaidAt = new DateTime(2026, 7, 20, 12, 0, 0, 0, DateTimeKind.Utc),
+                            PrepaidAt = new DateTime(2026, 9, 26, 10, 2, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 1,
-                            UpdatedAt = new DateTime(2026, 7, 20, 12, 6, 0, 0, DateTimeKind.Utc)
+                            UpdatedAt = new DateTime(2026, 9, 26, 10, 20, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 18,
-                            AcceptedAt = new DateTime(2026, 7, 22, 9, 19, 0, 0, DateTimeKind.Utc),
+                            AcceptedAt = new DateTime(2026, 9, 28, 11, 5, 0, 0, DateTimeKind.Utc),
                             CancellationReason = "Driver could not reach the pick-up point because of a closed road.",
-                            CancelledAt = new DateTime(2026, 7, 22, 9, 31, 0, 0, DateTimeKind.Utc),
+                            CancelledAt = new DateTime(2026, 9, 28, 11, 20, 0, 0, DateTimeKind.Utc),
                             CarId = 5,
                             CityId = 2,
-                            CreatedAt = new DateTime(2026, 7, 22, 9, 15, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 28, 11, 0, 0, 0, DateTimeKind.Utc),
                             DestinationAddress = "Vogosca",
                             DestinationLat = 43.899999999999999,
                             DestinationLng = 18.343,
@@ -1547,9 +1448,97 @@ namespace PickMeUp.Services.Migrations
                             PickupAddress = "Grbavica",
                             PickupLat = 43.847999999999999,
                             PickupLng = 18.395,
-                            PrepaidAt = new DateTime(2026, 7, 22, 9, 15, 0, 0, DateTimeKind.Utc),
+                            PrepaidAt = new DateTime(2026, 9, 28, 11, 2, 0, 0, DateTimeKind.Utc),
                             TaxiCompanyId = 3,
-                            UpdatedAt = new DateTime(2026, 7, 22, 9, 31, 0, 0, DateTimeKind.Utc)
+                            UpdatedAt = new DateTime(2026, 9, 28, 11, 20, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 15,
+                            AcceptedAt = new DateTime(2026, 10, 3, 9, 5, 0, 0, DateTimeKind.Utc),
+                            CarId = 2,
+                            CityId = 1,
+                            CreatedAt = new DateTime(2026, 10, 3, 9, 0, 0, 0, DateTimeKind.Utc),
+                            DestinationAddress = "Stari Most",
+                            DestinationLat = 43.337400000000002,
+                            DestinationLng = 17.815100000000001,
+                            DistanceKm = 6.70m,
+                            DriverId = 2,
+                            Fare = 10.54m,
+                            IsDeleted = false,
+                            IsPrepaid = true,
+                            OrderStatusId = 2,
+                            PassengerId = 10,
+                            PickupAddress = "Splitska 5",
+                            PickupLat = 43.335000000000001,
+                            PickupLng = 17.802099999999999,
+                            PrepaidAt = new DateTime(2026, 10, 3, 9, 2, 0, 0, DateTimeKind.Utc),
+                            TaxiCompanyId = 1,
+                            UpdatedAt = new DateTime(2026, 10, 3, 9, 5, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 16,
+                            AcceptedAt = new DateTime(2026, 10, 4, 8, 5, 0, 0, DateTimeKind.Utc),
+                            CarId = 5,
+                            CityId = 2,
+                            CreatedAt = new DateTime(2026, 10, 4, 8, 0, 0, 0, DateTimeKind.Utc),
+                            DestinationAddress = "Ilidza",
+                            DestinationLat = 43.828000000000003,
+                            DestinationLng = 18.309999999999999,
+                            DistanceKm = 8.20m,
+                            DriverId = 3,
+                            Fare = 12.02m,
+                            IsDeleted = false,
+                            IsPrepaid = true,
+                            OrderStatusId = 3,
+                            PassengerId = 9,
+                            PickedUpAt = new DateTime(2026, 10, 4, 8, 12, 0, 0, DateTimeKind.Utc),
+                            PickupAddress = "Bascarsija",
+                            PickupLat = 43.859499999999997,
+                            PickupLng = 18.431000000000001,
+                            PrepaidAt = new DateTime(2026, 10, 4, 8, 2, 0, 0, DateTimeKind.Utc),
+                            TaxiCompanyId = 3,
+                            UpdatedAt = new DateTime(2026, 10, 4, 8, 12, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CityId = 2,
+                            CreatedAt = new DateTime(2026, 10, 4, 17, 0, 0, 0, DateTimeKind.Utc),
+                            DestinationAddress = "Marijin Dvor",
+                            DestinationLat = 43.856000000000002,
+                            DestinationLng = 18.402999999999999,
+                            DistanceKm = 3.90m,
+                            Fare = 7.31m,
+                            IsDeleted = false,
+                            IsPrepaid = true,
+                            OrderStatusId = 1,
+                            PassengerId = 9,
+                            PickupAddress = "Ferhadija 10",
+                            PickupLat = 43.859000000000002,
+                            PickupLng = 18.420999999999999,
+                            PrepaidAt = new DateTime(2026, 10, 4, 17, 2, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 10, 4, 17, 2, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 19,
+                            CityId = 1,
+                            CreatedAt = new DateTime(2026, 10, 4, 18, 0, 0, 0, DateTimeKind.Utc),
+                            DestinationAddress = "Stari Most",
+                            DestinationLat = 43.337400000000002,
+                            DestinationLng = 17.815100000000001,
+                            DistanceKm = 2.40m,
+                            Fare = 5.24m,
+                            IsDeleted = false,
+                            IsPrepaid = false,
+                            OrderStatusId = 1,
+                            PassengerId = 10,
+                            PickupAddress = "Kneza Domagoja 12",
+                            PickupLat = 43.347700000000003,
+                            PickupLng = 17.796099999999999,
+                            TaxiCompanyId = 2
                         });
                 });
 
@@ -1696,7 +1685,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 1,
-                            ChangedAt = new DateTime(2026, 6, 11, 9, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 9, 8, 0, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 4,
                             OrderId = 1,
                             Reason = "Order placed",
@@ -1705,7 +1694,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 2,
-                            ChangedAt = new DateTime(2026, 6, 11, 9, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 9, 8, 5, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 3,
                             FromStatusId = 1,
                             OrderId = 1,
@@ -1715,7 +1704,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 3,
-                            ChangedAt = new DateTime(2026, 6, 11, 9, 12, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 9, 8, 12, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 3,
                             FromStatusId = 2,
                             OrderId = 1,
@@ -1725,7 +1714,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 4,
-                            ChangedAt = new DateTime(2026, 6, 11, 9, 35, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 9, 8, 35, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 3,
                             FromStatusId = 3,
                             OrderId = 1,
@@ -1735,7 +1724,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 5,
-                            ChangedAt = new DateTime(2026, 6, 18, 9, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 11, 9, 0, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 4,
                             OrderId = 2,
                             Reason = "Order placed",
@@ -1744,7 +1733,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 6,
-                            ChangedAt = new DateTime(2026, 6, 18, 9, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 11, 9, 5, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 3,
                             FromStatusId = 1,
                             OrderId = 2,
@@ -1754,7 +1743,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 7,
-                            ChangedAt = new DateTime(2026, 6, 18, 9, 12, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 11, 9, 12, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 3,
                             FromStatusId = 2,
                             OrderId = 2,
@@ -1764,7 +1753,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 8,
-                            ChangedAt = new DateTime(2026, 6, 18, 9, 35, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 11, 9, 35, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 3,
                             FromStatusId = 3,
                             OrderId = 2,
@@ -1774,7 +1763,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 9,
-                            ChangedAt = new DateTime(2026, 6, 25, 9, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 13, 10, 0, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 4,
                             OrderId = 3,
                             Reason = "Order placed",
@@ -1783,7 +1772,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 10,
-                            ChangedAt = new DateTime(2026, 6, 25, 9, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 13, 10, 5, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 7,
                             FromStatusId = 1,
                             OrderId = 3,
@@ -1793,7 +1782,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 11,
-                            ChangedAt = new DateTime(2026, 6, 25, 9, 12, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 13, 10, 12, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 7,
                             FromStatusId = 2,
                             OrderId = 3,
@@ -1803,7 +1792,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 12,
-                            ChangedAt = new DateTime(2026, 6, 25, 9, 35, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 13, 10, 35, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 7,
                             FromStatusId = 3,
                             OrderId = 3,
@@ -1813,7 +1802,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 13,
-                            ChangedAt = new DateTime(2026, 7, 2, 9, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 15, 8, 0, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 4,
                             OrderId = 4,
                             Reason = "Order placed",
@@ -1822,7 +1811,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 14,
-                            ChangedAt = new DateTime(2026, 7, 2, 9, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 15, 8, 5, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 3,
                             FromStatusId = 1,
                             OrderId = 4,
@@ -1832,7 +1821,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 15,
-                            ChangedAt = new DateTime(2026, 7, 2, 9, 12, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 15, 8, 12, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 3,
                             FromStatusId = 2,
                             OrderId = 4,
@@ -1842,7 +1831,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 16,
-                            ChangedAt = new DateTime(2026, 7, 2, 9, 35, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 15, 8, 35, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 3,
                             FromStatusId = 3,
                             OrderId = 4,
@@ -1852,7 +1841,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 17,
-                            ChangedAt = new DateTime(2026, 7, 9, 9, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 17, 11, 0, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 4,
                             OrderId = 5,
                             Reason = "Order placed",
@@ -1861,7 +1850,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 18,
-                            ChangedAt = new DateTime(2026, 7, 9, 9, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 17, 11, 5, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 7,
                             FromStatusId = 1,
                             OrderId = 5,
@@ -1871,7 +1860,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 19,
-                            ChangedAt = new DateTime(2026, 7, 9, 9, 12, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 17, 11, 12, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 7,
                             FromStatusId = 2,
                             OrderId = 5,
@@ -1881,7 +1870,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 20,
-                            ChangedAt = new DateTime(2026, 7, 9, 9, 35, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 17, 11, 35, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 7,
                             FromStatusId = 3,
                             OrderId = 5,
@@ -1891,7 +1880,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 21,
-                            ChangedAt = new DateTime(2026, 6, 14, 9, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 19, 9, 0, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 4,
                             OrderId = 6,
                             Reason = "Order placed",
@@ -1900,7 +1889,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 22,
-                            ChangedAt = new DateTime(2026, 6, 14, 9, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 19, 9, 5, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 12,
                             FromStatusId = 1,
                             OrderId = 6,
@@ -1910,7 +1899,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 23,
-                            ChangedAt = new DateTime(2026, 6, 14, 9, 12, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 19, 9, 12, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 12,
                             FromStatusId = 2,
                             OrderId = 6,
@@ -1920,7 +1909,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 24,
-                            ChangedAt = new DateTime(2026, 6, 14, 9, 35, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 19, 9, 35, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 12,
                             FromStatusId = 3,
                             OrderId = 6,
@@ -1930,7 +1919,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 25,
-                            ChangedAt = new DateTime(2026, 7, 16, 9, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 21, 13, 0, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 4,
                             OrderId = 7,
                             Reason = "Order placed",
@@ -1939,7 +1928,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 26,
-                            ChangedAt = new DateTime(2026, 7, 16, 9, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 21, 13, 5, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 12,
                             FromStatusId = 1,
                             OrderId = 7,
@@ -1949,7 +1938,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 27,
-                            ChangedAt = new DateTime(2026, 7, 16, 9, 12, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 21, 13, 12, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 12,
                             FromStatusId = 2,
                             OrderId = 7,
@@ -1959,7 +1948,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 28,
-                            ChangedAt = new DateTime(2026, 7, 16, 9, 35, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 21, 13, 35, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 12,
                             FromStatusId = 3,
                             OrderId = 7,
@@ -1969,7 +1958,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 29,
-                            ChangedAt = new DateTime(2026, 6, 12, 9, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 10, 8, 0, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 9,
                             OrderId = 8,
                             Reason = "Order placed",
@@ -1978,7 +1967,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 30,
-                            ChangedAt = new DateTime(2026, 6, 12, 9, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 10, 8, 5, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 8,
                             FromStatusId = 1,
                             OrderId = 8,
@@ -1988,7 +1977,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 31,
-                            ChangedAt = new DateTime(2026, 6, 12, 9, 12, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 10, 8, 12, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 8,
                             FromStatusId = 2,
                             OrderId = 8,
@@ -1998,7 +1987,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 32,
-                            ChangedAt = new DateTime(2026, 6, 12, 9, 35, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 10, 8, 35, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 8,
                             FromStatusId = 3,
                             OrderId = 8,
@@ -2008,7 +1997,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 33,
-                            ChangedAt = new DateTime(2026, 6, 20, 9, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 14, 10, 0, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 9,
                             OrderId = 9,
                             Reason = "Order placed",
@@ -2017,7 +2006,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 34,
-                            ChangedAt = new DateTime(2026, 6, 20, 9, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 14, 10, 5, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 8,
                             FromStatusId = 1,
                             OrderId = 9,
@@ -2027,7 +2016,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 35,
-                            ChangedAt = new DateTime(2026, 6, 20, 9, 12, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 14, 10, 12, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 8,
                             FromStatusId = 2,
                             OrderId = 9,
@@ -2037,7 +2026,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 36,
-                            ChangedAt = new DateTime(2026, 6, 20, 9, 35, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 14, 10, 35, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 8,
                             FromStatusId = 3,
                             OrderId = 9,
@@ -2047,7 +2036,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 37,
-                            ChangedAt = new DateTime(2026, 7, 4, 9, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 18, 12, 0, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 9,
                             OrderId = 10,
                             Reason = "Order placed",
@@ -2056,7 +2045,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 38,
-                            ChangedAt = new DateTime(2026, 7, 4, 9, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 18, 12, 5, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 8,
                             FromStatusId = 1,
                             OrderId = 10,
@@ -2066,7 +2055,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 39,
-                            ChangedAt = new DateTime(2026, 7, 4, 9, 12, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 18, 12, 12, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 8,
                             FromStatusId = 2,
                             OrderId = 10,
@@ -2076,7 +2065,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 40,
-                            ChangedAt = new DateTime(2026, 7, 4, 9, 35, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 18, 12, 35, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 8,
                             FromStatusId = 3,
                             OrderId = 10,
@@ -2086,7 +2075,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 41,
-                            ChangedAt = new DateTime(2026, 7, 11, 9, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 22, 9, 0, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 9,
                             OrderId = 11,
                             Reason = "Order placed",
@@ -2095,7 +2084,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 42,
-                            ChangedAt = new DateTime(2026, 7, 11, 9, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 22, 9, 5, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 8,
                             FromStatusId = 1,
                             OrderId = 11,
@@ -2105,7 +2094,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 43,
-                            ChangedAt = new DateTime(2026, 7, 11, 9, 12, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 22, 9, 12, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 8,
                             FromStatusId = 2,
                             OrderId = 11,
@@ -2115,7 +2104,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 44,
-                            ChangedAt = new DateTime(2026, 7, 11, 9, 35, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 22, 9, 35, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 8,
                             FromStatusId = 3,
                             OrderId = 11,
@@ -2125,7 +2114,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 45,
-                            ChangedAt = new DateTime(2026, 6, 28, 9, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 24, 14, 0, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 9,
                             OrderId = 12,
                             Reason = "Order placed",
@@ -2134,7 +2123,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 46,
-                            ChangedAt = new DateTime(2026, 6, 28, 9, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 24, 14, 5, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 13,
                             FromStatusId = 1,
                             OrderId = 12,
@@ -2144,7 +2133,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 47,
-                            ChangedAt = new DateTime(2026, 6, 28, 9, 12, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 24, 14, 12, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 13,
                             FromStatusId = 2,
                             OrderId = 12,
@@ -2154,7 +2143,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 48,
-                            ChangedAt = new DateTime(2026, 6, 28, 9, 35, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 24, 14, 35, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 13,
                             FromStatusId = 3,
                             OrderId = 12,
@@ -2164,73 +2153,7 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 49,
-                            ChangedAt = new DateTime(2026, 8, 3, 8, 30, 0, 0, DateTimeKind.Utc),
-                            ChangedByUserId = 4,
-                            OrderId = 13,
-                            Reason = "Order placed",
-                            ToStatusId = 1
-                        },
-                        new
-                        {
-                            Id = 50,
-                            ChangedAt = new DateTime(2026, 8, 4, 17, 10, 0, 0, DateTimeKind.Utc),
-                            ChangedByUserId = 9,
-                            OrderId = 14,
-                            Reason = "Order placed",
-                            ToStatusId = 1
-                        },
-                        new
-                        {
-                            Id = 51,
-                            ChangedAt = new DateTime(2026, 8, 5, 7, 45, 0, 0, DateTimeKind.Utc),
-                            ChangedByUserId = 4,
-                            OrderId = 15,
-                            Reason = "Order placed",
-                            ToStatusId = 1
-                        },
-                        new
-                        {
-                            Id = 52,
-                            ChangedAt = new DateTime(2026, 8, 5, 7, 50, 0, 0, DateTimeKind.Utc),
-                            ChangedByUserId = 3,
-                            FromStatusId = 1,
-                            OrderId = 15,
-                            Reason = "Accepted by driver",
-                            ToStatusId = 2
-                        },
-                        new
-                        {
-                            Id = 53,
-                            ChangedAt = new DateTime(2026, 8, 5, 18, 5, 0, 0, DateTimeKind.Utc),
-                            ChangedByUserId = 9,
-                            OrderId = 16,
-                            Reason = "Order placed",
-                            ToStatusId = 1
-                        },
-                        new
-                        {
-                            Id = 54,
-                            ChangedAt = new DateTime(2026, 8, 5, 18, 9, 0, 0, DateTimeKind.Utc),
-                            ChangedByUserId = 8,
-                            FromStatusId = 1,
-                            OrderId = 16,
-                            Reason = "Accepted by driver",
-                            ToStatusId = 2
-                        },
-                        new
-                        {
-                            Id = 55,
-                            ChangedAt = new DateTime(2026, 8, 5, 18, 16, 0, 0, DateTimeKind.Utc),
-                            ChangedByUserId = 8,
-                            FromStatusId = 2,
-                            OrderId = 16,
-                            Reason = "Passenger picked up",
-                            ToStatusId = 3
-                        },
-                        new
-                        {
-                            Id = 56,
-                            ChangedAt = new DateTime(2026, 7, 20, 12, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedAt = new DateTime(2026, 9, 26, 10, 0, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 4,
                             OrderId = 17,
                             Reason = "Order placed",
@@ -2238,8 +2161,8 @@ namespace PickMeUp.Services.Migrations
                         },
                         new
                         {
-                            Id = 57,
-                            ChangedAt = new DateTime(2026, 7, 20, 12, 6, 0, 0, DateTimeKind.Utc),
+                            Id = 50,
+                            ChangedAt = new DateTime(2026, 9, 26, 10, 20, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 4,
                             FromStatusId = 1,
                             OrderId = 17,
@@ -2248,8 +2171,8 @@ namespace PickMeUp.Services.Migrations
                         },
                         new
                         {
-                            Id = 58,
-                            ChangedAt = new DateTime(2026, 7, 22, 9, 15, 0, 0, DateTimeKind.Utc),
+                            Id = 51,
+                            ChangedAt = new DateTime(2026, 9, 28, 11, 0, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 9,
                             OrderId = 18,
                             Reason = "Order placed",
@@ -2257,8 +2180,8 @@ namespace PickMeUp.Services.Migrations
                         },
                         new
                         {
-                            Id = 59,
-                            ChangedAt = new DateTime(2026, 7, 22, 9, 19, 0, 0, DateTimeKind.Utc),
+                            Id = 52,
+                            ChangedAt = new DateTime(2026, 9, 28, 11, 5, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 8,
                             FromStatusId = 1,
                             OrderId = 18,
@@ -2267,13 +2190,79 @@ namespace PickMeUp.Services.Migrations
                         },
                         new
                         {
-                            Id = 60,
-                            ChangedAt = new DateTime(2026, 7, 22, 9, 31, 0, 0, DateTimeKind.Utc),
+                            Id = 53,
+                            ChangedAt = new DateTime(2026, 9, 28, 11, 20, 0, 0, DateTimeKind.Utc),
                             ChangedByUserId = 8,
                             FromStatusId = 2,
                             OrderId = 18,
                             Reason = "Driver could not reach the pick-up point because of a closed road.",
                             ToStatusId = 5
+                        },
+                        new
+                        {
+                            Id = 54,
+                            ChangedAt = new DateTime(2026, 10, 3, 9, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 10,
+                            OrderId = 15,
+                            Reason = "Order placed",
+                            ToStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 55,
+                            ChangedAt = new DateTime(2026, 10, 3, 9, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 7,
+                            FromStatusId = 1,
+                            OrderId = 15,
+                            Reason = "Accepted by driver",
+                            ToStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 56,
+                            ChangedAt = new DateTime(2026, 10, 4, 8, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 9,
+                            OrderId = 16,
+                            Reason = "Order placed",
+                            ToStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 57,
+                            ChangedAt = new DateTime(2026, 10, 4, 8, 5, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 8,
+                            FromStatusId = 1,
+                            OrderId = 16,
+                            Reason = "Accepted by driver",
+                            ToStatusId = 2
+                        },
+                        new
+                        {
+                            Id = 58,
+                            ChangedAt = new DateTime(2026, 10, 4, 8, 12, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 8,
+                            FromStatusId = 2,
+                            OrderId = 16,
+                            Reason = "Passenger picked up",
+                            ToStatusId = 3
+                        },
+                        new
+                        {
+                            Id = 59,
+                            ChangedAt = new DateTime(2026, 10, 4, 17, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 9,
+                            OrderId = 14,
+                            Reason = "Order placed",
+                            ToStatusId = 1
+                        },
+                        new
+                        {
+                            Id = 60,
+                            ChangedAt = new DateTime(2026, 10, 4, 18, 0, 0, 0, DateTimeKind.Utc),
+                            ChangedByUserId = 10,
+                            OrderId = 19,
+                            Reason = "Order placed",
+                            ToStatusId = 1
                         });
                 });
 
@@ -2378,143 +2367,239 @@ namespace PickMeUp.Services.Migrations
                         {
                             Id = 1,
                             AmountCharged = 6.34m,
-                            CreatedAt = new DateTime(2026, 6, 11, 9, 40, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 9, 8, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
                             IsDeleted = false,
                             IsPaid = true,
                             OrderId = 1,
-                            PaidAt = new DateTime(2026, 6, 11, 10, 5, 0, 0, DateTimeKind.Utc),
+                            PaidAt = new DateTime(2026, 9, 9, 8, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
-                            StripePaymentIntentId = "pi_seed_001"
+                            StripePaymentIntentId = "pi_seed_order_001",
+                            UpdatedAt = new DateTime(2026, 9, 9, 8, 2, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 2,
                             AmountCharged = 9.22m,
-                            CreatedAt = new DateTime(2026, 6, 18, 9, 40, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 11, 9, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
                             IsDeleted = false,
                             IsPaid = true,
                             OrderId = 2,
-                            PaidAt = new DateTime(2026, 6, 18, 10, 5, 0, 0, DateTimeKind.Utc),
+                            PaidAt = new DateTime(2026, 9, 11, 9, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
-                            StripePaymentIntentId = "pi_seed_002"
+                            StripePaymentIntentId = "pi_seed_order_002",
+                            UpdatedAt = new DateTime(2026, 9, 11, 9, 2, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 3,
                             AmountCharged = 12.58m,
-                            CreatedAt = new DateTime(2026, 6, 25, 9, 40, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 13, 10, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
                             IsDeleted = false,
                             IsPaid = true,
                             OrderId = 3,
-                            PaidAt = new DateTime(2026, 6, 25, 10, 5, 0, 0, DateTimeKind.Utc),
+                            PaidAt = new DateTime(2026, 9, 13, 10, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 3,
-                            StripePaymentIntentId = "pi_seed_003"
+                            StripePaymentIntentId = "pi_seed_order_003",
+                            UpdatedAt = new DateTime(2026, 9, 13, 10, 2, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 4,
                             AmountCharged = 7.42m,
-                            CreatedAt = new DateTime(2026, 7, 2, 9, 40, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 15, 8, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
                             IsDeleted = false,
                             IsPaid = true,
                             OrderId = 4,
-                            PaidAt = new DateTime(2026, 7, 2, 10, 5, 0, 0, DateTimeKind.Utc),
+                            PaidAt = new DateTime(2026, 9, 15, 8, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 4,
-                            StripePaymentIntentId = "pi_seed_004"
+                            StripePaymentIntentId = "pi_seed_order_004",
+                            UpdatedAt = new DateTime(2026, 9, 15, 8, 2, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 5,
                             AmountCharged = 10.78m,
-                            CreatedAt = new DateTime(2026, 7, 9, 9, 40, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 17, 11, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
                             IsDeleted = false,
-                            IsPaid = false,
+                            IsPaid = true,
                             OrderId = 5,
-                            PaymentStatusId = 1,
-                            StripePaymentIntentId = "pi_seed_005"
+                            PaidAt = new DateTime(2026, 9, 17, 11, 2, 0, 0, DateTimeKind.Utc),
+                            PaymentStatusId = 2,
+                            StripePaymentIntentId = "pi_seed_order_005",
+                            UpdatedAt = new DateTime(2026, 9, 17, 11, 2, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 6,
                             AmountCharged = 8.75m,
-                            CreatedAt = new DateTime(2026, 6, 14, 9, 40, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 19, 9, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
                             IsDeleted = false,
                             IsPaid = true,
                             OrderId = 6,
-                            PaidAt = new DateTime(2026, 6, 14, 10, 5, 0, 0, DateTimeKind.Utc),
+                            PaidAt = new DateTime(2026, 9, 19, 9, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
-                            StripePaymentIntentId = "pi_seed_006"
+                            StripePaymentIntentId = "pi_seed_order_006",
+                            UpdatedAt = new DateTime(2026, 9, 19, 9, 2, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 7,
-                            AmountCharged = 7.95m,
-                            CreatedAt = new DateTime(2026, 6, 12, 9, 40, 0, 0, DateTimeKind.Utc),
+                            AmountCharged = 11.86m,
+                            CreatedAt = new DateTime(2026, 9, 21, 13, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
                             IsDeleted = false,
                             IsPaid = true,
-                            OrderId = 8,
-                            PaidAt = new DateTime(2026, 6, 12, 10, 5, 0, 0, DateTimeKind.Utc),
+                            OrderId = 7,
+                            PaidAt = new DateTime(2026, 9, 21, 13, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
-                            StripePaymentIntentId = "pi_seed_008"
+                            StripePaymentIntentId = "pi_seed_order_007",
+                            UpdatedAt = new DateTime(2026, 9, 21, 13, 2, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 8,
-                            AmountCharged = 13.12m,
-                            CreatedAt = new DateTime(2026, 6, 20, 9, 40, 0, 0, DateTimeKind.Utc),
+                            AmountCharged = 7.95m,
+                            CreatedAt = new DateTime(2026, 9, 10, 8, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
                             IsDeleted = false,
                             IsPaid = true,
-                            OrderId = 9,
-                            PaidAt = new DateTime(2026, 6, 20, 10, 5, 0, 0, DateTimeKind.Utc),
+                            OrderId = 8,
+                            PaidAt = new DateTime(2026, 9, 10, 8, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
-                            StripePaymentIntentId = "pi_seed_009"
+                            StripePaymentIntentId = "pi_seed_order_008",
+                            UpdatedAt = new DateTime(2026, 9, 10, 8, 2, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 9,
-                            AmountCharged = 9.71m,
-                            CreatedAt = new DateTime(2026, 7, 4, 9, 40, 0, 0, DateTimeKind.Utc),
+                            AmountCharged = 13.12m,
+                            CreatedAt = new DateTime(2026, 9, 14, 10, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
                             IsDeleted = false,
                             IsPaid = true,
-                            OrderId = 10,
-                            PaidAt = new DateTime(2026, 7, 4, 10, 5, 0, 0, DateTimeKind.Utc),
+                            OrderId = 9,
+                            PaidAt = new DateTime(2026, 9, 14, 10, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
-                            StripePaymentIntentId = "pi_seed_010"
+                            StripePaymentIntentId = "pi_seed_order_009",
+                            UpdatedAt = new DateTime(2026, 9, 14, 10, 2, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 10,
-                            AmountCharged = 7.18m,
-                            CreatedAt = new DateTime(2026, 7, 11, 9, 40, 0, 0, DateTimeKind.Utc),
+                            AmountCharged = 9.71m,
+                            CreatedAt = new DateTime(2026, 9, 18, 12, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
                             IsDeleted = false,
                             IsPaid = true,
-                            OrderId = 11,
-                            PaidAt = new DateTime(2026, 7, 11, 10, 5, 0, 0, DateTimeKind.Utc),
-                            PaymentStatusId = 3,
-                            StripePaymentIntentId = "pi_seed_011"
+                            OrderId = 10,
+                            PaidAt = new DateTime(2026, 9, 18, 12, 2, 0, 0, DateTimeKind.Utc),
+                            PaymentStatusId = 2,
+                            StripePaymentIntentId = "pi_seed_order_010",
+                            UpdatedAt = new DateTime(2026, 9, 18, 12, 2, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 11,
+                            AmountCharged = 7.18m,
+                            CreatedAt = new DateTime(2026, 9, 22, 9, 1, 0, 0, DateTimeKind.Utc),
+                            Currency = "BAM",
+                            IsDeleted = false,
+                            IsPaid = true,
+                            OrderId = 11,
+                            PaidAt = new DateTime(2026, 9, 22, 9, 2, 0, 0, DateTimeKind.Utc),
+                            PaymentStatusId = 3,
+                            StripePaymentIntentId = "pi_seed_order_011",
+                            UpdatedAt = new DateTime(2026, 9, 22, 9, 2, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 12,
                             AmountCharged = 9.01m,
-                            CreatedAt = new DateTime(2026, 6, 28, 9, 40, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 24, 14, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
                             IsDeleted = false,
                             IsPaid = true,
                             OrderId = 12,
-                            PaidAt = new DateTime(2026, 6, 28, 10, 5, 0, 0, DateTimeKind.Utc),
+                            PaidAt = new DateTime(2026, 9, 24, 14, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 4,
-                            StripePaymentIntentId = "pi_seed_012"
+                            StripePaymentIntentId = "pi_seed_order_012",
+                            UpdatedAt = new DateTime(2026, 9, 24, 14, 2, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 13,
+                            AmountCharged = 7.31m,
+                            CreatedAt = new DateTime(2026, 10, 4, 17, 1, 0, 0, DateTimeKind.Utc),
+                            Currency = "BAM",
+                            IsDeleted = false,
+                            IsPaid = true,
+                            OrderId = 14,
+                            PaidAt = new DateTime(2026, 10, 4, 17, 2, 0, 0, DateTimeKind.Utc),
+                            PaymentStatusId = 2,
+                            StripePaymentIntentId = "pi_seed_order_014",
+                            UpdatedAt = new DateTime(2026, 10, 4, 17, 2, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 14,
+                            AmountCharged = 10.54m,
+                            CreatedAt = new DateTime(2026, 10, 3, 9, 1, 0, 0, DateTimeKind.Utc),
+                            Currency = "BAM",
+                            IsDeleted = false,
+                            IsPaid = true,
+                            OrderId = 15,
+                            PaidAt = new DateTime(2026, 10, 3, 9, 2, 0, 0, DateTimeKind.Utc),
+                            PaymentStatusId = 2,
+                            StripePaymentIntentId = "pi_seed_order_015",
+                            UpdatedAt = new DateTime(2026, 10, 3, 9, 2, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 15,
+                            AmountCharged = 12.02m,
+                            CreatedAt = new DateTime(2026, 10, 4, 8, 1, 0, 0, DateTimeKind.Utc),
+                            Currency = "BAM",
+                            IsDeleted = false,
+                            IsPaid = true,
+                            OrderId = 16,
+                            PaidAt = new DateTime(2026, 10, 4, 8, 2, 0, 0, DateTimeKind.Utc),
+                            PaymentStatusId = 2,
+                            StripePaymentIntentId = "pi_seed_order_016",
+                            UpdatedAt = new DateTime(2026, 10, 4, 8, 2, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 16,
+                            AmountCharged = 7.78m,
+                            CreatedAt = new DateTime(2026, 9, 26, 10, 1, 0, 0, DateTimeKind.Utc),
+                            Currency = "BAM",
+                            IsDeleted = false,
+                            IsPaid = true,
+                            OrderId = 17,
+                            PaidAt = new DateTime(2026, 9, 26, 10, 2, 0, 0, DateTimeKind.Utc),
+                            PaymentStatusId = 4,
+                            StripePaymentIntentId = "pi_seed_order_017",
+                            UpdatedAt = new DateTime(2026, 9, 26, 10, 2, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 17,
+                            AmountCharged = 9.71m,
+                            CreatedAt = new DateTime(2026, 9, 28, 11, 1, 0, 0, DateTimeKind.Utc),
+                            Currency = "BAM",
+                            IsDeleted = false,
+                            IsPaid = true,
+                            OrderId = 18,
+                            PaidAt = new DateTime(2026, 9, 28, 11, 2, 0, 0, DateTimeKind.Utc),
+                            PaymentStatusId = 4,
+                            StripePaymentIntentId = "pi_seed_order_018",
+                            UpdatedAt = new DateTime(2026, 9, 28, 11, 2, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
@@ -2554,38 +2639,56 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 1,
-                            PaymentId = 10,
-                            Reason = "Waiting time was charged in error and returned to the passenger.",
-                            RefundedAmount = 2.18m,
-                            RefundedAt = new DateTime(2026, 7, 12, 8, 20, 0, 0, DateTimeKind.Utc),
-                            StripeRefundId = "re_seed_010"
+                            PaymentId = 3,
+                            Reason = "The passenger was charged for a longer route than the one driven.",
+                            RefundedAmount = 3.58m,
+                            RefundedAt = new DateTime(2026, 9, 14, 12, 0, 0, 0, DateTimeKind.Utc),
+                            StripeRefundId = "re_seed_order_003"
                         },
                         new
                         {
                             Id = 2,
-                            PaymentId = 11,
-                            Reason = "The ride was billed twice, so the duplicate charge was returned in full.",
-                            RefundedAmount = 9.01m,
-                            RefundedAt = new DateTime(2026, 6, 29, 8, 20, 0, 0, DateTimeKind.Utc),
-                            StripeRefundId = "re_seed_011"
+                            PaymentId = 4,
+                            Reason = "The ride was cut short by a breakdown, so the full fare was returned.",
+                            RefundedAmount = 7.42m,
+                            RefundedAt = new DateTime(2026, 9, 16, 12, 0, 0, 0, DateTimeKind.Utc),
+                            StripeRefundId = "re_seed_order_004"
                         },
                         new
                         {
                             Id = 3,
-                            PaymentId = 3,
-                            Reason = "The passenger was charged for a longer route than the one driven.",
-                            RefundedAmount = 3.58m,
-                            RefundedAt = new DateTime(2026, 6, 26, 9, 15, 0, 0, DateTimeKind.Utc),
-                            StripeRefundId = "re_seed_003"
+                            PaymentId = 11,
+                            Reason = "Waiting time was charged in error and returned to the passenger.",
+                            RefundedAmount = 2.18m,
+                            RefundedAt = new DateTime(2026, 9, 23, 12, 0, 0, 0, DateTimeKind.Utc),
+                            StripeRefundId = "re_seed_order_011"
                         },
                         new
                         {
                             Id = 4,
-                            PaymentId = 4,
-                            Reason = "The ride was cut short by a breakdown, so the full fare was returned.",
-                            RefundedAmount = 7.42m,
-                            RefundedAt = new DateTime(2026, 7, 3, 8, 40, 0, 0, DateTimeKind.Utc),
-                            StripeRefundId = "re_seed_004"
+                            PaymentId = 12,
+                            Reason = "The ride was billed twice, so the duplicate charge was returned in full.",
+                            RefundedAmount = 9.01m,
+                            RefundedAt = new DateTime(2026, 9, 25, 12, 0, 0, 0, DateTimeKind.Utc),
+                            StripeRefundId = "re_seed_order_012"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            PaymentId = 16,
+                            Reason = "The passenger cancelled before a driver took the ride, so the fare was returned in full.",
+                            RefundedAmount = 7.78m,
+                            RefundedAt = new DateTime(2026, 9, 26, 12, 0, 0, 0, DateTimeKind.Utc),
+                            StripeRefundId = "re_seed_order_017"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            PaymentId = 17,
+                            Reason = "The ride was cancelled by the driver, so the fare was returned in full.",
+                            RefundedAmount = 9.71m,
+                            RefundedAt = new DateTime(2026, 9, 28, 12, 0, 0, 0, DateTimeKind.Utc),
+                            StripeRefundId = "re_seed_order_018"
                         });
                 });
 
@@ -2739,8 +2842,8 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 1,
-                            Comment = "Quick pickup and a friendly driver.",
-                            CreatedAt = new DateTime(2026, 6, 11, 10, 35, 0, 0, DateTimeKind.Utc),
+                            Comment = "Excellent from start to finish.",
+                            CreatedAt = new DateTime(2026, 9, 9, 8, 55, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
                             OrderId = 1,
                             PassengerId = 4,
@@ -2751,8 +2854,8 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 2,
-                            Comment = "Always on time, never had a problem.",
-                            CreatedAt = new DateTime(2026, 6, 18, 10, 35, 0, 0, DateTimeKind.Utc),
+                            Comment = "Quick pick-up and a very polite driver.",
+                            CreatedAt = new DateTime(2026, 9, 11, 9, 55, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
                             OrderId = 2,
                             PassengerId = 4,
@@ -2763,8 +2866,8 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 3,
-                            Comment = "Comfortable ride, arrived a few minutes late.",
-                            CreatedAt = new DateTime(2026, 6, 25, 10, 35, 0, 0, DateTimeKind.Utc),
+                            Comment = "Smooth ride, the car was spotless.",
+                            CreatedAt = new DateTime(2026, 9, 13, 10, 55, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
                             OrderId = 3,
                             PassengerId = 4,
@@ -2775,8 +2878,8 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 4,
-                            Comment = "Waited far too long for the car to show up.",
-                            CreatedAt = new DateTime(2026, 6, 14, 10, 35, 0, 0, DateTimeKind.Utc),
+                            Comment = "The driver took a long detour without saying why.",
+                            CreatedAt = new DateTime(2026, 9, 19, 9, 55, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
                             OrderId = 6,
                             PassengerId = 4,
@@ -2787,8 +2890,8 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 5,
-                            Comment = "Good driver and a clean car.",
-                            CreatedAt = new DateTime(2026, 6, 12, 10, 35, 0, 0, DateTimeKind.Utc),
+                            Comment = "Arrived on time and drove carefully.",
+                            CreatedAt = new DateTime(2026, 9, 10, 8, 55, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
                             OrderId = 8,
                             PassengerId = 9,
@@ -2799,8 +2902,8 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 6,
-                            Comment = "Excellent from start to finish.",
-                            CreatedAt = new DateTime(2026, 6, 20, 10, 35, 0, 0, DateTimeKind.Utc),
+                            Comment = "Could not have been better.",
+                            CreatedAt = new DateTime(2026, 9, 14, 10, 55, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
                             OrderId = 9,
                             PassengerId = 9,
@@ -2812,7 +2915,7 @@ namespace PickMeUp.Services.Migrations
                         {
                             Id = 7,
                             Comment = "Fine ride, but the fare felt high for the distance.",
-                            CreatedAt = new DateTime(2026, 6, 28, 10, 35, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 24, 14, 55, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
                             OrderId = 12,
                             PassengerId = 9,
@@ -2959,143 +3062,170 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 6, 11, 7, 30, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 9, 7, 30, 0, 0, DateTimeKind.Utc),
                             DriverId = 1,
-                            EndedAt = new DateTime(2026, 6, 11, 15, 30, 0, 0, DateTimeKind.Utc),
+                            EndedAt = new DateTime(2026, 9, 9, 15, 30, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
                             OrdersHandled = 1,
-                            StartedAt = new DateTime(2026, 6, 11, 7, 30, 0, 0, DateTimeKind.Utc),
-                            UpdatedAt = new DateTime(2026, 6, 11, 15, 30, 0, 0, DateTimeKind.Utc)
+                            StartedAt = new DateTime(2026, 9, 9, 7, 30, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 9, 9, 15, 30, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2026, 6, 18, 7, 30, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 11, 7, 30, 0, 0, DateTimeKind.Utc),
                             DriverId = 1,
-                            EndedAt = new DateTime(2026, 6, 18, 15, 30, 0, 0, DateTimeKind.Utc),
+                            EndedAt = new DateTime(2026, 9, 11, 15, 30, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
                             OrdersHandled = 1,
-                            StartedAt = new DateTime(2026, 6, 18, 7, 30, 0, 0, DateTimeKind.Utc),
-                            UpdatedAt = new DateTime(2026, 6, 18, 15, 30, 0, 0, DateTimeKind.Utc)
+                            StartedAt = new DateTime(2026, 9, 11, 7, 30, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 9, 11, 15, 30, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2026, 7, 2, 7, 30, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 15, 7, 30, 0, 0, DateTimeKind.Utc),
                             DriverId = 1,
-                            EndedAt = new DateTime(2026, 7, 2, 16, 0, 0, 0, DateTimeKind.Utc),
+                            EndedAt = new DateTime(2026, 9, 15, 16, 0, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
                             OrdersHandled = 1,
-                            StartedAt = new DateTime(2026, 7, 2, 7, 30, 0, 0, DateTimeKind.Utc),
-                            UpdatedAt = new DateTime(2026, 7, 2, 16, 0, 0, 0, DateTimeKind.Utc)
+                            StartedAt = new DateTime(2026, 9, 15, 7, 30, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 9, 15, 16, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2026, 6, 25, 8, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 13, 8, 0, 0, 0, DateTimeKind.Utc),
                             DriverId = 2,
-                            EndedAt = new DateTime(2026, 6, 25, 16, 0, 0, 0, DateTimeKind.Utc),
+                            EndedAt = new DateTime(2026, 9, 13, 16, 0, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
                             OrdersHandled = 1,
-                            StartedAt = new DateTime(2026, 6, 25, 8, 0, 0, 0, DateTimeKind.Utc),
-                            UpdatedAt = new DateTime(2026, 6, 25, 16, 0, 0, 0, DateTimeKind.Utc)
+                            StartedAt = new DateTime(2026, 9, 13, 8, 0, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 9, 13, 16, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2026, 7, 9, 8, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 0, 0, 0, DateTimeKind.Utc),
                             DriverId = 2,
-                            EndedAt = new DateTime(2026, 7, 9, 16, 0, 0, 0, DateTimeKind.Utc),
+                            EndedAt = new DateTime(2026, 9, 17, 16, 0, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
                             OrdersHandled = 1,
-                            StartedAt = new DateTime(2026, 7, 9, 8, 0, 0, 0, DateTimeKind.Utc),
-                            UpdatedAt = new DateTime(2026, 7, 9, 16, 0, 0, 0, DateTimeKind.Utc)
+                            StartedAt = new DateTime(2026, 9, 17, 8, 0, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 9, 17, 16, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 6,
-                            CreatedAt = new DateTime(2026, 6, 14, 9, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 19, 9, 0, 0, 0, DateTimeKind.Utc),
                             DriverId = 4,
-                            EndedAt = new DateTime(2026, 6, 14, 17, 0, 0, 0, DateTimeKind.Utc),
+                            EndedAt = new DateTime(2026, 9, 19, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
                             OrdersHandled = 1,
-                            StartedAt = new DateTime(2026, 6, 14, 9, 0, 0, 0, DateTimeKind.Utc),
-                            UpdatedAt = new DateTime(2026, 6, 14, 17, 0, 0, 0, DateTimeKind.Utc)
+                            StartedAt = new DateTime(2026, 9, 19, 9, 0, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 9, 19, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 7,
-                            CreatedAt = new DateTime(2026, 7, 16, 9, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 21, 9, 0, 0, 0, DateTimeKind.Utc),
                             DriverId = 4,
-                            EndedAt = new DateTime(2026, 7, 16, 17, 0, 0, 0, DateTimeKind.Utc),
+                            EndedAt = new DateTime(2026, 9, 21, 17, 0, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
                             OrdersHandled = 1,
-                            StartedAt = new DateTime(2026, 7, 16, 9, 0, 0, 0, DateTimeKind.Utc),
-                            UpdatedAt = new DateTime(2026, 7, 16, 17, 0, 0, 0, DateTimeKind.Utc)
+                            StartedAt = new DateTime(2026, 9, 21, 9, 0, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 9, 21, 17, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 8,
-                            CreatedAt = new DateTime(2026, 6, 12, 7, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 10, 7, 0, 0, 0, DateTimeKind.Utc),
                             DriverId = 3,
-                            EndedAt = new DateTime(2026, 6, 12, 15, 0, 0, 0, DateTimeKind.Utc),
+                            EndedAt = new DateTime(2026, 9, 10, 15, 0, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
                             OrdersHandled = 1,
-                            StartedAt = new DateTime(2026, 6, 12, 7, 0, 0, 0, DateTimeKind.Utc),
-                            UpdatedAt = new DateTime(2026, 6, 12, 15, 0, 0, 0, DateTimeKind.Utc)
+                            StartedAt = new DateTime(2026, 9, 10, 7, 0, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 9, 10, 15, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 9,
-                            CreatedAt = new DateTime(2026, 6, 20, 7, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 14, 7, 0, 0, 0, DateTimeKind.Utc),
                             DriverId = 3,
-                            EndedAt = new DateTime(2026, 6, 20, 15, 0, 0, 0, DateTimeKind.Utc),
+                            EndedAt = new DateTime(2026, 9, 14, 15, 0, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
                             OrdersHandled = 1,
-                            StartedAt = new DateTime(2026, 6, 20, 7, 0, 0, 0, DateTimeKind.Utc),
-                            UpdatedAt = new DateTime(2026, 6, 20, 15, 0, 0, 0, DateTimeKind.Utc)
+                            StartedAt = new DateTime(2026, 9, 14, 7, 0, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 9, 14, 15, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 10,
-                            CreatedAt = new DateTime(2026, 7, 4, 7, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 18, 7, 0, 0, 0, DateTimeKind.Utc),
                             DriverId = 3,
-                            EndedAt = new DateTime(2026, 7, 4, 15, 0, 0, 0, DateTimeKind.Utc),
+                            EndedAt = new DateTime(2026, 9, 18, 15, 0, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
                             OrdersHandled = 1,
-                            StartedAt = new DateTime(2026, 7, 4, 7, 0, 0, 0, DateTimeKind.Utc),
-                            UpdatedAt = new DateTime(2026, 7, 4, 15, 0, 0, 0, DateTimeKind.Utc)
+                            StartedAt = new DateTime(2026, 9, 18, 7, 0, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 9, 18, 15, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 11,
-                            CreatedAt = new DateTime(2026, 7, 11, 7, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 22, 7, 0, 0, 0, DateTimeKind.Utc),
                             DriverId = 3,
-                            EndedAt = new DateTime(2026, 7, 11, 15, 0, 0, 0, DateTimeKind.Utc),
+                            EndedAt = new DateTime(2026, 9, 22, 15, 0, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
                             OrdersHandled = 1,
-                            StartedAt = new DateTime(2026, 7, 11, 7, 0, 0, 0, DateTimeKind.Utc),
-                            UpdatedAt = new DateTime(2026, 7, 11, 15, 0, 0, 0, DateTimeKind.Utc)
+                            StartedAt = new DateTime(2026, 9, 22, 7, 0, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 9, 22, 15, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 12,
-                            CreatedAt = new DateTime(2026, 6, 28, 8, 30, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 24, 8, 30, 0, 0, DateTimeKind.Utc),
                             DriverId = 5,
-                            EndedAt = new DateTime(2026, 6, 28, 16, 30, 0, 0, DateTimeKind.Utc),
+                            EndedAt = new DateTime(2026, 9, 24, 16, 30, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
                             OrdersHandled = 1,
-                            StartedAt = new DateTime(2026, 6, 28, 8, 30, 0, 0, DateTimeKind.Utc),
-                            UpdatedAt = new DateTime(2026, 6, 28, 16, 30, 0, 0, DateTimeKind.Utc)
+                            StartedAt = new DateTime(2026, 9, 24, 8, 30, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 9, 24, 16, 30, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 13,
-                            CreatedAt = new DateTime(2026, 8, 6, 6, 45, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 10, 5, 6, 45, 0, 0, DateTimeKind.Utc),
                             DriverId = 1,
                             IsDeleted = false,
                             OrdersHandled = 0,
-                            StartedAt = new DateTime(2026, 8, 6, 6, 45, 0, 0, DateTimeKind.Utc)
+                            StartedAt = new DateTime(2026, 10, 5, 6, 45, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CreatedAt = new DateTime(2026, 10, 3, 6, 30, 0, 0, DateTimeKind.Utc),
+                            DriverId = 2,
+                            IsDeleted = false,
+                            OrdersHandled = 1,
+                            StartedAt = new DateTime(2026, 10, 3, 6, 30, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 15,
+                            CreatedAt = new DateTime(2026, 10, 4, 6, 0, 0, 0, DateTimeKind.Utc),
+                            DriverId = 3,
+                            IsDeleted = false,
+                            OrdersHandled = 1,
+                            StartedAt = new DateTime(2026, 10, 4, 6, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 16,
+                            CreatedAt = new DateTime(2026, 10, 4, 7, 0, 0, 0, DateTimeKind.Utc),
+                            DriverId = 5,
+                            IsDeleted = false,
+                            OrdersHandled = 0,
+                            StartedAt = new DateTime(2026, 10, 4, 7, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
@@ -3132,29 +3262,29 @@ namespace PickMeUp.Services.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 6, 18, 11, 0, 0, 0, DateTimeKind.Utc),
-                            EndedAt = new DateTime(2026, 6, 18, 11, 30, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 11, 11, 0, 0, 0, DateTimeKind.Utc),
+                            EndedAt = new DateTime(2026, 9, 11, 11, 30, 0, 0, DateTimeKind.Utc),
                             ShiftId = 2,
-                            StartedAt = new DateTime(2026, 6, 18, 11, 0, 0, 0, DateTimeKind.Utc),
-                            UpdatedAt = new DateTime(2026, 6, 18, 11, 30, 0, 0, DateTimeKind.Utc)
+                            StartedAt = new DateTime(2026, 9, 11, 11, 0, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 9, 11, 11, 30, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2026, 6, 25, 12, 0, 0, 0, DateTimeKind.Utc),
-                            EndedAt = new DateTime(2026, 6, 25, 12, 45, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 13, 12, 0, 0, 0, DateTimeKind.Utc),
+                            EndedAt = new DateTime(2026, 9, 13, 12, 45, 0, 0, DateTimeKind.Utc),
                             ShiftId = 4,
-                            StartedAt = new DateTime(2026, 6, 25, 12, 0, 0, 0, DateTimeKind.Utc),
-                            UpdatedAt = new DateTime(2026, 6, 25, 12, 45, 0, 0, DateTimeKind.Utc)
+                            StartedAt = new DateTime(2026, 9, 13, 12, 0, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 9, 13, 12, 45, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2026, 6, 12, 10, 30, 0, 0, DateTimeKind.Utc),
-                            EndedAt = new DateTime(2026, 6, 12, 11, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 9, 10, 10, 30, 0, 0, DateTimeKind.Utc),
+                            EndedAt = new DateTime(2026, 9, 10, 11, 0, 0, 0, DateTimeKind.Utc),
                             ShiftId = 8,
-                            StartedAt = new DateTime(2026, 6, 12, 10, 30, 0, 0, DateTimeKind.Utc),
-                            UpdatedAt = new DateTime(2026, 6, 12, 11, 0, 0, 0, DateTimeKind.Utc)
+                            StartedAt = new DateTime(2026, 9, 10, 10, 30, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 9, 10, 11, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
