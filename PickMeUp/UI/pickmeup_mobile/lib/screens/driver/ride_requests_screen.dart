@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../models/notification_item.dart';
 import '../../models/order.dart';
 import '../../models/shift.dart';
 import '../../providers/notification_store.dart';
@@ -20,13 +23,12 @@ class RideRequestsScreen extends StatefulWidget {
 }
 
 class _RideRequestsScreenState extends State<RideRequestsScreen> {
-  static const String _availableCategory = 'order-available';
+  static const Set<String> _reloadCategories = {'order-available', 'order-status', 'order-cancelled'};
 
   final _orders = OrderProvider();
   final _shifts = ShiftProvider();
 
-  NotificationStore? _store;
-  int? _lastSeenNotificationId;
+  StreamSubscription<NotificationItem>? _pushes;
 
   Shift? _openShift;
   List<Order> _requests = const [];
@@ -41,37 +43,23 @@ class _RideRequestsScreenState extends State<RideRequestsScreen> {
     _load();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final store = context.read<NotificationStore>();
-      _store = store;
-      _lastSeenNotificationId = store.items.isEmpty ? null : store.items.first.id;
-      store.addListener(_onNotifications);
+      if (!mounted) return;
+      _pushes = context.read<NotificationStore>().pushes.listen(_onPushed);
     });
   }
 
   @override
   void dispose() {
-    _store?.removeListener(_onNotifications);
+    _pushes?.cancel();
     super.dispose();
   }
 
-  void _onNotifications() {
-    final store = _store;
-
-    if (store == null || store.items.isEmpty || !mounted) {
+  void _onPushed(NotificationItem pushed) {
+    if (!mounted || !_reloadCategories.contains(pushed.category)) {
       return;
     }
 
-    final newest = store.items.first;
-
-    if (newest.id == _lastSeenNotificationId) {
-      return;
-    }
-
-    _lastSeenNotificationId = newest.id;
-
-    if (newest.category == _availableCategory) {
-      _load();
-    }
+    _load();
   }
 
   bool get _isEligible => _openShift?.isDispatchEligible == true;
