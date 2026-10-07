@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -5,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../models/notification_item.dart';
 import '../../models/order.dart';
 import '../../providers/notification_store.dart';
 import '../../providers/order_provider.dart';
@@ -33,10 +36,10 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
 
   final _orders = OrderProvider();
 
-  NotificationStore? _store;
-  int? _lastSeenNotificationId;
+  StreamSubscription<NotificationItem>? _pushes;
 
   Order? _ride;
+  int? _trackedId;
   int _otherActive = 0;
   bool _isLoading = true;
   bool _isCancelling = false;
@@ -48,42 +51,34 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
     _load();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final store = context.read<NotificationStore>();
-      _store = store;
-      _lastSeenNotificationId = store.items.isEmpty
-          ? null
-          : store.items.first.id;
-      store.addListener(_onNotifications);
+      if (!mounted) return;
+      _pushes = context.read<NotificationStore>().pushes.listen(_onPushed);
     });
   }
 
   @override
   void dispose() {
-    _store?.removeListener(_onNotifications);
+    _pushes?.cancel();
     super.dispose();
   }
 
-  void _onNotifications() {
-    final store = _store;
-
-    if (store == null || store.items.isEmpty || !mounted) {
+  void _onPushed(NotificationItem pushed) {
+    if (!mounted) {
       return;
     }
 
-    final newest = store.items.first;
+    _load(focusOrderId: pushed.orderId);
+  }
 
-    if (newest.id == _lastSeenNotificationId) {
-      return;
-    }
-
-    _lastSeenNotificationId = newest.id;
-
-    if ((newest.category ?? '').startsWith('order')) {
-      _load();
+  Future<Order?> _readOrder(int orderId) async {
+    try {
+      return await _orders.getById(orderId);
+    } catch (_) {
+      return null;
     }
   }
 
-  Future<void> _load() async {
+  Future<void> _load({int? focusOrderId}) async {
     if (mounted) {
       setState(() => _error = null);
     }
@@ -114,7 +109,26 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
         return right.compareTo(left);
       });
 
-      Order? tracked = active.isEmpty ? null : active.first;
+      final focus = focusOrderId ?? _trackedId;
+
+      Order? tracked = focus == null
+          ? null
+          : active.where((o) => o.id == focus).firstOrNull;
+
+      if (tracked == null && focusOrderId != null) {
+        tracked = await _readOrder(focusOrderId);
+      }
+
+      if (tracked == null && _trackedId != null) {
+        final kept = await _readOrder(_trackedId!);
+
+        if (kept != null &&
+            (active.isEmpty || (kept.id ?? 0) > (active.first.id ?? 0))) {
+          tracked = kept;
+        }
+      }
+
+      tracked ??= active.isEmpty ? null : active.first;
 
       if (tracked == null) {
         final recent = await _orders.get(
@@ -132,7 +146,8 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
 
       setState(() {
         _ride = tracked;
-        _otherActive = active.isEmpty ? 0 : active.length - 1;
+        _trackedId = tracked?.id;
+        _otherActive = active.where((o) => o.id != tracked?.id).length;
         _isLoading = false;
       });
     } on ApiClientException catch (e) {
@@ -245,7 +260,7 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
     final theme = Theme.of(context);
 
     return RefreshIndicator(
-      onRefresh: _load,
+      onRefresh: () => _load(),
       child: ListView(
         children: [
           _buildMap(ride),
@@ -582,9 +597,11 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
       return const SizedBox.shrink();
     }
 
-    return SizedBox(
-      height: (MediaQuery.of(context).size.height * 0.28).clamp(150.0, 280.0),
-      child: FlutterMap(
+    return GestureDetector(
+      onTap: ride.id == null ? null : () => _openDetail(ride.id!),
+      child: SizedBox(
+        height: (MediaQuery.of(context).size.height * 0.28).clamp(150.0, 280.0),
+        child: FlutterMap(
         options: MapOptions(
           initialCenter: pickup,
           initialZoom: 14,
@@ -595,7 +612,7 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
                   padding: const EdgeInsets.all(44),
                 ),
           interactionOptions: const InteractionOptions(
-            flags: InteractiveFlag.pinchZoom | InteractiveFlag.drag,
+            flags: InteractiveFlag.none,
           ),
         ),
         children: [
@@ -621,8 +638,9 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
                 _marker(destination, AppColors.danger, Icons.flag),
             ],
           ),
-          const MapAttribution(),
-        ],
+            const MapAttribution(),
+          ],
+        ),
       ),
     );
   }

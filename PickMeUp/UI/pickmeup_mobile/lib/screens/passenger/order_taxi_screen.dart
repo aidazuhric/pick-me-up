@@ -1,14 +1,18 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../models/notification_item.dart';
 import '../../models/order.dart';
 import '../../models/order_quote.dart';
 import '../../models/taxi_company.dart';
+import '../../providers/notification_store.dart';
 import '../../providers/order_provider.dart';
 import '../../providers/payment_provider.dart';
 import '../../services/city_locator.dart';
@@ -56,13 +60,56 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
   bool _isQuoting = false;
   int _quoteToken = 0;
   String? _gatewayNotice;
-  bool _isPaid = false;
+  bool _isRefreshingPlaced = false;
+
+  StreamSubscription<NotificationItem>? _pushes;
+
+  bool get _isPaid => _placed?.isPrepaid == true;
 
   @override
   void initState() {
     super.initState();
     _company = widget.initialCompany;
     _prepareGateway();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _pushes = context.read<NotificationStore>().pushes.listen(_onPushed);
+    });
+  }
+
+  void _onPushed(NotificationItem pushed) {
+    final placedId = _placed?.id;
+
+    if (!mounted || placedId == null || pushed.orderId != placedId) {
+      return;
+    }
+
+    _refreshPlaced();
+  }
+
+  Future<void> _refreshPlaced() async {
+    final placedId = _placed?.id;
+
+    if (placedId == null || _isRefreshingPlaced) {
+      return;
+    }
+
+    setState(() => _isRefreshingPlaced = true);
+
+    try {
+      final fresh = await _orders.getById(placedId);
+
+      if (!mounted) return;
+
+      setState(() {
+        _placed = fresh;
+        _isRefreshingPlaced = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _isRefreshingPlaced = false);
+    }
   }
 
   Future<void> _prepareGateway() async {
@@ -78,6 +125,7 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
 
   @override
   void dispose() {
+    _pushes?.cancel();
     _mapController.dispose();
     super.dispose();
   }
@@ -315,10 +363,7 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
 
     if (!mounted) return;
 
-    setState(() {
-      _placed = order;
-      _isPaid = false;
-    });
+    setState(() => _placed = order);
 
     await _payForPlacedRide();
   }
@@ -344,12 +389,13 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
 
     if (!mounted) return;
 
-    setState(() {
-      _isSubmitting = false;
-      _isPaid = result.isPaid;
-    });
+    setState(() => _isSubmitting = false);
 
-    if (result.isPaid) {
+    await _refreshPlaced();
+
+    if (!mounted) return;
+
+    if (result.isPaid || _isPaid) {
       AppMessages.success(context, result.message);
     } else {
       AppMessages.failure(context, result.message);
@@ -366,7 +412,6 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
       _company = widget.initialCompany;
       _picking = null;
       _quote = null;
-      _isPaid = false;
     });
   }
 
@@ -754,6 +799,17 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
                       icon: Icons.payments,
                       label: Formats.money(order.fare!),
                     ),
+                  IconButton(
+                    onPressed: _isRefreshingPlaced ? null : _refreshPlaced,
+                    tooltip: 'Check for an update',
+                    icon: _isRefreshingPlaced
+                        ? const SizedBox(
+                            height: 18,
+                            width: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.refresh),
+                  ),
                 ],
               ),
               const SizedBox(height: AppSpacing.sm),

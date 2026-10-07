@@ -39,7 +39,7 @@ namespace PickMeUp.Services.Payments
             }
         }
 
-        public async Task<StripeIntent?> FindOpenIntentAsync(string paymentIntentId, CancellationToken cancellationToken = default)
+        public async Task<StripeIntentState?> ReadIntentAsync(string paymentIntentId, CancellationToken cancellationToken = default)
         {
             EnsureConfigured();
 
@@ -48,12 +48,7 @@ namespace PickMeUp.Services.Payments
                 var intent = await new PaymentIntentService()
                     .GetAsync(paymentIntentId, cancellationToken: cancellationToken);
 
-                if (intent.Status == "succeeded" || intent.Status == "canceled")
-                {
-                    return null;
-                }
-
-                return new StripeIntent(intent.Id, intent.ClientSecret);
+                return new StripeIntentState(intent.Id, intent.ClientSecret, intent.Status);
             }
             catch (StripeException)
             {
@@ -118,10 +113,17 @@ namespace PickMeUp.Services.Payments
                 throw new BusinessException($"The webhook payload could not be read: {exception.Message}");
             }
 
-            var intentId = stripeEvent.Data.Object is PaymentIntent intent ? intent.Id : null;
+            var intent = stripeEvent.Data.Object as PaymentIntent;
 
-            return new StripeWebhookEvent(stripeEvent.Type, intentId);
+            return new StripeWebhookEvent(stripeEvent.Type, intent?.Id, ReadOrderId(intent));
         }
+
+        private static int? ReadOrderId(PaymentIntent? intent) =>
+            intent?.Metadata != null
+            && intent.Metadata.TryGetValue("orderId", out var raw)
+            && int.TryParse(raw, out var orderId)
+                ? orderId
+                : null;
 
         private static long ToMinorUnits(decimal amount) => (long)Math.Round(amount * 100m, MidpointRounding.AwayFromZero);
 
