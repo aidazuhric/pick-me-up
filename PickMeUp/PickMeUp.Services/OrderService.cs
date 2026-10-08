@@ -158,6 +158,7 @@ namespace PickMeUp.Services
             var order = await LoadForTransitionAsync(id);
 
             EnsureOrderIsOfferedTo(order, driver);
+            await EnsureDriverIsFreeAsync(driver.Id);
 
             var target = _stateMachine.ResolveTarget(OrderTransition.Accept, CurrentStatus(order));
 
@@ -441,11 +442,7 @@ namespace PickMeUp.Services
                     return QueryAvailableFor(query, driverId, companyId, cityId);
                 }
 
-                return query.Where(o => o.DriverId == driverId
-                    || (o.OrderStatusId == (int)OrderStatusEnum.Pending
-                        && (o.TaxiCompanyId == null || o.TaxiCompanyId == companyId)
-                        && (o.CityId == null || o.CityId == cityId)
-                        && !o.Rejections.Any(r => r.DriverId == driverId)));
+                return query.Where(DispatchRules.VisibleToDriver(driverId, companyId, cityId));
             }
 
             if (scope.CompanyId.HasValue)
@@ -460,16 +457,15 @@ namespace PickMeUp.Services
         {
             var eligibleDriverIds = _shiftService.QueryDispatchEligibleDriverIds();
 
-            return query.Where(o => o.OrderStatusId == (int)OrderStatusEnum.Pending
-                && o.IsPrepaid
-                && o.DriverId == null
-                && (o.TaxiCompanyId == null || o.TaxiCompanyId == companyId)
-                && (o.CityId == null || o.CityId == cityId)
-                && !o.Rejections.Any(r => r.DriverId == driverId)
-                && eligibleDriverIds.Contains(driverId)
-                && !_dbContext.Orders.Any(active => active.DriverId == driverId
-                    && (active.OrderStatusId == (int)OrderStatusEnum.Confirmed
-                        || active.OrderStatusId == (int)OrderStatusEnum.InProgress)));
+            return query
+                .Where(DispatchRules.OfferedTo(companyId, cityId))
+                .Where(o => o.OrderStatusId == (int)OrderStatusEnum.Pending
+                    && o.IsPrepaid
+                    && o.DriverId == null
+                    && !o.Rejections.Any(r => r.DriverId == driverId)
+                    && eligibleDriverIds.Contains(driverId)
+                    && !_dbContext.Orders.Any(active => active.DriverId == driverId
+                        && DispatchRules.ActiveRideStatuses.Contains(active.OrderStatusId)));
         }
 
         private static DateTime? PeriodStart(ShiftPeriod? period) => period switch
@@ -588,11 +584,22 @@ namespace PickMeUp.Services
 
         private static void EnsureOrderIsOfferedTo(Order order, Driver driver)
         {
-            var offered = order.TaxiCompanyId == null || order.TaxiCompanyId == driver.TaxiCompanyId;
+            var offered = DispatchRules.IsOfferedTo(
+                order.TaxiCompanyId, order.CityId, driver.TaxiCompanyId, driver.TaxiCompany?.CityId);
 
             if (!offered)
             {
                 throw new KeyNotFoundException($"Order with id {order.Id} not found.");
+            }
+        }
+
+        private async Task EnsureDriverIsFreeAsync(int driverId)
+        {
+            var onAnotherRide = await _dbContext.Orders.AnyAsync(DispatchRules.ActiveRideOf(driverId));
+
+            if (onAnotherRide)
+            {
+                throw new BusinessException("You are already on a ride. Finish it before accepting another.");
             }
         }
 
@@ -667,6 +674,7 @@ namespace PickMeUp.Services
             var userId = RequireUserId();
 
             var driver = await _dbContext.Drivers
+                .Include(d => d.TaxiCompany)
                 .FirstOrDefaultAsync(d => d.UserId == userId && d.ResignedAt == null)
                 ?? throw new BusinessException("This account is not an active driver.");
 
