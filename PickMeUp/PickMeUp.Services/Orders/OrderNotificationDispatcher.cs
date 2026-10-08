@@ -1,5 +1,4 @@
 using PickMeUp.Model.Constants;
-using PickMeUp.Model.Enums;
 using PickMeUp.Model.Messaging;
 using PickMeUp.Model.Responses;
 using PickMeUp.Services.Database;
@@ -150,13 +149,12 @@ namespace PickMeUp.Services.Orders
 
                 var recipients = await _dbContext.Drivers
                     .Where(d => d.ResignedAt == null)
-                    .Where(d => order.TaxiCompanyId == null || d.TaxiCompanyId == order.TaxiCompanyId)
+                    .Where(DispatchRules.DriversOffered(order.TaxiCompanyId, order.CityId))
                     .Where(d => excludeDriverId == null || d.Id != excludeDriverId.Value)
                     .Where(d => eligibleDriverIds.Contains(d.Id))
                     .Where(d => !_dbContext.OrderRejections.Any(r => r.OrderId == order.Id && r.DriverId == d.Id))
                     .Where(d => !_dbContext.Orders.Any(active => active.DriverId == d.Id
-                        && (active.OrderStatusId == (int)OrderStatusEnum.Confirmed
-                            || active.OrderStatusId == (int)OrderStatusEnum.InProgress)))
+                        && DispatchRules.ActiveRideStatuses.Contains(active.OrderStatusId)))
                     .Select(d => d.UserId)
                     .ToListAsync();
 
