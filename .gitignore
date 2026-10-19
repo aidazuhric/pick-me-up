@@ -417,3 +417,8 @@ PickMeUp/seed-assets/images/README.md
 /PickMeUp/PickMeUp.WebAPI/storage/
 /PickMeUp/PickMeUp.Worker/storage/
 !/PickMeUp/PickMeUp.Services/Storage/
+
+# Local-only working material and IDE state
+prijava_screenshots/
+prijava_screenshots_extra/
+.idea/
