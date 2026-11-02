@@ -321,6 +321,49 @@ namespace PickMeUp.Services
             return response;
         }
 
+        public async Task<RideDriverLocationResponse?> GetRideDriverLocationAsync(int id)
+        {
+            var userId = RequireUserId();
+
+            var ride = await _dbContext.Orders
+                .AsNoTracking()
+                .Where(o => o.Id == id && o.PassengerId == userId)
+                .Select(o => new
+                {
+                    o.Id,
+                    o.DriverId,
+                    o.OrderStatusId,
+                    DriverName = o.Driver == null ? null : o.Driver.User.FirstName + " " + o.Driver.User.LastName,
+                    CarPlate = o.Car == null ? null : o.Car.Plate
+                })
+                .FirstOrDefaultAsync()
+                ?? throw new KeyNotFoundException($"Order with id {id} not found.");
+
+            if (ride.DriverId == null || !DispatchRules.ActiveRideStatuses.Contains(ride.OrderStatusId))
+            {
+                return null;
+            }
+
+            var location = await _dbContext.DriverLocations
+                .AsNoTracking()
+                .FirstOrDefaultAsync(l => l.DriverId == ride.DriverId.Value);
+
+            if (location == null)
+            {
+                return null;
+            }
+
+            return new RideDriverLocationResponse
+            {
+                OrderId = ride.Id,
+                DriverName = ride.DriverName,
+                CarPlate = ride.CarPlate,
+                Latitude = location.Latitude,
+                Longitude = location.Longitude,
+                UpdatedAt = location.UpdatedAt
+            };
+        }
+
         public async Task<bool> DriverHasActiveOrderAsync(int driverId) =>
             await _dbContext.Orders.AnyAsync(o => o.DriverId == driverId
                 && (o.OrderStatusId == (int)OrderStatusEnum.Confirmed

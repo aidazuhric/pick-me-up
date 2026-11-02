@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -34,10 +35,13 @@ class _ReportLocationScreenState extends State<ReportLocationScreen> {
   Shift? _openShift;
   DriverLocation? _reported;
   LatLng? _picked;
+  LatLng? _deviceFix;
   bool _isLoading = true;
   bool _isSending = false;
   bool _autoReport = true;
+  bool _useDeviceGps = true;
   String? _error;
+  String? _gpsNotice;
 
   @override
   void initState() {
@@ -94,12 +98,77 @@ class _ReportLocationScreenState extends State<ReportLocationScreen> {
     }
 
     _timer = Timer.periodic(_autoInterval, (_) {
-      final point = _picked;
-
-      if (point != null && mounted) {
-        _send(point, quiet: true);
+      if (mounted) {
+        _sendCurrent(quiet: true);
       }
     });
+  }
+
+  Future<LatLng?> _readDevicePosition() async {
+    if (!await Geolocator.isLocationServiceEnabled()) {
+      _noteGps('Location is switched off on this device.');
+      return null;
+    }
+
+    var permission = await Geolocator.checkPermission();
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      _noteGps('PickMeUp needs permission to read your location.');
+      return null;
+    }
+
+    try {
+      final position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 20),
+        ),
+      );
+
+      _noteGps(null);
+
+      return LatLng(position.latitude, position.longitude);
+    } catch (_) {
+      _noteGps('Could not read your position just now.');
+      return null;
+    }
+  }
+
+  void _noteGps(String? message) {
+    if (mounted && _gpsNotice != message) {
+      setState(() => _gpsNotice = message);
+    }
+  }
+
+  Future<void> _sendCurrent({bool quiet = false}) async {
+    LatLng? point;
+
+    if (_useDeviceGps) {
+      point = await _readDevicePosition();
+
+      if (point != null && mounted) {
+        setState(() => _deviceFix = point);
+      }
+    } else {
+      point = _picked;
+    }
+
+    if (point == null) {
+      if (!quiet && mounted) {
+        AppMessages.failure(
+          context,
+          _gpsNotice ?? 'Tap the map to choose a point first.',
+        );
+      }
+      return;
+    }
+
+    await _send(point, quiet: quiet);
   }
 
   Future<void> _send(LatLng point, {bool quiet = false}) async {
@@ -190,6 +259,7 @@ class _ReportLocationScreenState extends State<ReportLocationScreen> {
   Widget _buildMap() {
     final picked = _picked;
     final reported = _reported;
+    final deviceFix = _deviceFix;
 
     final reportedPoint = reported?.latitude != null && reported?.longitude != null
         ? LatLng(reported!.latitude!, reported.longitude!)
@@ -216,7 +286,9 @@ class _ReportLocationScreenState extends State<ReportLocationScreen> {
           markers: [
             if (reportedPoint != null)
               _marker(reportedPoint, AppColors.toggleOn, Icons.my_location),
-            if (picked != null)
+            if (deviceFix != null)
+              _marker(deviceFix, AppColors.mobileHeader, Icons.gps_fixed),
+            if (picked != null && !_useDeviceGps)
               _marker(picked, AppColors.mobileHeader, Icons.place),
           ],
         ),
@@ -263,9 +335,12 @@ class _ReportLocationScreenState extends State<ReportLocationScreen> {
             const SizedBox(width: AppSpacing.sm),
             Expanded(
               child: Text(
-                _isOnShift
-                    ? 'Tap the map where you are, then send it.'
-                    : 'You are off shift. Start a shift before reporting where you are.',
+                !_isOnShift
+                    ? 'You are off shift. Start a shift before reporting where you are.'
+                    : _gpsNotice ??
+                        (_useDeviceGps
+                            ? 'Sending the position this device reports.'
+                            : 'Tap the map where you are, then send it.'),
                 style: theme.textTheme.bodySmall?.copyWith(color: Colors.white),
               ),
             ),
@@ -302,6 +377,22 @@ class _ReportLocationScreenState extends State<ReportLocationScreen> {
             const SizedBox(height: AppSpacing.sm),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
+              value: _useDeviceGps,
+              onChanged: _isOnShift
+                  ? (value) {
+                      setState(() {
+                        _useDeviceGps = value;
+                        _gpsNotice = null;
+                      });
+                    }
+                  : null,
+              title: const Text("Use this device's GPS"),
+              subtitle: const Text(
+                'Turn this off only to pick a point by hand on an emulator.',
+              ),
+            ),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
               value: _autoReport,
               onChanged: _isOnShift
                   ? (value) {
@@ -310,13 +401,15 @@ class _ReportLocationScreenState extends State<ReportLocationScreen> {
                     }
                   : null,
               title: const Text('Keep sending while on shift'),
-              subtitle: const Text('Resends the pin every couple of minutes.'),
+              subtitle: const Text('Resends your position every couple of minutes.'),
             ),
             const SizedBox(height: AppSpacing.sm),
             FilledButton.icon(
-              onPressed: !_isOnShift || picked == null || _isSending
+              onPressed: !_isOnShift ||
+                      _isSending ||
+                      (!_useDeviceGps && picked == null)
                   ? null
-                  : () => _send(picked),
+                  : () => _sendCurrent(),
               icon: const Icon(Icons.send, size: 18),
               label: _isSending
                   ? const SizedBox(

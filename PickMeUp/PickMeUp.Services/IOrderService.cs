@@ -21,5 +21,7 @@ namespace PickMeUp.Services
         Task<OrderResponse> CancelAsync(int id, OrderCancelRequest request);
 
         Task<bool> DriverHasActiveOrderAsync(int driverId);
+
+        Task<RideDriverLocationResponse?> GetRideDriverLocationAsync(int id);
     }
 }

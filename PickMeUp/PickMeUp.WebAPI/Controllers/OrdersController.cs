@@ -102,4 +102,23 @@ public class OrdersController : BaseReadController<OrderResponse, OrderSearch, I
     {
         return await _service.CancelAsync(id, request);
     }
+
+    /// <summary>
+    /// The last position reported by the driver of the caller's own ride, while that ride is
+    /// under way. Returns no content before a driver takes the ride, after it ends, or if the
+    /// driver has not reported a position yet.
+    /// </summary>
+    [Authorization(Roles.Passenger)]
+    [HttpGet("{id}/DriverLocation")]
+    public async Task<ActionResult<RideDriverLocationResponse>> DriverLocation(int id)
+    {
+        var location = await _service.GetRideDriverLocationAsync(id);
+
+        if (location == null)
+        {
+            return NoContent();
+        }
+
+        return location;
+    }
 }
