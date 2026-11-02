@@ -148,7 +148,7 @@ namespace PickMeUp.Services.Orders
                 var eligibleDriverIds = _shiftService.QueryDispatchEligibleDriverIds();
 
                 var recipients = await _dbContext.Drivers
-                    .Where(d => d.ResignedAt == null)
+                    .Where(DispatchRules.OperationalDriver)
                     .Where(DispatchRules.DriversOffered(order.TaxiCompanyId, order.CityId))
                     .Where(d => excludeDriverId == null || d.Id != excludeDriverId.Value)
                     .Where(d => eligibleDriverIds.Contains(d.Id))

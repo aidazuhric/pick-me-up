@@ -4,6 +4,7 @@ using PickMeUp.Model.Exceptions;
 using PickMeUp.Model.Responses;
 using PickMeUp.Model.SearchObjects;
 using PickMeUp.Services.Database;
+using PickMeUp.Services.Orders;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -38,9 +39,25 @@ namespace PickMeUp.Services
         public Task<bool> IsDriverDispatchEligibleAsync(int driverId) =>
             _dbContext.Shifts.Where(s => s.DriverId == driverId).AnyAsync(DispatchEligibleShift);
 
+        public IQueryable<int> QueryDriverIdsAllowedNewWork() =>
+            _dbContext.Drivers.Where(DispatchRules.OperationalDriver).Select(d => d.Id);
+
+        public async Task EnsureDriverMayTakeNewWorkAsync(int driverId)
+        {
+            var allowed = await QueryDriverIdsAllowedNewWork().AnyAsync(id => id == driverId);
+
+            if (!allowed)
+            {
+                throw new BusinessException(
+                    "Your driver account is not active. Ask your company to reactivate it before taking work.");
+            }
+        }
+
         public async Task<DriverEligibilityResponse> GetEligibilityAsync(int driverId)
         {
-            var driver = await _dbContext.Drivers
+            await ResolveScopeAsync();
+
+            var driver = await ScopedDrivers()
                 .Include(d => d.User)
                 .FirstOrDefaultAsync(d => d.Id == driverId)
                 ?? throw new KeyNotFoundException($"Driver with id {driverId} not found.");
@@ -72,6 +89,8 @@ namespace PickMeUp.Services
         {
             var driverId = await RequireCallerDriverIdAsync();
 
+            await EnsureDriverMayTakeNewWorkAsync(driverId);
+
             var alreadyOpen = await _dbContext.Shifts.Where(s => s.DriverId == driverId).AnyAsync(OpenShift);
 
             if (alreadyOpen)
@@ -100,6 +119,8 @@ namespace PickMeUp.Services
             {
                 throw new BusinessException("This shift has already been stopped.");
             }
+
+            await EnsureNoActiveRideAsync(shift.DriverId, "stopping your shift");
 
             var now = DateTime.UtcNow;
 
@@ -131,6 +152,8 @@ namespace PickMeUp.Services
             {
                 throw new BusinessException("You are already on a break.");
             }
+
+            await EnsureNoActiveRideAsync(shift.DriverId, "taking a break");
 
             var now = DateTime.UtcNow;
 
@@ -246,6 +269,28 @@ namespace PickMeUp.Services
             _ => null
         };
 
+        private IQueryable<Driver> ScopedDrivers()
+        {
+            IQueryable<Driver> drivers = _dbContext.Drivers;
+
+            if (_userAccessor.IsInRole(Roles.Admin))
+            {
+                return drivers;
+            }
+
+            if (_scopedDriverId.HasValue)
+            {
+                return drivers.Where(d => d.Id == _scopedDriverId.Value);
+            }
+
+            if (_scopedCompanyId.HasValue)
+            {
+                return drivers.Where(d => d.TaxiCompanyId == _scopedCompanyId.Value);
+            }
+
+            return drivers.Where(d => false);
+        }
+
         private IQueryable<Shift> ApplyReadScope(IQueryable<Shift> query)
         {
             if (_userAccessor.IsInRole(Roles.Admin))
@@ -323,6 +368,16 @@ namespace PickMeUp.Services
                     .FirstOrDefaultAsync();
 
             return driverId ?? throw new BusinessException("This account is not an active driver.");
+        }
+
+        private async Task EnsureNoActiveRideAsync(int driverId, string action)
+        {
+            var onRide = await _dbContext.Orders.AnyAsync(DispatchRules.ActiveRideOf(driverId));
+
+            if (onRide)
+            {
+                throw new BusinessException($"Finish your active ride before {action}.");
+            }
         }
 
         private async Task<Shift> LoadOwnedShiftForWriteAsync(int id)

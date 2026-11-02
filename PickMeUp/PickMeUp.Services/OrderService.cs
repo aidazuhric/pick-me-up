@@ -157,6 +157,8 @@ namespace PickMeUp.Services
             var driver = await RequireEligibleDriverAsync();
             var order = await LoadForTransitionAsync(id);
 
+            await _shiftService.EnsureDriverMayTakeNewWorkAsync(driver.Id);
+
             EnsureOrderIsOfferedTo(order, driver);
             await EnsureDriverIsFreeAsync(driver.Id);
 
@@ -457,10 +459,12 @@ namespace PickMeUp.Services
         private IQueryable<Order> QueryAvailableFor(IQueryable<Order> query, int driverId, int companyId, int? cityId)
         {
             var eligibleDriverIds = _shiftService.QueryDispatchEligibleDriverIds();
+            var operationalDriverIds = _shiftService.QueryDriverIdsAllowedNewWork();
 
             return query
                 .Where(DispatchRules.AcceptableBy(driverId, companyId, cityId))
                 .Where(o => eligibleDriverIds.Contains(driverId)
+                    && operationalDriverIds.Contains(driverId)
                     && !_dbContext.Orders.Any(active => active.DriverId == driverId
                         && DispatchRules.ActiveRideStatuses.Contains(active.OrderStatusId)));
         }

@@ -12,6 +12,12 @@ namespace PickMeUp.Services.Orders
             (int)OrderStatusEnum.InProgress
         };
 
+        public static Expression<Func<Driver, bool>> OperationalDriver =>
+            driver => driver.ResignedAt == null
+                && driver.IsActive
+                && driver.User.IsActive
+                && driver.TaxiCompany.IsActive;
+
         public static bool IsOfferedTo(int? orderCompanyId, int? orderCityId, int driverCompanyId, int? driverCityId) =>
             (orderCompanyId == null || orderCompanyId == driverCompanyId)
             && (orderCityId == null || orderCityId == driverCityId);

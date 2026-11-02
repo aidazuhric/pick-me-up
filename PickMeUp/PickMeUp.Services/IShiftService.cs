@@ -17,6 +17,10 @@ namespace PickMeUp.Services
 
         Task<bool> IsDriverDispatchEligibleAsync(int driverId);
 
+        Task EnsureDriverMayTakeNewWorkAsync(int driverId);
+
         IQueryable<int> QueryDispatchEligibleDriverIds();
+
+        IQueryable<int> QueryDriverIdsAllowedNewWork();
     }
 }
