@@ -12,7 +12,7 @@ namespace PickMeUp.Services
 {
     public class ReportService : IReportService
     {
-        private const string UnassignedCity = "No company assigned";
+        private const string UnknownCity = "City not determined";
         private const int DefaultRangeDays = 30;
         private const int MaxRangeDays = 366;
         private const int TopCompanyCount = 5;
@@ -36,7 +36,6 @@ namespace PickMeUp.Services
             var range = ReportRange.Of(search);
             var field = DateTruncField(search.Granularity);
 
-            var completed = (int)OrderStatusEnum.Completed;
             var cancelled = (int)OrderStatusEnum.Cancelled;
 
             var bucketed = _dbContext.Orders
@@ -45,13 +44,14 @@ namespace PickMeUp.Services
                 .Select(o => new
                 {
                     Bucket = PostgresFunctions.DateTrunc(field, o.CreatedAt),
-                    CityId = _dbContext.TaxiCompanies
-                        .Where(t => t.Id == o.TaxiCompanyId)
-                        .Select(t => (int?)t.CityId)
-                        .FirstOrDefault(),
+                    CityId = o.CityId,
                     o.OrderStatusId,
-                    Fare = o.Fare ?? 0m,
-                    IsPaid = _dbContext.Payments.Any(p => p.OrderId == o.Id && p.IsPaid)
+                    Charged = _dbContext.Payments
+                        .Where(p => p.OrderId == o.Id && p.IsPaid)
+                        .Sum(p => p.AmountCharged),
+                    Refunded = _dbContext.PaymentRefunds
+                        .Where(r => r.Payment.OrderId == o.Id && r.Payment.IsPaid)
+                        .Sum(r => r.RefundedAmount)
                 });
 
             var grouped = bucketed
@@ -62,7 +62,8 @@ namespace PickMeUp.Services
                     g.Key.CityId,
                     OrderCount = g.Count(),
                     CancelledCount = g.Sum(x => x.OrderStatusId == cancelled ? 1 : 0),
-                    Revenue = g.Sum(x => x.OrderStatusId == completed && x.IsPaid ? x.Fare : 0m)
+                    Charged = g.Sum(x => x.Charged),
+                    Refunded = g.Sum(x => x.Refunded)
                 });
 
             var rows = await (from row in grouped
@@ -72,10 +73,12 @@ namespace PickMeUp.Services
                               select new OrdersByPeriodRow
                               {
                                   PeriodStart = row.Bucket,
-                                  CityName = city == null ? UnassignedCity : city.Name,
+                                  CityName = city == null ? UnknownCity : city.Name,
                                   OrderCount = row.OrderCount,
                                   CancelledCount = row.CancelledCount,
-                                  Revenue = row.Revenue
+                                  Charged = row.Charged,
+                                  Refunded = row.Refunded,
+                                  Revenue = row.Charged - row.Refunded
                               })
                              .ToListAsync();
 
@@ -87,7 +90,9 @@ namespace PickMeUp.Services
                 {
                     $"Orders placed: {rows.Sum(r => r.OrderCount)}",
                     $"Cancelled: {rows.Sum(r => r.CancelledCount)}",
-                    $"Revenue (completed and paid rides): {Money(rows.Sum(r => r.Revenue))}"
+                    $"Charged: {Money(rows.Sum(r => r.Charged))}",
+                    $"Refunded: {Money(rows.Sum(r => r.Refunded))}",
+                    $"Revenue (charged minus refunds): {Money(rows.Sum(r => r.Revenue))}"
                 },
                 Tables = new List<ReportTable>
                 {
@@ -134,15 +139,19 @@ namespace PickMeUp.Services
                 .Select(o => new
                 {
                     CompanyId = o.TaxiCompanyId!.Value,
-                    Fare = o.Fare ?? 0m,
-                    IsPaid = _dbContext.Payments.Any(p => p.OrderId == o.Id && p.IsPaid)
+                    NetRevenue = _dbContext.Payments
+                        .Where(p => p.OrderId == o.Id && p.IsPaid)
+                        .Sum(p => p.AmountCharged)
+                        - _dbContext.PaymentRefunds
+                            .Where(r => r.Payment.OrderId == o.Id && r.Payment.IsPaid)
+                            .Sum(r => r.RefundedAmount)
                 })
                 .GroupBy(x => x.CompanyId)
                 .Select(g => new
                 {
                     CompanyId = g.Key,
                     CompletedRides = g.Count(),
-                    Revenue = g.Sum(x => x.IsPaid ? x.Fare : 0m)
+                    Revenue = g.Sum(x => x.NetRevenue)
                 });
 
             var ratings = _dbContext.Reviews
@@ -183,7 +192,7 @@ namespace PickMeUp.Services
                 {
                     $"Companies with at least one completed ride: {rows.Count}",
                     $"Completed rides in the top {TopCompanyCount}: {rows.Sum(r => r.CompletedRides)}",
-                    $"Revenue in the top {TopCompanyCount}: {Money(rows.Sum(r => r.Revenue))}"
+                    $"Revenue in the top {TopCompanyCount} (charged minus refunds): {Money(rows.Sum(r => r.Revenue))}"
                 },
                 Tables = new List<ReportTable>
                 {
@@ -234,8 +243,12 @@ namespace PickMeUp.Services
                 {
                     o.DriverId,
                     o.CarId,
-                    Fare = o.Fare ?? 0m,
-                    IsPaid = _dbContext.Payments.Any(p => p.OrderId == o.Id && p.IsPaid)
+                    NetRevenue = _dbContext.Payments
+                        .Where(p => p.OrderId == o.Id && p.IsPaid)
+                        .Sum(p => p.AmountCharged)
+                        - _dbContext.PaymentRefunds
+                            .Where(r => r.Payment.OrderId == o.Id && r.Payment.IsPaid)
+                            .Sum(r => r.RefundedAmount)
                 });
 
             var driverRatings = _dbContext.Reviews
@@ -258,7 +271,7 @@ namespace PickMeUp.Services
                 {
                     DriverId = g.Key,
                     CompletedRides = g.Count(),
-                    Revenue = g.Sum(x => x.IsPaid ? x.Fare : 0m)
+                    Revenue = g.Sum(x => x.NetRevenue)
                 });
 
             var driverRows = await (from row in byDriver
@@ -283,7 +296,7 @@ namespace PickMeUp.Services
                 {
                     CarId = g.Key,
                     CompletedRides = g.Count(),
-                    Revenue = g.Sum(x => x.IsPaid ? x.Fare : 0m)
+                    Revenue = g.Sum(x => x.NetRevenue)
                 });
 
             var vehicleRows = await (from row in byCar
@@ -321,7 +334,7 @@ namespace PickMeUp.Services
                 Summary = new List<string>
                 {
                     $"Completed rides: {driverRows.Sum(r => r.CompletedRides)}",
-                    $"Revenue (completed and paid rides): {Money(driverRows.Sum(r => r.Revenue))}",
+                    $"Revenue (charged minus refunds): {Money(driverRows.Sum(r => r.Revenue))}",
                     $"Average rating: {Rating(companyRating?.Average, companyRating?.ReviewCount ?? 0)}"
                 },
                 Tables = new List<ReportTable>

@@ -10,6 +10,10 @@ namespace PickMeUp.Model.Responses
 
         public int CancelledCount { get; set; }
 
+        public decimal Charged { get; set; }
+
+        public decimal Refunded { get; set; }
+
         public decimal Revenue { get; set; }
     }
 }
