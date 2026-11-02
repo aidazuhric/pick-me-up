@@ -139,10 +139,10 @@ namespace PickMeUp.Services
             await _shiftService.EnsureDriverMayTakeNewWorkAsync(driver.Id);
 
             EnsureOrderIsOfferedTo(order, driver);
-            await EnsureDriverIsFreeAsync(driver.Id);
 
             var target = _stateMachine.ResolveTarget(OrderTransition.Accept, CurrentStatus(order));
 
+            await EnsureDriverIsFreeAsync(driver.Id);
             EnsureOrderIsAcceptableBy(order, driver);
 
             var carId = request.CarId ?? await ResolveAssignedCarIdAsync(driver.Id);
@@ -673,7 +673,7 @@ namespace PickMeUp.Services
 
             if (order.PassengerId == userId)
             {
-                if (order.OrderStatusId != (int)OrderStatusEnum.Pending || order.DriverId != null)
+                if (order.DriverId != null)
                 {
                     throw new BusinessException(
                         "A driver has already taken this ride, so it can no longer be cancelled here. "

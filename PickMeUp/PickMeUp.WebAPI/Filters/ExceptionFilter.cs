@@ -33,6 +33,12 @@ namespace PickMeUp.WebAPI.Filters
                 context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 _logger.LogWarning("Client rule: {Message}", ce.Message);
             }
+            else if (context.Exception is ForbiddenException fe)
+            {
+                context.ModelState.AddModelError("forbidden", fe.Message);
+                context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                _logger.LogWarning("Forbidden: {Message}", fe.Message);
+            }
             else if (context.Exception is KeyNotFoundException)
             {
                 context.ModelState.AddModelError("notFound", "The requested record was not found.");
@@ -54,7 +60,9 @@ namespace PickMeUp.WebAPI.Filters
 
             var allMessages = list.Values.SelectMany(v => v).Where(m => !string.IsNullOrWhiteSpace(m)).ToList();
             var message = allMessages.FirstOrDefault()
-                ?? (context.Exception is BusinessException ? context.Exception.Message : null)
+                ?? (context.Exception is BusinessException or ForbiddenException
+                    ? context.Exception.Message
+                    : null)
                 ?? "Request could not be processed.";
 
             context.Result = new JsonResult(new

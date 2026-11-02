@@ -79,7 +79,8 @@ namespace PickMeUp.Services.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Plate")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.HasIndex("TaxiCompanyId");
 
@@ -397,7 +398,8 @@ namespace PickMeUp.Services.Migrations
                     b.HasIndex("TaxiCompanyId");
 
                     b.HasIndex("UserId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.ToTable("Drivers");
 
@@ -2366,7 +2368,8 @@ namespace PickMeUp.Services.Migrations
                     b.HasIndex("PaymentStatusId");
 
                     b.HasIndex("StripePaymentIntentId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.ToTable("Payments");
 
@@ -2384,7 +2387,6 @@ namespace PickMeUp.Services.Migrations
                             PaidAt = new DateTime(2026, 9, 9, 8, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
                             RefundRequired = false,
-                            StripePaymentIntentId = "pi_seed_order_001",
                             UpdatedAt = new DateTime(2026, 9, 9, 8, 2, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -2400,7 +2402,6 @@ namespace PickMeUp.Services.Migrations
                             PaidAt = new DateTime(2026, 9, 11, 9, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
                             RefundRequired = false,
-                            StripePaymentIntentId = "pi_seed_order_002",
                             UpdatedAt = new DateTime(2026, 9, 11, 9, 2, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -2416,7 +2417,6 @@ namespace PickMeUp.Services.Migrations
                             PaidAt = new DateTime(2026, 9, 13, 10, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 3,
                             RefundRequired = false,
-                            StripePaymentIntentId = "pi_seed_order_003",
                             UpdatedAt = new DateTime(2026, 9, 13, 10, 2, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -2432,7 +2432,6 @@ namespace PickMeUp.Services.Migrations
                             PaidAt = new DateTime(2026, 9, 15, 8, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 4,
                             RefundRequired = false,
-                            StripePaymentIntentId = "pi_seed_order_004",
                             UpdatedAt = new DateTime(2026, 9, 15, 8, 2, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -2448,7 +2447,6 @@ namespace PickMeUp.Services.Migrations
                             PaidAt = new DateTime(2026, 9, 17, 11, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
                             RefundRequired = false,
-                            StripePaymentIntentId = "pi_seed_order_005",
                             UpdatedAt = new DateTime(2026, 9, 17, 11, 2, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -2464,7 +2462,6 @@ namespace PickMeUp.Services.Migrations
                             PaidAt = new DateTime(2026, 9, 19, 9, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
                             RefundRequired = false,
-                            StripePaymentIntentId = "pi_seed_order_006",
                             UpdatedAt = new DateTime(2026, 9, 19, 9, 2, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -2480,7 +2477,6 @@ namespace PickMeUp.Services.Migrations
                             PaidAt = new DateTime(2026, 9, 21, 13, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
                             RefundRequired = false,
-                            StripePaymentIntentId = "pi_seed_order_007",
                             UpdatedAt = new DateTime(2026, 9, 21, 13, 2, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -2496,7 +2492,6 @@ namespace PickMeUp.Services.Migrations
                             PaidAt = new DateTime(2026, 9, 10, 8, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
                             RefundRequired = false,
-                            StripePaymentIntentId = "pi_seed_order_008",
                             UpdatedAt = new DateTime(2026, 9, 10, 8, 2, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -2512,7 +2507,6 @@ namespace PickMeUp.Services.Migrations
                             PaidAt = new DateTime(2026, 9, 14, 10, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
                             RefundRequired = false,
-                            StripePaymentIntentId = "pi_seed_order_009",
                             UpdatedAt = new DateTime(2026, 9, 14, 10, 2, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -2528,7 +2522,6 @@ namespace PickMeUp.Services.Migrations
                             PaidAt = new DateTime(2026, 9, 18, 12, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
                             RefundRequired = false,
-                            StripePaymentIntentId = "pi_seed_order_010",
                             UpdatedAt = new DateTime(2026, 9, 18, 12, 2, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -2544,7 +2537,6 @@ namespace PickMeUp.Services.Migrations
                             PaidAt = new DateTime(2026, 9, 22, 9, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 3,
                             RefundRequired = false,
-                            StripePaymentIntentId = "pi_seed_order_011",
                             UpdatedAt = new DateTime(2026, 9, 22, 9, 2, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -2560,7 +2552,6 @@ namespace PickMeUp.Services.Migrations
                             PaidAt = new DateTime(2026, 9, 24, 14, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 4,
                             RefundRequired = false,
-                            StripePaymentIntentId = "pi_seed_order_012",
                             UpdatedAt = new DateTime(2026, 9, 24, 14, 2, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -2576,7 +2567,6 @@ namespace PickMeUp.Services.Migrations
                             PaidAt = new DateTime(2026, 10, 4, 17, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
                             RefundRequired = false,
-                            StripePaymentIntentId = "pi_seed_order_014",
                             UpdatedAt = new DateTime(2026, 10, 4, 17, 2, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -2592,7 +2582,6 @@ namespace PickMeUp.Services.Migrations
                             PaidAt = new DateTime(2026, 10, 3, 9, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
                             RefundRequired = false,
-                            StripePaymentIntentId = "pi_seed_order_015",
                             UpdatedAt = new DateTime(2026, 10, 3, 9, 2, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -2608,7 +2597,6 @@ namespace PickMeUp.Services.Migrations
                             PaidAt = new DateTime(2026, 10, 4, 8, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
                             RefundRequired = false,
-                            StripePaymentIntentId = "pi_seed_order_016",
                             UpdatedAt = new DateTime(2026, 10, 4, 8, 2, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -2624,7 +2612,6 @@ namespace PickMeUp.Services.Migrations
                             PaidAt = new DateTime(2026, 9, 26, 10, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 4,
                             RefundRequired = false,
-                            StripePaymentIntentId = "pi_seed_order_017",
                             UpdatedAt = new DateTime(2026, 9, 26, 10, 2, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -2640,7 +2627,6 @@ namespace PickMeUp.Services.Migrations
                             PaidAt = new DateTime(2026, 9, 28, 11, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 4,
                             RefundRequired = false,
-                            StripePaymentIntentId = "pi_seed_order_018",
                             UpdatedAt = new DateTime(2026, 9, 28, 11, 2, 0, 0, DateTimeKind.Utc)
                         });
                 });
@@ -2885,10 +2871,12 @@ namespace PickMeUp.Services.Migrations
                     b.HasIndex("TargetDriverId");
 
                     b.HasIndex("OrderId", "TargetCompanyId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.HasIndex("OrderId", "TargetDriverId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.ToTable("Reviews");
 
@@ -3636,7 +3624,8 @@ namespace PickMeUp.Services.Migrations
                         .HasFilter("\"IsDeleted\" = false");
 
                     b.HasIndex("Name")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("\"IsDeleted\" = false");
 
                     b.HasIndex("UserId");
 

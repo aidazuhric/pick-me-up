@@ -20,6 +20,9 @@ namespace PickMeUp.Services
         private const string PaymentSucceededEvent = "payment_intent.succeeded";
         private const string AlreadyPaidMessage = "This ride has already been paid for.";
 
+        private const string NoGatewayChargeMessage =
+            "This payment has no card charge recorded at the gateway, so there is nothing to refund through it.";
+
         private readonly IAuthenticatedUserAccessor _userAccessor;
         private readonly IStripeGateway _stripeGateway;
         private readonly IPaymentNotificationDispatcher _dispatcher;
@@ -444,6 +447,11 @@ namespace PickMeUp.Services
                 throw new BusinessException("This payment has not been charged, so there is nothing to refund.");
             }
 
+            if (string.IsNullOrWhiteSpace(payment.StripePaymentIntentId))
+            {
+                throw new BusinessException(NoGatewayChargeMessage);
+            }
+
             var alreadyRefunded = await RecordedRefundTotalAsync(payment.Id);
             var remaining = payment.AmountCharged - alreadyRefunded;
 
@@ -505,6 +513,16 @@ namespace PickMeUp.Services
         private async Task<RefundOutcome> ApplyRefundAsync(
             Payment payment, decimal alreadyRefunded, decimal amount, string? reason)
         {
+            if (string.IsNullOrWhiteSpace(payment.StripePaymentIntentId))
+            {
+                _logger.LogWarning(
+                    "Payment {PaymentId} on order {OrderId} has no gateway charge recorded, "
+                    + "so no refund was sent and none is owed.",
+                    payment.Id, payment.OrderId);
+
+                return RefundOutcome.NotNeeded;
+            }
+
             var key = RefundKey(payment.Id, alreadyRefunded, amount);
 
             StripeRefund stripeRefund;

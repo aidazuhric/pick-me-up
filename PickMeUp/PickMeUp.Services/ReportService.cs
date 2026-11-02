@@ -394,11 +394,19 @@ namespace PickMeUp.Services
 
             if (!_userAccessor.IsInRole(Roles.Admin))
             {
-                return await _dbContext.TaxiCompanies
+                var own = await _dbContext.TaxiCompanies
                     .AsNoTracking()
                     .Include(t => t.City)
                     .FirstOrDefaultAsync(t => t.UserId == userId)
                     ?? throw new BusinessException("This account does not manage a taxi company.");
+
+                if (requestedCompanyId != null && requestedCompanyId.Value != own.Id)
+                {
+                    throw new ForbiddenException(
+                        "You can only report on your own taxi company.");
+                }
+
+                return own;
             }
 
             if (requestedCompanyId == null)

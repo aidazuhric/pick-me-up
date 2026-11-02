@@ -95,7 +95,8 @@ namespace PickMeUp.Services.Database
 
             modelBuilder.Entity<TaxiCompany>()
                 .HasIndex(t => t.Name)
-                .IsUnique();
+                .IsUnique()
+                .HasFilter("\"IsDeleted\" = false");
 
             modelBuilder.Entity<TaxiCompany>()
                 .HasIndex(t => t.ContactPhone)
@@ -139,14 +140,16 @@ namespace PickMeUp.Services.Database
 
             modelBuilder.Entity<Driver>()
                 .HasIndex(d => d.UserId)
-                .IsUnique();
+                .IsUnique()
+                .HasFilter("\"IsDeleted\" = false");
 
             modelBuilder.Entity<Car>()
                 .HasQueryFilter(c => !c.IsDeleted);
 
             modelBuilder.Entity<Car>()
                 .HasIndex(c => c.Plate)
-                .IsUnique();
+                .IsUnique()
+                .HasFilter("\"IsDeleted\" = false");
 
             modelBuilder.Entity<Car>()
                 .HasOne(c => c.VehicleCategory)
@@ -291,7 +294,10 @@ namespace PickMeUp.Services.Database
                 .IsUnique()
                 .HasFilter($"\"PaymentStatusId\" NOT IN ({(int)PaymentStatusEnum.Refunded}, {(int)PaymentStatusEnum.Failed}) AND NOT \"IsDeleted\"");
 
-            modelBuilder.Entity<Payment>().HasIndex(p => p.StripePaymentIntentId).IsUnique();
+            modelBuilder.Entity<Payment>()
+                .HasIndex(p => p.StripePaymentIntentId)
+                .IsUnique()
+                .HasFilter("\"IsDeleted\" = false");
 
             modelBuilder.Entity<PaymentRefund>()
                 .HasOne(r => r.Payment).WithMany(p => p.Refunds).HasForeignKey(r => r.PaymentId)
@@ -326,10 +332,12 @@ namespace PickMeUp.Services.Database
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Review>()
-                .HasIndex(r => new { r.OrderId, r.TargetCompanyId }).IsUnique();
+                .HasIndex(r => new { r.OrderId, r.TargetCompanyId }).IsUnique()
+                .HasFilter("\"IsDeleted\" = false");
 
             modelBuilder.Entity<Review>()
-                .HasIndex(r => new { r.OrderId, r.TargetDriverId }).IsUnique();
+                .HasIndex(r => new { r.OrderId, r.TargetDriverId }).IsUnique()
+                .HasFilter("\"IsDeleted\" = false");
 
             modelBuilder.Entity<SupportTicket>()
                 .HasQueryFilter(t => !t.IsDeleted);
