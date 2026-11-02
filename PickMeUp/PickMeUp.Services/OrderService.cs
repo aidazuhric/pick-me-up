@@ -59,23 +59,7 @@ namespace PickMeUp.Services
 
             var cityId = await ResolveNearestCityIdAsync(request.PickupLat, request.PickupLng);
 
-            if (request.TaxiCompanyId.HasValue)
-            {
-                var company = await _dbContext.TaxiCompanies
-                    .Where(t => t.Id == request.TaxiCompanyId.Value && t.IsActive)
-                    .Select(t => new { t.Id, t.CityId })
-                    .FirstOrDefaultAsync();
-
-                if (company == null)
-                {
-                    throw new BusinessException("The selected taxi company is not available.");
-                }
-
-                if (cityId.HasValue && company.CityId != cityId.Value)
-                {
-                    throw new BusinessException("This company does not operate in the pickup city.");
-                }
-            }
+            await RequireOperatingCompanyAsync(request.TaxiCompanyId, cityId);
 
             var order = new Order
             {
@@ -136,12 +120,7 @@ namespace PickMeUp.Services
 
             probe.DistanceKm = DeriveDistanceKm(probe);
 
-            var companyName = request.TaxiCompanyId == null
-                ? null
-                : await _dbContext.TaxiCompanies
-                    .Where(t => t.Id == request.TaxiCompanyId.Value)
-                    .Select(t => t.Name)
-                    .FirstOrDefaultAsync();
+            var companyName = await RequireOperatingCompanyAsync(request.TaxiCompanyId, cityId);
 
             return new OrderQuoteResponse
             {
@@ -646,6 +625,13 @@ namespace PickMeUp.Services
 
             if (order.PassengerId == userId)
             {
+                if (order.OrderStatusId != (int)OrderStatusEnum.Pending || order.DriverId != null)
+                {
+                    throw new BusinessException(
+                        "A driver has already taken this ride, so it can no longer be cancelled here. "
+                        + "Contact support if you need it stopped.");
+                }
+
                 return;
             }
 
@@ -656,6 +642,27 @@ namespace PickMeUp.Services
             {
                 throw new KeyNotFoundException($"Order with id {id} not found.");
             }
+        }
+
+        private async Task<string?> RequireOperatingCompanyAsync(int? companyId, int? pickupCityId)
+        {
+            if (companyId == null)
+            {
+                return null;
+            }
+
+            var company = await _dbContext.TaxiCompanies
+                .Where(t => t.Id == companyId.Value && t.IsActive)
+                .Select(t => new { t.Name, t.CityId })
+                .FirstOrDefaultAsync()
+                ?? throw new BusinessException("The selected taxi company is not available.");
+
+            if (pickupCityId.HasValue && company.CityId != pickupCityId.Value)
+            {
+                throw new BusinessException("This company does not operate in the pickup city.");
+            }
+
+            return company.Name;
         }
 
         private async Task<int?> ResolveNearestCityIdAsync(double latitude, double longitude)

@@ -26,6 +26,17 @@ namespace PickMeUp.Services.Validators
                 .WithName(nameof(OrderInsertRequest.PickupLat))
                 .WithMessage("Pick your pick-up point on the map first.");
 
+            RuleFor(x => x.DestinationAddress).NotEmpty()
+                .WithMessage("Destination address is required. Choose the point on the map.")
+                .MaximumLength(250)
+                .WithMessage("Destination address must be at most 250 characters.");
+
+            RuleFor(x => x.DestinationLat).NotNull()
+                .WithMessage("Pick your destination on the map first.");
+
+            RuleFor(x => x.DestinationLng).NotNull()
+                .WithMessage("Pick your destination on the map first.");
+
             RuleFor(x => x.DestinationLat!.Value).InclusiveBetween(-90, 90)
                 .When(x => x.DestinationLat.HasValue)
                 .WithMessage("Destination latitude must be between -90 and 90.");
@@ -34,8 +45,12 @@ namespace PickMeUp.Services.Validators
                 .When(x => x.DestinationLng.HasValue)
                 .WithMessage("Destination longitude must be between -180 and 180.");
 
-            RuleFor(x => x.DestinationAddress).MaximumLength(250)
-                .WithMessage("Destination address must be at most 250 characters.");
+            RuleFor(x => x)
+                .Must(x => Math.Abs(x.DestinationLat!.Value) > CoordinateEpsilon
+                    || Math.Abs(x.DestinationLng!.Value) > CoordinateEpsilon)
+                .When(x => x.DestinationLat.HasValue && x.DestinationLng.HasValue)
+                .WithName(nameof(OrderInsertRequest.DestinationLat))
+                .WithMessage("Pick your destination on the map first.");
         }
     }
 }

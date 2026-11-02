@@ -145,8 +145,9 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
 
   Map<String, dynamic>? _tripPayload() {
     final pickup = _pickup;
+    final destination = _destination;
 
-    if (pickup == null) {
+    if (pickup == null || destination == null) {
       return null;
     }
 
@@ -155,9 +156,9 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
       'pickupLat': pickup.latitude,
       'pickupLng': pickup.longitude,
       'pickupAddress': _pickupAddress ?? _unnamedPoint,
-      'destinationLat': _destination?.latitude,
-      'destinationLng': _destination?.longitude,
-      'destinationAddress': _destination == null ? null : _destinationAddress,
+      'destinationLat': destination.latitude,
+      'destinationLng': destination.longitude,
+      'destinationAddress': _destinationAddress ?? _unnamedPoint,
     };
   }
 
@@ -614,7 +615,8 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
     final theme = Theme.of(context);
     final distance = _distanceKm;
     final quote = _quote;
-    final canOrder = _pickup != null && !_isSubmitting && quote != null;
+    final canOrder =
+        _pickup != null && _destination != null && !_isSubmitting && quote != null;
 
     return _Card(
       child: ConstrainedBox(
