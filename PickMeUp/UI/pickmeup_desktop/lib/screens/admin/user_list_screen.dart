@@ -24,6 +24,7 @@ class _UserListScreenState extends State<UserListScreen> {
   final _tableKey = GlobalKey<CrudDataTableState<User>>();
 
   bool? _isActive;
+  String? _role;
 
   Future<SearchResult<User>> _load(
     int page,
@@ -38,6 +39,7 @@ class _UserListScreenState extends State<UserListScreen> {
       'SortBy': ?sortBy,
       'Name': ?search,
       'IsActive': ?_isActive,
+      'Role': ?_role,
     });
   }
 
@@ -114,6 +116,21 @@ class _UserListScreenState extends State<UserListScreen> {
           ],
           onChanged: (value) {
             setState(() => _isActive = value);
+            _tableKey.currentState?.refresh(toFirstPage: true);
+          },
+        ),
+        FilterDropdown<String>(
+          value: _role,
+          width: 170,
+          options: const [
+            FilterOption<String>(label: 'Any role', value: null),
+            FilterOption<String>(label: 'Admin', value: 'Admin'),
+            FilterOption<String>(label: 'Company', value: 'Company'),
+            FilterOption<String>(label: 'Driver', value: 'Driver'),
+            FilterOption<String>(label: 'Passenger', value: 'Passenger'),
+          ],
+          onChanged: (value) {
+            setState(() => _role = value);
             _tableKey.currentState?.refresh(toFirstPage: true);
           },
         ),

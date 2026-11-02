@@ -99,6 +99,8 @@ namespace PickMeUp.Services
 
         public async Task<(Stream Content, string ContentType, string FileName)> GetProfileImageAsync(int id)
         {
+            await EnsureProfileImageIsVisibleAsync(id);
+
             var user = await LoadUserAsync(id);
 
             if (string.IsNullOrWhiteSpace(user.ProfileImagePath))
@@ -108,6 +110,48 @@ namespace PickMeUp.Services
 
             return _imageFileStore.Open(user.ProfileImagePath);
         }
+
+        private async Task EnsureProfileImageIsVisibleAsync(int id)
+        {
+            if (_userAccessor.IsInRole(Roles.Admin))
+            {
+                return;
+            }
+
+            var callerId = RequireOwnUserId();
+
+            if (callerId == id)
+            {
+                return;
+            }
+
+            var sharedRide = await _dbContext.Orders.AnyAsync(o =>
+                (o.PassengerId == callerId && o.Driver != null && o.Driver.UserId == id)
+                || (o.PassengerId == id && o.Driver != null && o.Driver.UserId == callerId));
+
+            if (sharedRide)
+            {
+                return;
+            }
+
+            var callerCompanies = CompanyIdsOf(callerId);
+            var sharedCompany = await CompanyIdsOf(id).AnyAsync(companyId => callerCompanies.Contains(companyId));
+
+            if (sharedCompany)
+            {
+                return;
+            }
+
+            throw new KeyNotFoundException($"User with id {id} not found.");
+        }
+
+        private IQueryable<int> CompanyIdsOf(int userId) =>
+            _dbContext.TaxiCompanies
+                .Where(t => t.UserId == userId)
+                .Select(t => t.Id)
+                .Concat(_dbContext.Drivers
+                    .Where(d => d.UserId == userId)
+                    .Select(d => d.TaxiCompanyId));
 
         private async Task<User> LoadUserAsync(int id)
         {
@@ -156,6 +200,12 @@ namespace PickMeUp.Services
             if (search.IsActive.HasValue)
             {
                 query = query.Where(u => u.IsActive == search.IsActive.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(search.Role))
+            {
+                var role = search.Role.Trim();
+                query = query.Where(u => u.UserRoles.Any(ur => EF.Functions.ILike(ur.Role.Name, role)));
             }
 
             return query;

@@ -160,7 +160,7 @@ Every seeded account uses the password `Test123`.
 
 | Username | Role | Application | Signs in with |
 | -------- | ---- | ----------- | ------------- |
-| `admin1` | Administrator | Desktop | Password |
+| `admin1` | Administrator | Desktop | Password and an emailed code |
 | `company1` | Taxi company | Desktop | Password |
 | `company4` | Taxi company | Desktop | Password and an emailed code |
 | `driver1` | Driver | Mobile | Password |
@@ -170,15 +170,20 @@ The seed also contains `company2`, `company3`, `driver2` through `driver5`, `pas
 and `passenger3` so that lists, reports and the recommender have realistic data to work
 with.
 
-`company4` demonstrates two factor authentication. After the password it asks for a six
-digit code that is emailed to the account, and no token is issued until that code is
-entered. Any account can switch the same protection on for itself from the security
-section of its settings screen.
+Every administrator signs in with two factor authentication, whether or not the account
+asked for it: after the password the desktop app asks for a six digit code that is emailed
+to the account, and no token is issued until that code is entered. `company4` demonstrates
+the same protection on a non administrator account, and any account can switch it on for
+itself from the security section of its settings screen.
 
-### Reading emailed codes when no mail server is configured
+### Reading the emailed codes
 
-`SMTP_HOST` is empty in `.env.example`, so the Worker writes each message to its log
-instead of sending it. Both the sign in code and the password reset code appear there:
+`.env.example` points the Worker at the Mailpit container that `docker compose up` starts,
+so nothing leaves the machine. Open <http://localhost:8025> and the sign in code and the
+password reset code arrive there within a second or two.
+
+If `SMTP_HOST` is empty the Worker writes each message to its log instead of sending it,
+and both codes appear there:
 
 ```bash
 docker compose logs pickmeup-worker | grep "code is"
