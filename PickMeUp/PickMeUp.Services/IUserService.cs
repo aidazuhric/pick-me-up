@@ -17,6 +17,8 @@ namespace PickMeUp.Services
 
         Task<UserResponse> UpdateOwnAsync(UserProfileUpdateRequest request);
 
+        Task DeleteOwnAccountAsync();
+
         Task<string> StoreOwnProfileImageAsync(Stream content, string fileName, string contentType);
 
         Task<string> StoreProfileImageAsync(int id, Stream content, string fileName, string contentType);

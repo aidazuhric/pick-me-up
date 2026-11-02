@@ -42,6 +42,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _twoFactorEnabled = false;
   bool _isTogglingTwoFactor = false;
   bool _isResigning = false;
+  bool _isDeleting = false;
   bool _isUploadingPhoto = false;
   int _photoVersion = 0;
 
@@ -282,6 +283,62 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return null;
   }
 
+  Future<void> _deleteAccount() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delete your account?'),
+        content: const Text(
+          'Your sign-in stops working straight away and you will be signed out. '
+          'Past rides stay on record so receipts and reports still add up. '
+          'This cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('KEEP MY ACCOUNT'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
+            child: const Text('DELETE'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) {
+      return;
+    }
+
+    setState(() => _isDeleting = true);
+
+    final auth = context.read<AuthProvider>();
+    final notifications = context.read<NotificationStore>();
+
+    try {
+      await _users.deleteMe();
+
+      if (!mounted) return;
+
+      AppMessages.success(context, 'Your account is closed. Signing you out.');
+
+      await notifications.disconnect();
+      await auth.logout();
+    } on ApiClientException catch (e) {
+      if (!mounted) return;
+      setState(() => _isDeleting = false);
+      AppMessages.failure(context, e.message);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _isDeleting = false);
+      AppMessages.failure(
+        context,
+        'Could not reach the server. Check that the API is running.',
+      );
+    }
+  }
+
   Future<void> _resign() async {
     final me = _me;
 
@@ -478,6 +535,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
               label: Text(_isResigning ? 'RESIGNING…' : 'RESIGN'),
             ),
           ],
+          const Divider(height: AppSpacing.xl),
+          Text('Your account', style: theme.textTheme.titleMedium),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            'Deleting your account signs you out for good. Finish any ride that '
+            'is under way first.',
+            style: theme.textTheme.bodySmall,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          OutlinedButton.icon(
+            onPressed: _isDeleting ? null : _deleteAccount,
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.danger,
+              side: const BorderSide(color: AppColors.danger),
+            ),
+            icon: const Icon(Icons.delete_outline, size: 18),
+            label: Text(_isDeleting ? 'DELETING…' : 'DELETE MY ACCOUNT'),
+          ),
         ],
       ),
     );

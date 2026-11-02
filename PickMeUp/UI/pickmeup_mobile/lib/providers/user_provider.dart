@@ -44,6 +44,14 @@ class UserProvider extends BaseProvider<User> {
     return User.fromJson(jsonDecode(response.body));
   }
 
+  Future<void> deleteMe() async {
+    final response = await http.delete(
+      Uri.parse('${BaseProvider.baseUrl}$endpoint/Me'),
+      headers: createHeaders(),
+    );
+    validateResponse(response);
+  }
+
   Future<void> uploadOwnPhoto(String filePath, String mimeType) async {
     final request = http.MultipartRequest(
       'POST',

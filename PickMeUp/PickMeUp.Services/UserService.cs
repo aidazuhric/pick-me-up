@@ -6,6 +6,7 @@ using PickMeUp.Model.Requests;
 using PickMeUp.Model.Responses;
 using PickMeUp.Model.SearchObjects;
 using PickMeUp.Services.Database;
+using PickMeUp.Services.Orders;
 using PickMeUp.Services.Storage;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -344,6 +345,80 @@ namespace PickMeUp.Services
             }
 
             return response;
+        }
+
+        public async Task DeleteOwnAccountAsync()
+        {
+            await DeleteAccountAsync(RequireOwnUserId());
+        }
+
+        public override async Task DeleteAsync(int id)
+        {
+            await DeleteAccountAsync(id);
+        }
+
+        private async Task DeleteAccountAsync(int userId)
+        {
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId)
+                ?? throw new KeyNotFoundException($"User with id {userId} not found.");
+
+            await EnsureAccountCanBeClosedAsync(userId);
+
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+            await _dbContext.RefreshTokens
+                .IgnoreQueryFilters()
+                .Where(t => t.UserId == userId)
+                .ExecuteDeleteAsync();
+
+            var closedAt = DateTime.UtcNow;
+
+            user.IsActive = false;
+            user.IsDeleted = true;
+            user.DeletedAt = closedAt;
+
+            await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+        }
+
+        private async Task EnsureAccountCanBeClosedAsync(int userId)
+        {
+            var ridingAsPassenger = await _dbContext.Orders
+                .AnyAsync(o => o.PassengerId == userId
+                    && DispatchRules.ActiveRideStatuses.Contains(o.OrderStatusId));
+
+            if (ridingAsPassenger)
+            {
+                throw new BusinessException(
+                    "There is a ride under way on this account. It has to finish or be cancelled first.");
+            }
+
+            var driverId = await _dbContext.Drivers
+                .Where(d => d.UserId == userId)
+                .Select(d => (int?)d.Id)
+                .FirstOrDefaultAsync();
+
+            if (driverId == null)
+            {
+                return;
+            }
+
+            var drivingARide = await _dbContext.Orders.AnyAsync(DispatchRules.ActiveRideOf(driverId.Value));
+
+            if (drivingARide)
+            {
+                throw new BusinessException(
+                    "This driver is on a ride. It has to be completed before the account is closed.");
+            }
+
+            var onShift = await _dbContext.Shifts
+                .AnyAsync(s => s.DriverId == driverId.Value && s.EndedAt == null);
+
+            if (onShift)
+            {
+                throw new BusinessException(
+                    "This driver still has an open shift. Stop the shift before closing the account.");
+            }
         }
 
         public async Task ChangePasswordAsync(UserPasswordChangeRequest request)

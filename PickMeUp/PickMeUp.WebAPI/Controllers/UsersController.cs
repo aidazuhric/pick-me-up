@@ -59,6 +59,19 @@ public class UsersController : BaseCRUDController<UserResponse, UserSearch, User
     /// <summary>
     /// Replaces the signed-in account's own photo.
     /// </summary>
+    /// <summary>
+    /// Closes the caller's own account. The record is kept so past rides and reports still
+    /// resolve names; the sign-in is revoked. Refused while a ride is under way.
+    /// </summary>
+    [Authorization(Roles.Driver, Roles.Passenger)]
+    [HttpDelete("Me")]
+    public async Task<IActionResult> DeleteMe()
+    {
+        await _service.DeleteOwnAccountAsync();
+
+        return NoContent();
+    }
+
     [Authorization(Roles.Admin, Roles.Company, Roles.Driver, Roles.Passenger)]
     [HttpPost("Me/Photo")]
     public async Task<IActionResult> UploadOwnPhoto(IFormFile file)
