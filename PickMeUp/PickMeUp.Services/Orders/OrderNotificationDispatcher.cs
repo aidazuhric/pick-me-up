@@ -155,7 +155,12 @@ namespace PickMeUp.Services.Orders
                     .Where(d => !_dbContext.OrderRejections.Any(r => r.OrderId == order.Id && r.DriverId == d.Id))
                     .Where(d => !_dbContext.Orders.Any(active => active.DriverId == d.Id
                         && DispatchRules.ActiveRideStatuses.Contains(active.OrderStatusId)))
-                    .Select(d => d.UserId)
+                    .Select(d => new AvailabilityRecipient
+                    {
+                        UserId = d.UserId,
+                        Email = d.User.Email,
+                        Name = d.User.FirstName + " " + d.User.LastName
+                    })
                     .ToListAsync();
 
                 if (recipients.Count == 0)
@@ -163,13 +168,28 @@ namespace PickMeUp.Services.Orders
                     return;
                 }
 
-                await _notifications.DeliverAsync(recipients, new NotificationMessage
+                await _notifications.DeliverAsync(recipients.Select(r => r.UserId).ToList(), new NotificationMessage
                 {
                     Title = "New ride available",
                     Body = $"Pick-up at {order.PickupAddress}.",
                     OrderId = order.Id,
                     Category = NotificationCategories.OrderAvailable
                 });
+
+                foreach (var recipient in recipients)
+                {
+                    await PublishAsync(new OrderAvailableEvent
+                    {
+                        OrderId = order.Id,
+                        PickupAddress = order.PickupAddress,
+                        DestinationAddress = order.DestinationAddress,
+                        CompanyName = order.TaxiCompany?.Name,
+                        Fare = order.Fare,
+                        DistanceKm = order.DistanceKm,
+                        RecipientEmail = recipient.Email,
+                        RecipientName = recipient.Name
+                    });
+                }
             }
             catch (Exception exception)
             {
@@ -216,5 +236,12 @@ namespace PickMeUp.Services.Orders
                 .FirstOrDefaultAsync(o => o.Id == orderId);
 
         private static string FullName(User user) => $"{user.FirstName} {user.LastName}";
+
+        private sealed class AvailabilityRecipient
+        {
+            public int UserId { get; set; }
+            public string Email { get; set; } = string.Empty;
+            public string Name { get; set; } = string.Empty;
+        }
     }
 }
