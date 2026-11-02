@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../models/driver_location.dart';
 import '../../models/notification_item.dart';
 import '../../models/order.dart';
 import '../../providers/notification_store.dart';
@@ -34,10 +35,14 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
     'InProgress',
   ];
 
+  static const Duration _driverPollInterval = Duration(seconds: 15);
+
   final _orders = OrderProvider();
 
   StreamSubscription<NotificationItem>? _pushes;
+  Timer? _driverPoll;
 
+  DriverLocation? _driverLocation;
   Order? _ride;
   int? _trackedId;
   int _otherActive = 0;
@@ -59,7 +64,53 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
   @override
   void dispose() {
     _pushes?.cancel();
+    _driverPoll?.cancel();
     super.dispose();
+  }
+
+  bool get _rideUnderWay {
+    final status = _ride?.status;
+
+    return status == 'Confirmed' || status == 'InProgress';
+  }
+
+  void _syncDriverPoll() {
+    _driverPoll?.cancel();
+
+    if (!_rideUnderWay || _trackedId == null) {
+      if (_driverLocation != null) {
+        setState(() => _driverLocation = null);
+      }
+      return;
+    }
+
+    _readDriverLocation();
+
+    _driverPoll = Timer.periodic(_driverPollInterval, (_) {
+      if (mounted) {
+        _readDriverLocation();
+      }
+    });
+  }
+
+  Future<void> _readDriverLocation() async {
+    final orderId = _trackedId;
+
+    if (orderId == null) {
+      return;
+    }
+
+    try {
+      final location = await _orders.driverLocation(orderId);
+
+      if (!mounted || orderId != _trackedId) return;
+
+      setState(() => _driverLocation = location);
+    } catch (_) {
+      if (mounted) {
+        setState(() => _driverLocation = null);
+      }
+    }
   }
 
   void _onPushed(NotificationItem pushed) {
@@ -144,12 +195,19 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
 
       if (!mounted) return;
 
+      final previousTracked = _trackedId;
+      final previousStatus = _ride?.status;
+
       setState(() {
         _ride = tracked;
         _trackedId = tracked?.id;
         _otherActive = active.where((o) => o.id != tracked?.id).length;
         _isLoading = false;
       });
+
+      if (_trackedId != previousTracked || _ride?.status != previousStatus) {
+        _syncDriverPoll();
+      }
     } on ApiClientException catch (e) {
       if (!mounted) return;
       setState(() {
@@ -497,6 +555,17 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
+                if (_rideUnderWay)
+                  Text(
+                    _driverLocation?.updatedAt == null
+                        ? 'Waiting for the driver to report their position.'
+                        : 'Position updated ${Formats.moment(_driverLocation!.updatedAt)}.',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColors.textMuted,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
               ],
             ),
           ),
@@ -597,6 +666,11 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
       return const SizedBox.shrink();
     }
 
+    final driver = _driverLocation;
+    final driverPoint = driver?.latitude != null && driver?.longitude != null
+        ? LatLng(driver!.latitude!, driver.longitude!)
+        : null;
+
     return GestureDetector(
       onTap: ride.id == null ? null : () => _openDetail(ride.id!),
       child: SizedBox(
@@ -636,6 +710,8 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
               _marker(pickup, AppColors.toggleOn, Icons.my_location),
               if (destination != null)
                 _marker(destination, AppColors.danger, Icons.flag),
+              if (driverPoint != null)
+                _marker(driverPoint, AppColors.mobileHeader, Icons.local_taxi),
             ],
           ),
             const MapAttribution(),

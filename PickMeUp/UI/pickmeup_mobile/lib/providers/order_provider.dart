@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../models/driver_location.dart';
 import '../models/order.dart';
 import '../models/order_quote.dart';
 import 'base_provider.dart';
@@ -21,6 +22,21 @@ class OrderProvider extends BaseProvider<Order> {
     validateResponse(response);
 
     return OrderQuote.fromJson(jsonDecode(response.body));
+  }
+
+  Future<DriverLocation?> driverLocation(int orderId) async {
+    final response = await http.get(
+      Uri.parse('${BaseProvider.baseUrl}$endpoint/$orderId/DriverLocation'),
+      headers: createHeaders(),
+    );
+
+    if (response.statusCode == 204 || response.body.isEmpty) {
+      return null;
+    }
+
+    validateResponse(response);
+
+    return DriverLocation.fromJson(jsonDecode(response.body));
   }
 
   Future<Order> accept(int orderId) => _post('$orderId/Accept');
