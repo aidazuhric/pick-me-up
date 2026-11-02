@@ -6,6 +6,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../models/payable_order.dart';
 import '../../models/payment.dart';
 import '../../providers/payment_provider.dart';
+import '../../services/ride_payment_flow.dart';
 import '../../utils/api_client_exception.dart';
 import '../../utils/formats.dart';
 import '../../widgets/app_messages.dart';
@@ -28,8 +29,6 @@ class PayRideScreen extends StatefulWidget {
 }
 
 class _PayRideScreenState extends State<PayRideScreen> {
-  static const Duration _pollInterval = Duration(milliseconds: 1500);
-  static const int _pollAttempts = 20;
 
   final _provider = PaymentProvider();
 
@@ -169,51 +168,34 @@ class _PayRideScreenState extends State<PayRideScreen> {
   }
 
   Future<void> _awaitConfirmation(_RideCard card, int orderId) async {
-    for (var attempt = 0; attempt < _pollAttempts; attempt++) {
-      await Future<void>.delayed(_pollInterval);
+    final result = await RidePaymentFlow.awaitConfirmation(_provider, orderId);
 
-      if (!mounted) return;
+    if (!mounted) return;
 
-      try {
-        final payment = await _provider.readByOrder(orderId);
+    if (!result.isPaid) {
+      setState(() => card.stage = _RideStage.unpaid);
+      AppMessages.failure(context, result.message);
+      return;
+    }
 
-        if (payment.isPaid == true) {
-          if (!mounted) return;
+    Payment? settled;
 
-          setState(() {
-            card.stage = _RideStage.paid;
-            card.payment = payment;
-          });
-
-          AppMessages.success(
-            context,
-            'Ride #$orderId is paid — waiting for a driver to accept.',
-          );
-          return;
-        }
-      } on ApiClientException catch (e) {
-        if (!e.isUnauthorized) {
-          continue;
-        }
-
-        if (!mounted) return;
-
-        setState(() => card.stage = _RideStage.unpaid);
-        AppMessages.failure(context, e.message);
-        return;
-      } catch (_) {
-        continue;
-      }
+    try {
+      settled = await _provider.readByOrder(orderId);
+    } catch (_) {
+      settled = null;
     }
 
     if (!mounted) return;
 
-    setState(() => card.stage = _RideStage.unpaid);
+    setState(() {
+      card.stage = _RideStage.paid;
+      card.payment = settled;
+    });
 
-    AppMessages.failure(
+    AppMessages.success(
       context,
-      'Your card went through, but the confirmation has not arrived yet. '
-      'Pull down to refresh in a moment.',
+      'Ride #$orderId is paid — waiting for a driver to accept.',
     );
   }
 

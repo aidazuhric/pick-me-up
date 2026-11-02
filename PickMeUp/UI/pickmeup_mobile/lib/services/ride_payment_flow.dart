@@ -118,8 +118,8 @@ class RidePaymentFlow {
 
     return const RidePaymentResult(
       RidePaymentOutcome.unconfirmed,
-      'Your card went through, but the confirmation has not arrived yet. '
-      'Pull down to refresh in a moment.',
+      'Payment was sent; the confirmation has not arrived yet. Check the ride '
+      'status before trying again.',
     );
   }
 }

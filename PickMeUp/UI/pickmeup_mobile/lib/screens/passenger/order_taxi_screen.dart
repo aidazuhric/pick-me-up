@@ -341,10 +341,75 @@ class _OrderTaxiScreenState extends State<OrderTaxiScreen> {
     _refreshQuote();
   }
 
+  Future<bool> _confirmTrip(OrderQuote quote) async {
+    final theme = Theme.of(context);
+
+    Widget line(String label, String value) => Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 74,
+            child: Text(label, style: theme.textTheme.bodySmall),
+          ),
+          Expanded(
+            child: Text(value, style: theme.textTheme.bodyMedium),
+          ),
+        ],
+      ),
+    );
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Send this ride?'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            line('From', _pickupAddress ?? _unnamedPoint),
+            line('To', _destinationAddress ?? _unnamedPoint),
+            line(
+              'Company',
+              _company?.name ?? 'Any company driving here',
+            ),
+            line(
+              'Price',
+              '${quote.fare.toStringAsFixed(2)} ${quote.currency}',
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              'You pay next. No driver sees the ride until it is paid.',
+              style: theme.textTheme.bodySmall,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('CANCEL'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('CONFIRM'),
+          ),
+        ],
+      ),
+    );
+
+    return confirmed == true;
+  }
+
   Future<void> _submit() async {
     final pickup = _pickup;
+    final quote = _quote;
 
-    if (pickup == null) {
+    if (pickup == null || quote == null) {
+      return;
+    }
+
+    if (!await _confirmTrip(quote) || !mounted) {
       return;
     }
 
