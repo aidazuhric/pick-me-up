@@ -31,7 +31,23 @@ namespace PickMeUp.Services.Orders
                     && (order.CityId == null || order.CityId == driverCityId)
                     && !order.Rejections.Any(r => r.DriverId == driverId));
 
+        public static Expression<Func<Order, bool>> AcceptableBy(int driverId, int driverCompanyId, int? driverCityId) =>
+            order => order.OrderStatusId == (int)OrderStatusEnum.Pending
+                && order.IsPrepaid
+                && order.DriverId == null
+                && (order.TaxiCompanyId == null || order.TaxiCompanyId == driverCompanyId)
+                && (order.CityId == null || order.CityId == driverCityId)
+                && !order.Rejections.Any(r => r.DriverId == driverId);
+
+        public static bool IsAcceptableBy(Order order, int driverId, int driverCompanyId, int? driverCityId) =>
+            AcceptableBy(driverId, driverCompanyId, driverCityId).Compile().Invoke(order);
+
         public static Expression<Func<Order, bool>> ActiveRideOf(int driverId) =>
             order => order.DriverId == driverId && ActiveRideStatuses.Contains(order.OrderStatusId);
+
+        public static Expression<Func<CarAssignment, bool>> AssignmentActiveAt(DateTime moment) =>
+            assignment => assignment.IsActive
+                && assignment.AssignedFrom <= moment
+                && (assignment.AssignedTo == null || assignment.AssignedTo > moment);
     }
 }

@@ -162,6 +162,8 @@ namespace PickMeUp.Services
 
             var target = _stateMachine.ResolveTarget(OrderTransition.Accept, CurrentStatus(order));
 
+            EnsureOrderIsAcceptableBy(order, driver);
+
             var carId = request.CarId ?? await ResolveAssignedCarIdAsync(driver.Id);
 
             if (carId == null)
@@ -169,7 +171,7 @@ namespace PickMeUp.Services
                 throw new BusinessException("You have no vehicle assigned. Ask your company to assign one first.");
             }
 
-            await EnsureCarBelongsToDriverAsync(carId.Value, driver);
+            await EnsureCarIsAssignedToDriverAsync(carId.Value, driver);
 
             await using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
@@ -178,9 +180,8 @@ namespace PickMeUp.Services
             var acceptedAt = DateTime.UtcNow;
 
             var claimed = await _dbContext.Orders
-                .Where(o => o.Id == order.Id
-                    && o.OrderStatusId == (int)OrderStatusEnum.Pending
-                    && o.DriverId == null)
+                .Where(DispatchRules.AcceptableBy(driver.Id, driver.TaxiCompanyId, driver.TaxiCompany?.CityId))
+                .Where(o => o.Id == order.Id)
                 .ExecuteUpdateAsync(setters => setters
                     .SetProperty(o => o.DriverId, driver.Id)
                     .SetProperty(o => o.CarId, carId)
@@ -412,7 +413,7 @@ namespace PickMeUp.Services
             var order = await FindByIdAsync(id)
                 ?? throw new KeyNotFoundException($"Order with id {id} not found.");
 
-            EnsureVisible(order, id);
+            await EnsureVisibleAsync(order, id);
 
             return _mapper.Map<OrderResponse>(order);
         }
@@ -458,12 +459,8 @@ namespace PickMeUp.Services
             var eligibleDriverIds = _shiftService.QueryDispatchEligibleDriverIds();
 
             return query
-                .Where(DispatchRules.OfferedTo(companyId, cityId))
-                .Where(o => o.OrderStatusId == (int)OrderStatusEnum.Pending
-                    && o.IsPrepaid
-                    && o.DriverId == null
-                    && !o.Rejections.Any(r => r.DriverId == driverId)
-                    && eligibleDriverIds.Contains(driverId)
+                .Where(DispatchRules.AcceptableBy(driverId, companyId, cityId))
+                .Where(o => eligibleDriverIds.Contains(driverId)
                     && !_dbContext.Orders.Any(active => active.DriverId == driverId
                         && DispatchRules.ActiveRideStatuses.Contains(active.OrderStatusId)));
         }
@@ -563,22 +560,23 @@ namespace PickMeUp.Services
 
         private async Task<int?> ResolveAssignedCarIdAsync(int driverId)
         {
-            var now = DateTime.UtcNow;
-
             return await _dbContext.CarAssignments
-                .Where(a => a.DriverId == driverId && a.IsActive)
-                .Where(a => a.AssignedFrom <= now && (a.AssignedTo == null || a.AssignedTo > now))
+                .Where(DispatchRules.AssignmentActiveAt(DateTime.UtcNow))
+                .Where(a => a.DriverId == driverId)
                 .Select(a => (int?)a.CarId)
                 .FirstOrDefaultAsync();
         }
 
-        private async Task EnsureCarBelongsToDriverAsync(int carId, Driver driver)
+        private async Task EnsureCarIsAssignedToDriverAsync(int carId, Driver driver)
         {
-            var ok = await _dbContext.Cars.AnyAsync(c => c.Id == carId && c.TaxiCompanyId == driver.TaxiCompanyId);
+            var assigned = await _dbContext.CarAssignments
+                .Where(DispatchRules.AssignmentActiveAt(DateTime.UtcNow))
+                .AnyAsync(a => a.DriverId == driver.Id && a.CarId == carId);
 
-            if (!ok)
+            if (!assigned)
             {
-                throw new BusinessException("That vehicle does not belong to your company.");
+                throw new BusinessException(
+                    "That vehicle is not assigned to you right now. Ask your company to assign it first.");
             }
         }
 
@@ -591,6 +589,30 @@ namespace PickMeUp.Services
             {
                 throw new KeyNotFoundException($"Order with id {order.Id} not found.");
             }
+        }
+
+        private static void EnsureOrderIsAcceptableBy(Order order, Driver driver)
+        {
+            var acceptable = DispatchRules.IsAcceptableBy(
+                order, driver.Id, driver.TaxiCompanyId, driver.TaxiCompany?.CityId);
+
+            if (acceptable)
+            {
+                return;
+            }
+
+            if (!order.IsPrepaid)
+            {
+                throw new BusinessException(
+                    "This ride has not been paid for yet, so it cannot be accepted.");
+            }
+
+            if (order.Rejections.Any(r => r.DriverId == driver.Id))
+            {
+                throw new BusinessException("You have already declined this ride.");
+            }
+
+            throw new BusinessException("This order has already been accepted by a driver.");
         }
 
         private async Task EnsureDriverIsFreeAsync(int driverId)
@@ -690,26 +712,31 @@ namespace PickMeUp.Services
         private int RequireUserId() =>
             _userAccessor.GetUserId() ?? throw new BusinessException("The caller could not be identified.");
 
-        private void EnsureVisible(Order order, int id)
+        private async Task EnsureVisibleAsync(Order order, int id)
         {
             var scope = _scope!;
 
-            if (scope.IsAdmin)
+            if (scope.IsAdmin
+                || (scope.PassengerUserId.HasValue && order.PassengerId == scope.PassengerUserId.Value)
+                || (scope.CompanyId.HasValue && order.TaxiCompanyId == scope.CompanyId.Value))
             {
                 return;
             }
 
-            var visible =
-                (scope.PassengerUserId.HasValue && order.PassengerId == scope.PassengerUserId.Value)
-                || (scope.DriverId.HasValue && (order.DriverId == scope.DriverId.Value
-                    || (order.OrderStatusId == (int)OrderStatusEnum.Pending
-                        && (order.TaxiCompanyId == null || order.TaxiCompanyId == scope.DriverCompanyId))))
-                || (scope.CompanyId.HasValue && order.TaxiCompanyId == scope.CompanyId.Value);
-
-            if (!visible)
+            if (scope.DriverId.HasValue)
             {
-                throw new KeyNotFoundException($"Order with id {id} not found.");
+                var visibleToDriver = await _dbContext.Orders
+                    .Where(DispatchRules.VisibleToDriver(
+                        scope.DriverId.Value, scope.DriverCompanyId!.Value, scope.DriverCompanyCityId))
+                    .AnyAsync(o => o.Id == id);
+
+                if (visibleToDriver)
+                {
+                    return;
+                }
             }
+
+            throw new KeyNotFoundException($"Order with id {id} not found.");
         }
 
         private async Task ResolveScopeAsync()
