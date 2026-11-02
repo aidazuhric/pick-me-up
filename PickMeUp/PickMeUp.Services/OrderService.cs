@@ -306,14 +306,19 @@ namespace PickMeUp.Services
             await _dbContext.SaveChangesAsync();
             await transaction.CommitAsync();
 
+            var refund = RefundOutcome.NotNeeded;
+
             if (order.IsPrepaid && from != OrderStatusEnum.Completed)
             {
-                await _payments.RefundCancelledOrderAsync(order.Id, $"Ride cancelled: {request.Reason}");
+                refund = await _payments.RefundCancelledOrderAsync(order.Id, $"Ride cancelled: {request.Reason}");
             }
 
             await _dispatcher.OrderCancelledAsync(order.Id, request.Reason, userId);
 
-            return await LoadResponseAsync(order.Id);
+            var response = await LoadResponseAsync(order.Id);
+            response.RefundStatus = refund.ToString();
+
+            return response;
         }
 
         public async Task<bool> DriverHasActiveOrderAsync(int driverId) =>

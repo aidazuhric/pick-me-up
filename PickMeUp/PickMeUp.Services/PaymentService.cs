@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using PickMeUp.Model.Constants;
 using PickMeUp.Model.Enums;
 using PickMeUp.Model.Exceptions;
@@ -83,70 +84,129 @@ namespace PickMeUp.Services
             var amount = order.Fare
                 ?? throw new BusinessException("This ride has no fare yet, so it cannot be paid for.");
 
-            var existing = await _dbContext.Payments
-                .Where(p => p.OrderId == order.Id)
-                .FirstOrDefaultAsync(p => p.IsPaid || p.StripePaymentIntentId != null);
+            var payment = await ClaimPaymentForAsync(order.Id, amount);
+
+            if (payment.IsPaid)
+            {
+                throw new BusinessException(AlreadyPaidMessage);
+            }
+
+            var decision = await DecideIntentAsync(payment, order.Id, amount);
+
+            if (decision.AlreadySucceeded)
+            {
+                _logger.LogWarning(
+                    "The intent for order {OrderId} already succeeded at Stripe but was never confirmed. "
+                    + "Settling it now instead of charging a second time.",
+                    order.Id);
+
+                await SettleAsync(payment);
+
+                throw new BusinessException(AlreadyPaidMessage);
+            }
+
+            return Describe(payment, decision.ClientSecret!);
+        }
+
+        private async Task<IntentDecision> DecideIntentAsync(Payment payment, int orderId, decimal amount)
+        {
+            var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+            try
+            {
+                await LockPaymentAsync(payment.Id);
+                await _dbContext.Entry(payment).ReloadAsync();
+
+                if (payment.IsPaid)
+                {
+                    await transaction.CommitAsync();
+                    return IntentDecision.Succeeded;
+                }
+
+                if (payment.StripePaymentIntentId != null)
+                {
+                    var state = await _stripeGateway.ReadIntentAsync(payment.StripePaymentIntentId);
+
+                    if (state != null && state.IsSucceeded)
+                    {
+                        await transaction.CommitAsync();
+                        return IntentDecision.Succeeded;
+                    }
+
+                    if (state != null && state.IsReusable)
+                    {
+                        _logger.LogInformation(
+                            "Reusing open intent {IntentId} for order {OrderId}.",
+                            state.PaymentIntentId, orderId);
+
+                        await transaction.CommitAsync();
+                        return IntentDecision.Open(state.ClientSecret);
+                    }
+                }
+
+                StripeIntent intent;
+
+                try
+                {
+                    intent = await StartIntentAsync(payment, orderId, amount);
+                }
+                catch
+                {
+                    await transaction.RollbackAsync();
+                    await MarkIntentFailedAsync(payment, orderId);
+                    throw;
+                }
+
+                await transaction.CommitAsync();
+
+                return IntentDecision.Open(intent.ClientSecret);
+            }
+            finally
+            {
+                await transaction.DisposeAsync();
+            }
+        }
+
+        private Task LockPaymentAsync(int paymentId) =>
+            _dbContext.Database.ExecuteSqlRawAsync(
+                "SELECT \"Id\" FROM \"Payments\" WHERE \"Id\" = {0} FOR UPDATE", paymentId);
+
+        private async Task MarkIntentFailedAsync(Payment payment, int orderId)
+        {
+            payment.PaymentStatusId = (int)PaymentStatusEnum.Failed;
+            payment.UpdatedAt = DateTime.UtcNow;
+
+            await _dbContext.SaveChangesAsync();
+
+            _logger.LogError(
+                "Stripe would not start a payment for order {OrderId}; payment {PaymentId} is marked failed "
+                + "so the passenger can try again without a stale row in the way.",
+                orderId, payment.Id);
+        }
+
+        private sealed class IntentDecision
+        {
+            public bool AlreadySucceeded { get; private init; }
+
+            public string? ClientSecret { get; private init; }
+
+            public static IntentDecision Succeeded => new() { AlreadySucceeded = true };
+
+            public static IntentDecision Open(string clientSecret) => new() { ClientSecret = clientSecret };
+        }
+
+        private async Task<Payment> ClaimPaymentForAsync(int orderId, decimal amount)
+        {
+            var existing = await ReadCurrentPaymentAsync(LivePaymentFor(orderId));
 
             if (existing != null)
             {
-                if (existing.IsPaid)
-                {
-                    throw new BusinessException(AlreadyPaidMessage);
-                }
-
-                var state = await _stripeGateway.ReadIntentAsync(existing.StripePaymentIntentId!);
-
-                if (state != null && state.IsSucceeded)
-                {
-                    _logger.LogWarning(
-                        "Intent {IntentId} for order {OrderId} already succeeded at Stripe but was never confirmed. "
-                        + "Settling it now instead of charging a second time.",
-                        state.PaymentIntentId, order.Id);
-
-                    await SettleAsync(existing);
-
-                    throw new BusinessException(AlreadyPaidMessage);
-                }
-
-                if (state != null && state.IsReusable)
-                {
-                    _logger.LogInformation(
-                        "Reusing open intent {IntentId} for order {OrderId}.", state.PaymentIntentId, order.Id);
-
-                    return new PaymentIntentResponse
-                    {
-                        PaymentId = existing.Id,
-                        OrderId = order.Id,
-                        AmountCharged = existing.AmountCharged,
-                        Currency = existing.Currency,
-                        ClientSecret = state.ClientSecret
-                    };
-                }
-
-                var replacement = await _stripeGateway.CreateIntentAsync(amount, existing.Currency, order.Id);
-
-                _logger.LogInformation(
-                    "Intent {PreviousIntentId} for order {OrderId} is no longer usable; replacing it with {IntentId}.",
-                    existing.StripePaymentIntentId, order.Id, replacement.PaymentIntentId);
-
-                existing.AmountCharged = amount;
-                existing.StripePaymentIntentId = replacement.PaymentIntentId;
-                existing.UpdatedAt = DateTime.UtcNow;
-                await _dbContext.SaveChangesAsync();
-
-                return new PaymentIntentResponse
-                {
-                    PaymentId = existing.Id,
-                    OrderId = order.Id,
-                    AmountCharged = existing.AmountCharged,
-                    Currency = existing.Currency,
-                    ClientSecret = replacement.ClientSecret
-                };
+                return existing;
             }
 
             var payment = new Payment
             {
-                OrderId = order.Id,
+                OrderId = orderId,
                 AmountCharged = amount,
                 Currency = "BAM",
                 PaymentStatusId = (int)PaymentStatusEnum.Unpaid,
@@ -155,27 +215,90 @@ namespace PickMeUp.Services
             };
 
             _dbContext.Payments.Add(payment);
+
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (DbUpdateException exception)
+            {
+                _dbContext.Entry(payment).State = EntityState.Detached;
+
+                var winner = await ReadCurrentPaymentAsync(LivePaymentFor(orderId));
+
+                if (winner == null)
+                {
+                    throw;
+                }
+
+                _logger.LogInformation(exception,
+                    "Another request was already starting a payment for order {OrderId}; "
+                    + "continuing with payment {PaymentId}.",
+                    orderId, winner.Id);
+
+                return winner;
+            }
+
+            return payment;
+        }
+
+        private async Task<StripeIntent> StartIntentAsync(Payment payment, int orderId, decimal amount)
+        {
+            payment.IntentAttempt += 1;
+            payment.AmountCharged = amount;
+            payment.UpdatedAt = DateTime.UtcNow;
             await _dbContext.SaveChangesAsync();
 
-            var intent = await _stripeGateway.CreateIntentAsync(amount, payment.Currency, order.Id);
+            var key = $"order-{orderId}-payment-{payment.Id}-attempt-{payment.IntentAttempt}";
+
+            StripeIntent intent;
+
+            try
+            {
+                intent = await _stripeGateway.CreateIntentAsync(amount, payment.Currency, orderId, key);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception,
+                    "Stripe refused to start a payment for order {OrderId} on attempt {Attempt}.",
+                    orderId, payment.IntentAttempt);
+
+                throw;
+            }
+
+            _logger.LogInformation(
+                "Started intent {IntentId} for order {OrderId} ({Amount} {Currency}), attempt {Attempt}.",
+                intent.PaymentIntentId, orderId, amount, payment.Currency, payment.IntentAttempt);
 
             payment.StripePaymentIntentId = intent.PaymentIntentId;
             payment.UpdatedAt = DateTime.UtcNow;
             await _dbContext.SaveChangesAsync();
 
-            _logger.LogInformation(
-                "Started intent {IntentId} for order {OrderId} ({Amount} {Currency}).",
-                intent.PaymentIntentId, order.Id, amount, payment.Currency);
+            return intent;
+        }
 
-            return new PaymentIntentResponse
+        private static Expression<Func<Payment, bool>> LivePaymentFor(int orderId) =>
+            payment => payment.OrderId == orderId
+                && payment.PaymentStatusId != (int)PaymentStatusEnum.Refunded
+                && payment.PaymentStatusId != (int)PaymentStatusEnum.Failed;
+
+        private Task<Payment?> ReadCurrentPaymentAsync(Expression<Func<Payment, bool>> predicate) =>
+            _dbContext.Payments
+                .Include(p => p.Refunds)
+                .Where(predicate)
+                .OrderByDescending(p => p.IsPaid)
+                .ThenByDescending(p => p.Id)
+                .FirstOrDefaultAsync();
+
+        private static PaymentIntentResponse Describe(Payment payment, string clientSecret) =>
+            new()
             {
                 PaymentId = payment.Id,
-                OrderId = order.Id,
+                OrderId = payment.OrderId,
                 AmountCharged = payment.AmountCharged,
                 Currency = payment.Currency,
-                ClientSecret = intent.ClientSecret
+                ClientSecret = clientSecret
             };
-        }
 
         public async Task<bool> HandleWebhookAsync(string payload, string signatureHeader)
         {
@@ -259,10 +382,7 @@ namespace PickMeUp.Services
                 return null;
             }
 
-            return await _dbContext.Payments
-                .Where(p => p.OrderId == stripeEvent.OrderId.Value)
-                .OrderByDescending(p => p.Id)
-                .FirstOrDefaultAsync();
+            return await ReadCurrentPaymentAsync(p => p.OrderId == stripeEvent.OrderId!.Value);
         }
 
         private async Task SettleAsync(Payment payment)
@@ -278,7 +398,13 @@ namespace PickMeUp.Services
 
             var order = await _dbContext.Orders.FirstOrDefaultAsync(o => o.Id == payment.OrderId);
 
-            if (order != null && !order.IsPrepaid)
+            var cancelled = order != null && order.OrderStatusId == (int)OrderStatusEnum.Cancelled;
+
+            if (cancelled)
+            {
+                payment.RefundRequired = true;
+            }
+            else if (order != null && !order.IsPrepaid)
             {
                 order.IsPrepaid = true;
                 order.PrepaidAt = paidAt;
@@ -290,6 +416,17 @@ namespace PickMeUp.Services
 
             await _dispatcher.PaymentConfirmedAsync(payment.Id);
 
+            if (cancelled)
+            {
+                _logger.LogWarning(
+                    "Payment {PaymentId} confirmed for order {OrderId}, which is already cancelled. "
+                    + "The ride stays cancelled and the money is owed back.",
+                    payment.Id, payment.OrderId);
+
+                await RefundOwedAsync(payment, "Payment arrived after the ride was cancelled");
+                return;
+            }
+
             if (order != null && order.OrderStatusId == (int)OrderStatusEnum.Pending)
             {
                 await _orderDispatcher.OrderBecameAvailableAsync(order.Id, excludeDriverId: null);
@@ -299,7 +436,6 @@ namespace PickMeUp.Services
         public async Task<PaymentResponse> RefundAsync(int id, PaymentRefundRequest request)
         {
             var payment = await _dbContext.Payments
-                .Include(p => p.Refunds)
                 .FirstOrDefaultAsync(p => p.Id == id)
                 ?? throw new KeyNotFoundException($"Payment with id {id} not found.");
 
@@ -308,7 +444,7 @@ namespace PickMeUp.Services
                 throw new BusinessException("This payment has not been charged, so there is nothing to refund.");
             }
 
-            var alreadyRefunded = payment.Refunds.Sum(r => r.RefundedAmount);
+            var alreadyRefunded = await RecordedRefundTotalAsync(payment.Id);
             var remaining = payment.AmountCharged - alreadyRefunded;
 
             if (remaining <= 0m)
@@ -329,77 +465,159 @@ namespace PickMeUp.Services
                     $"At most {remaining} {payment.Currency} can still be refunded for this payment.");
             }
 
-            var stripeRefund = await _stripeGateway.RefundAsync(
-                payment.StripePaymentIntentId ?? string.Empty, amount, request.Reason);
+            var outcome = await ApplyRefundAsync(payment, alreadyRefunded, amount, request.Reason);
 
-            await using var transaction = await _dbContext.Database.BeginTransactionAsync();
-
-            _dbContext.PaymentRefunds.Add(new PaymentRefund
+            if (outcome == RefundOutcome.Pending)
             {
-                PaymentId = payment.Id,
-                RefundedAmount = stripeRefund.Amount,
-                StripeRefundId = stripeRefund.RefundId,
-                Reason = request.Reason,
-                RefundedAt = DateTime.UtcNow
-            });
-
-            var refundedTotal = alreadyRefunded + stripeRefund.Amount;
-
-            payment.PaymentStatusId = refundedTotal >= payment.AmountCharged
-                ? (int)PaymentStatusEnum.Refunded
-                : (int)PaymentStatusEnum.PartiallyRefunded;
-            payment.UpdatedAt = DateTime.UtcNow;
-
-            await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            await _dispatcher.PaymentRefundedAsync(payment.Id, stripeRefund.Amount);
+                throw new BusinessException(
+                    "The refund could not be completed and is still owed. It is recorded and can be retried safely.");
+            }
 
             return await LoadResponseAsync(payment.Id);
         }
 
-        public async Task<bool> RefundCancelledOrderAsync(int orderId, string reason)
+        public async Task<RefundOutcome> RefundCancelledOrderAsync(int orderId, string reason)
         {
-            var payment = await _dbContext.Payments
-                .Include(p => p.Refunds)
-                .FirstOrDefaultAsync(p => p.OrderId == orderId && p.IsPaid);
+            var payment = await ReadCurrentPaymentAsync(p => p.OrderId == orderId && p.IsPaid);
 
             if (payment == null)
             {
-                return false;
+                return RefundOutcome.NotNeeded;
             }
 
-            var remaining = payment.AmountCharged - payment.Refunds.Sum(r => r.RefundedAmount);
+            return await RefundOwedAsync(payment, reason);
+        }
+
+        private async Task<RefundOutcome> RefundOwedAsync(Payment payment, string reason)
+        {
+            var alreadyRefunded = await RecordedRefundTotalAsync(payment.Id);
+            var remaining = payment.AmountCharged - alreadyRefunded;
 
             if (remaining <= 0m)
             {
-                return false;
+                await ClearRefundOwedAsync(payment);
+                return RefundOutcome.Refunded;
             }
 
-            var stripeRefund = await _stripeGateway.RefundAsync(
-                payment.StripePaymentIntentId ?? string.Empty, remaining, reason);
+            return await ApplyRefundAsync(payment, alreadyRefunded, remaining, reason);
+        }
+
+        private async Task<RefundOutcome> ApplyRefundAsync(
+            Payment payment, decimal alreadyRefunded, decimal amount, string? reason)
+        {
+            var key = RefundKey(payment.Id, alreadyRefunded, amount);
+
+            StripeRefund stripeRefund;
+
+            try
+            {
+                stripeRefund = await _stripeGateway.RefundAsync(
+                    payment.StripePaymentIntentId ?? string.Empty, amount, reason, key);
+            }
+            catch (Exception exception)
+            {
+                await MarkRefundOwedAsync(payment, exception,
+                    "Stripe would not refund {Amount} on payment {PaymentId}");
+                return RefundOutcome.Pending;
+            }
+
+            try
+            {
+                await RecordRefundAsync(payment, stripeRefund, reason);
+            }
+            catch (Exception exception)
+            {
+                await MarkRefundOwedAsync(payment, exception,
+                    "Stripe refunded {Amount} on payment {PaymentId} but it could not be written down");
+                return RefundOutcome.Pending;
+            }
+
+            await _dispatcher.PaymentRefundedAsync(payment.Id, stripeRefund.Amount);
+
+            return RefundOutcome.Refunded;
+        }
+
+        private async Task RecordRefundAsync(Payment payment, StripeRefund stripeRefund, string? reason)
+        {
+            var alreadyWritten = await _dbContext.PaymentRefunds
+                .AnyAsync(r => r.StripeRefundId == stripeRefund.RefundId);
 
             await using var transaction = await _dbContext.Database.BeginTransactionAsync();
 
-            _dbContext.PaymentRefunds.Add(new PaymentRefund
+            if (!alreadyWritten)
             {
-                PaymentId = payment.Id,
-                RefundedAmount = stripeRefund.Amount,
-                StripeRefundId = stripeRefund.RefundId,
-                Reason = reason,
-                RefundedAt = DateTime.UtcNow
-            });
+                _dbContext.PaymentRefunds.Add(new PaymentRefund
+                {
+                    PaymentId = payment.Id,
+                    RefundedAmount = stripeRefund.Amount,
+                    StripeRefundId = stripeRefund.RefundId,
+                    Reason = reason,
+                    RefundedAt = DateTime.UtcNow
+                });
 
-            payment.PaymentStatusId = (int)PaymentStatusEnum.Refunded;
+                await _dbContext.SaveChangesAsync();
+            }
+            else
+            {
+                _logger.LogInformation(
+                    "Stripe refund {RefundId} was already written down for payment {PaymentId}; "
+                    + "the retry changed nothing.",
+                    stripeRefund.RefundId, payment.Id);
+            }
+
+            var refundedTotal = await RecordedRefundTotalAsync(payment.Id);
+            var full = refundedTotal >= payment.AmountCharged;
+
+            payment.PaymentStatusId = full
+                ? (int)PaymentStatusEnum.Refunded
+                : (int)PaymentStatusEnum.PartiallyRefunded;
+
+            if (full)
+            {
+                payment.RefundRequired = false;
+            }
+
             payment.UpdatedAt = DateTime.UtcNow;
 
             await _dbContext.SaveChangesAsync();
             await transaction.CommitAsync();
-
-            await _dispatcher.PaymentRefundedAsync(payment.Id, stripeRefund.Amount);
-
-            return true;
         }
+
+        private async Task MarkRefundOwedAsync(Payment payment, Exception exception, string message)
+        {
+            _logger.LogError(exception,
+                message + "; the refund is marked as owed so it can be retried without paying twice.",
+                payment.AmountCharged, payment.Id);
+
+            payment.RefundRequired = true;
+            payment.UpdatedAt = DateTime.UtcNow;
+
+            await _dbContext.SaveChangesAsync();
+        }
+
+        private async Task ClearRefundOwedAsync(Payment payment)
+        {
+            if (!payment.RefundRequired)
+            {
+                return;
+            }
+
+            payment.RefundRequired = false;
+            payment.UpdatedAt = DateTime.UtcNow;
+
+            await _dbContext.SaveChangesAsync();
+        }
+
+        private Task<decimal> RecordedRefundTotalAsync(int paymentId) =>
+            _dbContext.PaymentRefunds
+                .Where(r => r.PaymentId == paymentId)
+                .SumAsync(r => r.RefundedAmount);
+
+        private static string RefundKey(int paymentId, decimal alreadyRefunded, decimal amount) =>
+            $"payment-{paymentId}-refund-from-{MinorUnits(alreadyRefunded)}-amount-{MinorUnits(amount)}";
+
+        private static long MinorUnits(decimal value) =>
+            (long)Math.Round(value * 100m, MidpointRounding.AwayFromZero);
 
         public async Task<PaymentResponse> GetByOrderAsync(int orderId)
         {
@@ -407,7 +625,11 @@ namespace PickMeUp.Services
 
             var query = await IncludeRelatedEntitiesAsync(null, _dbContext.Payments.AsNoTracking());
 
-            var payment = await query.FirstOrDefaultAsync(p => p.OrderId == orderId)
+            var payment = await query
+                .Where(p => p.OrderId == orderId)
+                .OrderByDescending(p => p.IsPaid)
+                .ThenByDescending(p => p.Id)
+                .FirstOrDefaultAsync()
                 ?? throw new KeyNotFoundException($"No payment found for order {orderId}.");
 
             EnsureVisible(payment, orderId);
@@ -425,7 +647,10 @@ namespace PickMeUp.Services
                 .Where(o => o.OrderStatusId == (int)OrderStatusEnum.Pending)
                 .Where(o => !o.IsPrepaid)
                 .Where(o => o.Fare != null)
-                .Where(o => !_dbContext.Payments.Any(p => p.OrderId == o.Id && (p.IsPaid || p.PaymentStatusId != (int)PaymentStatusEnum.Unpaid)))
+                .Where(o => !_dbContext.Payments.Any(p => p.OrderId == o.Id
+                    && (p.IsPaid
+                        || (p.PaymentStatusId != (int)PaymentStatusEnum.Unpaid
+                            && p.PaymentStatusId != (int)PaymentStatusEnum.Failed))))
                 .OrderByDescending(o => o.CreatedAt)
                 .Select(o => new PayableOrderResponse
                 {

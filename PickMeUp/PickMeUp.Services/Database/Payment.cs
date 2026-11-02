@@ -26,6 +26,10 @@ namespace PickMeUp.Services.Database
 
         public bool IsPaid { get; set; }
 
+        public int IntentAttempt { get; set; }
+
+        public bool RefundRequired { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime? PaidAt { get; set; }

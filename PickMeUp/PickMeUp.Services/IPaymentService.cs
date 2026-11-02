@@ -2,6 +2,8 @@ using PickMeUp.Model.Requests;
 using PickMeUp.Model.Responses;
 using PickMeUp.Model.SearchObjects;
 
+using PickMeUp.Model.Enums;
+
 namespace PickMeUp.Services
 {
     public interface IPaymentService : IBaseReadService<PaymentResponse, PaymentSearch>
@@ -12,7 +14,7 @@ namespace PickMeUp.Services
 
         Task<PaymentResponse> RefundAsync(int id, PaymentRefundRequest request);
 
-        Task<bool> RefundCancelledOrderAsync(int orderId, string reason);
+        Task<RefundOutcome> RefundCancelledOrderAsync(int orderId, string reason);
 
         Task<PaymentResponse> GetByOrderAsync(int orderId);
 

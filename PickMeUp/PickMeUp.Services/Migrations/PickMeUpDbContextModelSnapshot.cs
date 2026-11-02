@@ -2329,6 +2329,9 @@ namespace PickMeUp.Services.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("IntentAttempt")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -2344,6 +2347,9 @@ namespace PickMeUp.Services.Migrations
                     b.Property<int>("PaymentStatusId")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("RefundRequired")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("StripePaymentIntentId")
                         .HasMaxLength(120)
                         .HasColumnType("character varying(120)");
@@ -2353,7 +2359,9 @@ namespace PickMeUp.Services.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("OrderId")
+                        .IsUnique()
+                        .HasFilter("\"PaymentStatusId\" NOT IN (4, 5) AND NOT \"IsDeleted\"");
 
                     b.HasIndex("PaymentStatusId");
 
@@ -2369,11 +2377,13 @@ namespace PickMeUp.Services.Migrations
                             AmountCharged = 6.34m,
                             CreatedAt = new DateTime(2026, 9, 9, 8, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
+                            IntentAttempt = 1,
                             IsDeleted = false,
                             IsPaid = true,
                             OrderId = 1,
                             PaidAt = new DateTime(2026, 9, 9, 8, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
+                            RefundRequired = false,
                             StripePaymentIntentId = "pi_seed_order_001",
                             UpdatedAt = new DateTime(2026, 9, 9, 8, 2, 0, 0, DateTimeKind.Utc)
                         },
@@ -2383,11 +2393,13 @@ namespace PickMeUp.Services.Migrations
                             AmountCharged = 9.22m,
                             CreatedAt = new DateTime(2026, 9, 11, 9, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
+                            IntentAttempt = 1,
                             IsDeleted = false,
                             IsPaid = true,
                             OrderId = 2,
                             PaidAt = new DateTime(2026, 9, 11, 9, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
+                            RefundRequired = false,
                             StripePaymentIntentId = "pi_seed_order_002",
                             UpdatedAt = new DateTime(2026, 9, 11, 9, 2, 0, 0, DateTimeKind.Utc)
                         },
@@ -2397,11 +2409,13 @@ namespace PickMeUp.Services.Migrations
                             AmountCharged = 12.58m,
                             CreatedAt = new DateTime(2026, 9, 13, 10, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
+                            IntentAttempt = 1,
                             IsDeleted = false,
                             IsPaid = true,
                             OrderId = 3,
                             PaidAt = new DateTime(2026, 9, 13, 10, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 3,
+                            RefundRequired = false,
                             StripePaymentIntentId = "pi_seed_order_003",
                             UpdatedAt = new DateTime(2026, 9, 13, 10, 2, 0, 0, DateTimeKind.Utc)
                         },
@@ -2411,11 +2425,13 @@ namespace PickMeUp.Services.Migrations
                             AmountCharged = 7.42m,
                             CreatedAt = new DateTime(2026, 9, 15, 8, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
+                            IntentAttempt = 1,
                             IsDeleted = false,
                             IsPaid = true,
                             OrderId = 4,
                             PaidAt = new DateTime(2026, 9, 15, 8, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 4,
+                            RefundRequired = false,
                             StripePaymentIntentId = "pi_seed_order_004",
                             UpdatedAt = new DateTime(2026, 9, 15, 8, 2, 0, 0, DateTimeKind.Utc)
                         },
@@ -2425,11 +2441,13 @@ namespace PickMeUp.Services.Migrations
                             AmountCharged = 10.78m,
                             CreatedAt = new DateTime(2026, 9, 17, 11, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
+                            IntentAttempt = 1,
                             IsDeleted = false,
                             IsPaid = true,
                             OrderId = 5,
                             PaidAt = new DateTime(2026, 9, 17, 11, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
+                            RefundRequired = false,
                             StripePaymentIntentId = "pi_seed_order_005",
                             UpdatedAt = new DateTime(2026, 9, 17, 11, 2, 0, 0, DateTimeKind.Utc)
                         },
@@ -2439,11 +2457,13 @@ namespace PickMeUp.Services.Migrations
                             AmountCharged = 8.75m,
                             CreatedAt = new DateTime(2026, 9, 19, 9, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
+                            IntentAttempt = 1,
                             IsDeleted = false,
                             IsPaid = true,
                             OrderId = 6,
                             PaidAt = new DateTime(2026, 9, 19, 9, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
+                            RefundRequired = false,
                             StripePaymentIntentId = "pi_seed_order_006",
                             UpdatedAt = new DateTime(2026, 9, 19, 9, 2, 0, 0, DateTimeKind.Utc)
                         },
@@ -2453,11 +2473,13 @@ namespace PickMeUp.Services.Migrations
                             AmountCharged = 11.86m,
                             CreatedAt = new DateTime(2026, 9, 21, 13, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
+                            IntentAttempt = 1,
                             IsDeleted = false,
                             IsPaid = true,
                             OrderId = 7,
                             PaidAt = new DateTime(2026, 9, 21, 13, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
+                            RefundRequired = false,
                             StripePaymentIntentId = "pi_seed_order_007",
                             UpdatedAt = new DateTime(2026, 9, 21, 13, 2, 0, 0, DateTimeKind.Utc)
                         },
@@ -2467,11 +2489,13 @@ namespace PickMeUp.Services.Migrations
                             AmountCharged = 7.95m,
                             CreatedAt = new DateTime(2026, 9, 10, 8, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
+                            IntentAttempt = 1,
                             IsDeleted = false,
                             IsPaid = true,
                             OrderId = 8,
                             PaidAt = new DateTime(2026, 9, 10, 8, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
+                            RefundRequired = false,
                             StripePaymentIntentId = "pi_seed_order_008",
                             UpdatedAt = new DateTime(2026, 9, 10, 8, 2, 0, 0, DateTimeKind.Utc)
                         },
@@ -2481,11 +2505,13 @@ namespace PickMeUp.Services.Migrations
                             AmountCharged = 13.12m,
                             CreatedAt = new DateTime(2026, 9, 14, 10, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
+                            IntentAttempt = 1,
                             IsDeleted = false,
                             IsPaid = true,
                             OrderId = 9,
                             PaidAt = new DateTime(2026, 9, 14, 10, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
+                            RefundRequired = false,
                             StripePaymentIntentId = "pi_seed_order_009",
                             UpdatedAt = new DateTime(2026, 9, 14, 10, 2, 0, 0, DateTimeKind.Utc)
                         },
@@ -2495,11 +2521,13 @@ namespace PickMeUp.Services.Migrations
                             AmountCharged = 9.71m,
                             CreatedAt = new DateTime(2026, 9, 18, 12, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
+                            IntentAttempt = 1,
                             IsDeleted = false,
                             IsPaid = true,
                             OrderId = 10,
                             PaidAt = new DateTime(2026, 9, 18, 12, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
+                            RefundRequired = false,
                             StripePaymentIntentId = "pi_seed_order_010",
                             UpdatedAt = new DateTime(2026, 9, 18, 12, 2, 0, 0, DateTimeKind.Utc)
                         },
@@ -2509,11 +2537,13 @@ namespace PickMeUp.Services.Migrations
                             AmountCharged = 7.18m,
                             CreatedAt = new DateTime(2026, 9, 22, 9, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
+                            IntentAttempt = 1,
                             IsDeleted = false,
                             IsPaid = true,
                             OrderId = 11,
                             PaidAt = new DateTime(2026, 9, 22, 9, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 3,
+                            RefundRequired = false,
                             StripePaymentIntentId = "pi_seed_order_011",
                             UpdatedAt = new DateTime(2026, 9, 22, 9, 2, 0, 0, DateTimeKind.Utc)
                         },
@@ -2523,11 +2553,13 @@ namespace PickMeUp.Services.Migrations
                             AmountCharged = 9.01m,
                             CreatedAt = new DateTime(2026, 9, 24, 14, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
+                            IntentAttempt = 1,
                             IsDeleted = false,
                             IsPaid = true,
                             OrderId = 12,
                             PaidAt = new DateTime(2026, 9, 24, 14, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 4,
+                            RefundRequired = false,
                             StripePaymentIntentId = "pi_seed_order_012",
                             UpdatedAt = new DateTime(2026, 9, 24, 14, 2, 0, 0, DateTimeKind.Utc)
                         },
@@ -2537,11 +2569,13 @@ namespace PickMeUp.Services.Migrations
                             AmountCharged = 7.31m,
                             CreatedAt = new DateTime(2026, 10, 4, 17, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
+                            IntentAttempt = 1,
                             IsDeleted = false,
                             IsPaid = true,
                             OrderId = 14,
                             PaidAt = new DateTime(2026, 10, 4, 17, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
+                            RefundRequired = false,
                             StripePaymentIntentId = "pi_seed_order_014",
                             UpdatedAt = new DateTime(2026, 10, 4, 17, 2, 0, 0, DateTimeKind.Utc)
                         },
@@ -2551,11 +2585,13 @@ namespace PickMeUp.Services.Migrations
                             AmountCharged = 10.54m,
                             CreatedAt = new DateTime(2026, 10, 3, 9, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
+                            IntentAttempt = 1,
                             IsDeleted = false,
                             IsPaid = true,
                             OrderId = 15,
                             PaidAt = new DateTime(2026, 10, 3, 9, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
+                            RefundRequired = false,
                             StripePaymentIntentId = "pi_seed_order_015",
                             UpdatedAt = new DateTime(2026, 10, 3, 9, 2, 0, 0, DateTimeKind.Utc)
                         },
@@ -2565,11 +2601,13 @@ namespace PickMeUp.Services.Migrations
                             AmountCharged = 12.02m,
                             CreatedAt = new DateTime(2026, 10, 4, 8, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
+                            IntentAttempt = 1,
                             IsDeleted = false,
                             IsPaid = true,
                             OrderId = 16,
                             PaidAt = new DateTime(2026, 10, 4, 8, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 2,
+                            RefundRequired = false,
                             StripePaymentIntentId = "pi_seed_order_016",
                             UpdatedAt = new DateTime(2026, 10, 4, 8, 2, 0, 0, DateTimeKind.Utc)
                         },
@@ -2579,11 +2617,13 @@ namespace PickMeUp.Services.Migrations
                             AmountCharged = 7.78m,
                             CreatedAt = new DateTime(2026, 9, 26, 10, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
+                            IntentAttempt = 1,
                             IsDeleted = false,
                             IsPaid = true,
                             OrderId = 17,
                             PaidAt = new DateTime(2026, 9, 26, 10, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 4,
+                            RefundRequired = false,
                             StripePaymentIntentId = "pi_seed_order_017",
                             UpdatedAt = new DateTime(2026, 9, 26, 10, 2, 0, 0, DateTimeKind.Utc)
                         },
@@ -2593,11 +2633,13 @@ namespace PickMeUp.Services.Migrations
                             AmountCharged = 9.71m,
                             CreatedAt = new DateTime(2026, 9, 28, 11, 1, 0, 0, DateTimeKind.Utc),
                             Currency = "BAM",
+                            IntentAttempt = 1,
                             IsDeleted = false,
                             IsPaid = true,
                             OrderId = 18,
                             PaidAt = new DateTime(2026, 9, 28, 11, 2, 0, 0, DateTimeKind.Utc),
                             PaymentStatusId = 4,
+                            RefundRequired = false,
                             StripePaymentIntentId = "pi_seed_order_018",
                             UpdatedAt = new DateTime(2026, 9, 28, 11, 2, 0, 0, DateTimeKind.Utc)
                         });
@@ -2632,6 +2674,10 @@ namespace PickMeUp.Services.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("PaymentId");
+
+                    b.HasIndex("StripeRefundId")
+                        .IsUnique()
+                        .HasFilter("\"StripeRefundId\" IS NOT NULL");
 
                     b.ToTable("PaymentRefunds");
 
@@ -2754,6 +2800,14 @@ namespace PickMeUp.Services.Migrations
                             IsActive = true,
                             Name = "Refunded",
                             SortOrder = 4
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Description = "The payment attempt never produced a charge",
+                            IsActive = true,
+                            Name = "Failed",
+                            SortOrder = 5
                         });
                 });
 

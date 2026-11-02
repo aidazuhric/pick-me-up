@@ -5,6 +5,7 @@ namespace PickMeUp.Model.Enums
         Unpaid = 1,
         Paid = 2,
         PartiallyRefunded = 3,
-        Refunded = 4
+        Refunded = 4,
+        Failed = 5
     }
 }

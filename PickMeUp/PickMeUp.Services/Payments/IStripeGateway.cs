@@ -2,11 +2,11 @@ namespace PickMeUp.Services.Payments
 {
     public interface IStripeGateway
     {
-        Task<StripeIntent> CreateIntentAsync(decimal amount, string currency, int orderId, CancellationToken cancellationToken = default);
+        Task<StripeIntent> CreateIntentAsync(decimal amount, string currency, int orderId, string idempotencyKey, CancellationToken cancellationToken = default);
 
         Task<StripeIntentState?> ReadIntentAsync(string paymentIntentId, CancellationToken cancellationToken = default);
 
-        Task<StripeRefund> RefundAsync(string paymentIntentId, decimal amount, string? reason, CancellationToken cancellationToken = default);
+        Task<StripeRefund> RefundAsync(string paymentIntentId, decimal amount, string? reason, string idempotencyKey, CancellationToken cancellationToken = default);
 
         StripeWebhookEvent ReadWebhook(string payload, string signatureHeader);
     }

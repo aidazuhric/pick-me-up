@@ -23,7 +23,7 @@ namespace PickMeUp.Services.Payments
             _logger = logger;
         }
 
-        public Task<StripeIntent> CreateIntentAsync(decimal amount, string currency, int orderId, CancellationToken cancellationToken = default)
+        public Task<StripeIntent> CreateIntentAsync(decimal amount, string currency, int orderId, string idempotencyKey, CancellationToken cancellationToken = default)
         {
             _logger.LogWarning(
                 "STRIPE_SECRET_KEY is not set: issuing a local stand-in intent for order {OrderId}. No money moves.",
@@ -40,7 +40,7 @@ namespace PickMeUp.Services.Payments
                 new StripeIntentState(paymentIntentId, $"{paymentIntentId}_secret", "requires_payment_method"));
         }
 
-        public Task<StripeRefund> RefundAsync(string paymentIntentId, decimal amount, string? reason, CancellationToken cancellationToken = default)
+        public Task<StripeRefund> RefundAsync(string paymentIntentId, decimal amount, string? reason, string idempotencyKey, CancellationToken cancellationToken = default)
         {
             _logger.LogWarning(
                 "STRIPE_SECRET_KEY is not set: recording a local stand-in refund of {Amount} against {IntentId}.",

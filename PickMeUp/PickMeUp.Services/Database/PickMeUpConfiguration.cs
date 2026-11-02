@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using PickMeUp.Model.Enums;
 
 namespace PickMeUp.Services.Database
 {
@@ -285,7 +286,11 @@ namespace PickMeUp.Services.Database
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Payment>().Property(p => p.AmountCharged).HasPrecision(18, 2);
-            modelBuilder.Entity<Payment>().HasIndex(p => p.OrderId);
+            modelBuilder.Entity<Payment>()
+                .HasIndex(p => p.OrderId)
+                .IsUnique()
+                .HasFilter($"\"PaymentStatusId\" NOT IN ({(int)PaymentStatusEnum.Refunded}, {(int)PaymentStatusEnum.Failed}) AND NOT \"IsDeleted\"");
+
             modelBuilder.Entity<Payment>().HasIndex(p => p.StripePaymentIntentId).IsUnique();
 
             modelBuilder.Entity<PaymentRefund>()
@@ -293,6 +298,12 @@ namespace PickMeUp.Services.Database
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<PaymentRefund>().Property(r => r.RefundedAmount).HasPrecision(18, 2);
+
+            modelBuilder.Entity<PaymentRefund>()
+                .HasIndex(r => r.StripeRefundId)
+                .IsUnique()
+                .HasFilter("\"StripeRefundId\" IS NOT NULL");
+
             modelBuilder.Entity<PaymentRefund>().HasQueryFilter(r => !r.Payment.IsDeleted);
 
             modelBuilder.Entity<Review>()

@@ -15,7 +15,7 @@ namespace PickMeUp.Services.Payments
             StripeConfiguration.ApiKey = _options.SecretKey;
         }
 
-        public async Task<StripeIntent> CreateIntentAsync(decimal amount, string currency, int orderId, CancellationToken cancellationToken = default)
+        public async Task<StripeIntent> CreateIntentAsync(decimal amount, string currency, int orderId, string idempotencyKey, CancellationToken cancellationToken = default)
         {
             EnsureConfigured();
 
@@ -29,7 +29,7 @@ namespace PickMeUp.Services.Payments
                 Currency = currency.ToLowerInvariant(),
                 Metadata = new Dictionary<string, string> { ["orderId"] = orderId.ToString() },
                 AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions { Enabled = true }
-                }, cancellationToken: cancellationToken);
+                }, new RequestOptions { IdempotencyKey = idempotencyKey }, cancellationToken);
 
                 return new StripeIntent(intent.Id, intent.ClientSecret);
             }
@@ -56,7 +56,7 @@ namespace PickMeUp.Services.Payments
             }
         }
 
-        public async Task<StripeRefund> RefundAsync(string paymentIntentId, decimal amount, string? reason, CancellationToken cancellationToken = default)
+        public async Task<StripeRefund> RefundAsync(string paymentIntentId, decimal amount, string? reason, string idempotencyKey, CancellationToken cancellationToken = default)
         {
             EnsureConfigured();
 
@@ -69,7 +69,7 @@ namespace PickMeUp.Services.Payments
                 PaymentIntent = paymentIntentId,
                 Amount = ToMinorUnits(amount),
                 Reason = RefundReasons.RequestedByCustomer
-                }, cancellationToken: cancellationToken);
+                }, new RequestOptions { IdempotencyKey = idempotencyKey }, cancellationToken);
 
                 return new StripeRefund(refund.Id, FromMinorUnits(refund.Amount));
             }

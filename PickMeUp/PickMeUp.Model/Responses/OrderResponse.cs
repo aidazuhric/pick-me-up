@@ -26,6 +26,7 @@ namespace PickMeUp.Model.Responses
         public DateTime? CompletedAt { get; set; }
         public DateTime? CancelledAt { get; set; }
         public string? CancellationReason { get; set; }
+        public string? RefundStatus { get; set; }
         public List<OrderStatusHistoryResponse> StatusHistory { get; set; } = new();
     }
 }
