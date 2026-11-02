@@ -40,10 +40,7 @@ namespace PickMeUp.Services.Validators
 
             RuleFor(x => x.LoginPassword).NotEmpty()
                 .WithMessage("Set an initial password for the driver account.")
-                .MinimumLength(6)
-                .WithMessage("Password must be at least 6 characters.")
-                .MaximumLength(100)
-                .WithMessage("Password must be at most 100 characters.");
+                .PasswordStrength();
         }
     }
 }

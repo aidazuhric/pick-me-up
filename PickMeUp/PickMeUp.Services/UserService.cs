@@ -26,14 +26,16 @@ namespace PickMeUp.Services
         private readonly IImageFileStore _imageFileStore;
         private readonly IAuthenticatedUserAccessor _userAccessor;
         private readonly IValidator<UserProfileUpdateRequest> _profileValidator;
+        private readonly IValidator<UserPasswordChangeRequest> _passwordChangeValidator;
 
-        public UserService(PickMeUpDbContext dbContext, MapsterMapper.IMapper mapper, IValidator<UserInsertRequest> insertValidator, IValidator<UserUpdateRequest> updateValidator, IValidator<UserProfileUpdateRequest> profileValidator, ICryptoService cryptoService, IImageFileStore imageFileStore, IAuthenticatedUserAccessor userAccessor)
+        public UserService(PickMeUpDbContext dbContext, MapsterMapper.IMapper mapper, IValidator<UserInsertRequest> insertValidator, IValidator<UserUpdateRequest> updateValidator, IValidator<UserProfileUpdateRequest> profileValidator, IValidator<UserPasswordChangeRequest> passwordChangeValidator, ICryptoService cryptoService, IImageFileStore imageFileStore, IAuthenticatedUserAccessor userAccessor)
             : base(dbContext, mapper, insertValidator, updateValidator)
         {
             _cryptoService = cryptoService;
             _imageFileStore = imageFileStore;
             _userAccessor = userAccessor;
             _profileValidator = profileValidator;
+            _passwordChangeValidator = passwordChangeValidator;
         }
 
         public async Task<UserResponse> GetOwnAsync()
@@ -346,6 +348,8 @@ namespace PickMeUp.Services
 
         public async Task ChangePasswordAsync(UserPasswordChangeRequest request)
         {
+            await _passwordChangeValidator.ValidateAndThrowAsync(request);
+
             var targetId = _userAccessor.IsInRole(Roles.Admin) ? request.Id : RequireOwnUserId();
 
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == targetId);

@@ -1,6 +1,7 @@
 using PickMeUp.Common.Services.Configuration;
 using PickMeUp.Common.Services.CryptoService;
 using PickMeUp.Model.Access;
+using PickMeUp.Model.Constants;
 using PickMeUp.Model.Enums;
 using PickMeUp.Model.Exceptions;
 using PickMeUp.Model.Responses;
@@ -122,12 +123,13 @@ namespace PickMeUp.WebAPI.Services.AccessManager
 
         private static bool CanSignIn(UserResponse user) => user.IsActive;
 
-        private static bool ChallengeIsRequired(UserResponse user) => user.TwoFactorMode switch
-        {
-            TwoFactorModeEnum.EveryLogin => true,
-            TwoFactorModeEnum.ConfirmOnce => user.TwoFactorConfirmedAt == null,
-            _ => false
-        };
+        private static bool ChallengeIsRequired(UserResponse user) =>
+            user.Role == Roles.Admin || user.TwoFactorMode switch
+            {
+                TwoFactorModeEnum.EveryLogin => true,
+                TwoFactorModeEnum.ConfirmOnce => user.TwoFactorConfirmedAt == null,
+                _ => false
+            };
 
         private async Task<UserLoginResponse> IssueSessionAsync(UserResponse user)
         {

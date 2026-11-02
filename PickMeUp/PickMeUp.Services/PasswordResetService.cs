@@ -10,13 +10,14 @@ using PickMeUp.Model.Requests;
 using PickMeUp.Model.Responses;
 using PickMeUp.Services.Database;
 using PickMeUp.Services.Messaging;
+using PickMeUp.Services.Validators;
 
 namespace PickMeUp.Services
 {
     public class PasswordResetService : IPasswordResetService
     {
-        private const int MinPasswordLength = 6;
-        private const int MaxPasswordLength = 100;
+        private const int MinPasswordLength = PasswordRules.MinLength;
+        private const int MaxPasswordLength = PasswordRules.MaxLength;
         private const string NeutralMessage =
             "If that email address belongs to an account, we have sent it a reset code.";
 

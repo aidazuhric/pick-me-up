@@ -27,8 +27,7 @@ namespace PickMeUp.Services.Validators
 
             RuleFor(x => x.Password)
                 .NotEmpty().WithMessage("Password is required.")
-                .MinimumLength(6).WithMessage("Password must be at least 6 characters.")
-                .MaximumLength(100).WithMessage("Password cannot exceed 100 characters.");
+                .PasswordStrength();
 
             RuleFor(x => x.CityId)
                 .NotNull().WithMessage("Select the city you ride in from the list.")

@@ -143,7 +143,7 @@ namespace PickMeUp.Services.Database
                     PasswordHash = "w2ka8ahYEDcLTXF5tlMLcMfIjIA=",
                     PasswordSalt = "nlQ9pafmLDDgNQjCdCHDBA==",
                     IsActive = true,
-                    TwoFactorMode = TwoFactorModeEnum.Off,
+                    TwoFactorMode = TwoFactorModeEnum.EveryLogin,
                     TwoFactorConfirmedAt = (DateTime?)null,
                     MustChangePassword = false,
                     CreatedAt = SeedTimestamp,

@@ -3802,7 +3802,7 @@ namespace PickMeUp.Services.Migrations
                             PasswordHash = "w2ka8ahYEDcLTXF5tlMLcMfIjIA=",
                             PasswordSalt = "nlQ9pafmLDDgNQjCdCHDBA==",
                             ProfileImagePath = "user-photos/1.png",
-                            TwoFactorMode = 0,
+                            TwoFactorMode = 1,
                             Username = "admin1"
                         },
                         new
