@@ -422,3 +422,8 @@ PickMeUp/seed-assets/images/README.md
 prijava_screenshots/
 prijava_screenshots_extra/
 .idea/
+
+# Working notes at the repo root stay local; only these two docs are published
+/*.md
+!/README.md
+!/recommender-dokumentacija.md
