@@ -28,7 +28,6 @@ namespace PickMeUp.Services.Recommendations
 
             var ordered = (int)InteractionSignalType.Ordered;
             var completed = (int)InteractionSignalType.Completed;
-            var reviewed = (int)InteractionSignalType.Reviewed;
 
             var popularity = _dbContext.InteractionHistories
                 .AsNoTracking()
@@ -36,9 +35,18 @@ namespace PickMeUp.Services.Recommendations
                 .Select(g => new
                 {
                     TaxiCompanyId = g.Key,
-                    CompletedRides = g.Sum(i => i.SignalTypeId == completed ? 1 : 0),
-                    ReviewCount = g.Sum(i => i.SignalTypeId == reviewed ? 1 : 0),
-                    RatingTotal = g.Sum(i => i.SignalTypeId == reviewed ? i.Value : 0m)
+                    CompletedRides = g.Sum(i => i.SignalTypeId == completed ? 1 : 0)
+                });
+
+            var ratings = _dbContext.Reviews
+                .AsNoTracking()
+                .Where(r => r.TargetCompanyId != null)
+                .GroupBy(r => r.TargetCompanyId!.Value)
+                .Select(g => new
+                {
+                    TaxiCompanyId = g.Key,
+                    ReviewCount = g.Count(),
+                    RatingTotal = g.Sum(r => (decimal)r.Rating)
                 });
 
             var registeredCityId = await _dbContext.Users
@@ -55,6 +63,9 @@ namespace PickMeUp.Services.Recommendations
                                     join signals in popularity
                                         on company.Id equals signals.TaxiCompanyId into matches
                                     from signals in matches.DefaultIfEmpty()
+                                    join rating in ratings
+                                        on company.Id equals rating.TaxiCompanyId into rated
+                                    from rating in rated.DefaultIfEmpty()
                                     select new CompanyPopularity
                                     {
                                         TaxiCompanyId = company.Id,
@@ -62,8 +73,8 @@ namespace PickMeUp.Services.Recommendations
                                         CityId = company.CityId,
                                         CityName = company.City.Name,
                                         CompletedRides = (int?)signals.CompletedRides ?? 0,
-                                        ReviewCount = (int?)signals.ReviewCount ?? 0,
-                                        RatingTotal = (decimal?)signals.RatingTotal
+                                        ReviewCount = (int?)rating.ReviewCount ?? 0,
+                                        RatingTotal = (decimal?)rating.RatingTotal
                                     })
                                    .ToListAsync();
 
@@ -75,13 +86,35 @@ namespace PickMeUp.Services.Recommendations
                 {
                     TaxiCompanyId = g.Key,
                     Orders = g.Sum(i => i.SignalTypeId == ordered ? 1 : 0),
-                    CompletedRides = g.Sum(i => i.SignalTypeId == completed ? 1 : 0),
-                    ReviewCount = g.Sum(i => i.SignalTypeId == reviewed ? 1 : 0),
-                    RatingTotal = g.Sum(i => i.SignalTypeId == reviewed ? i.Value : 0m)
+                    CompletedRides = g.Sum(i => i.SignalTypeId == completed ? 1 : 0)
+                })
+                .ToListAsync();
+
+            var myRatings = await _dbContext.Reviews
+                .AsNoTracking()
+                .Where(r => r.PassengerId == userId && r.TargetCompanyId != null)
+                .GroupBy(r => r.TargetCompanyId!.Value)
+                .Select(g => new
+                {
+                    TaxiCompanyId = g.Key,
+                    ReviewCount = g.Count(),
+                    RatingTotal = g.Sum(r => (decimal)r.Rating)
                 })
                 .ToListAsync();
 
             var byCompany = personal.ToDictionary(p => p.TaxiCompanyId);
+
+            foreach (var rating in myRatings)
+            {
+                if (!byCompany.TryGetValue(rating.TaxiCompanyId, out var signals))
+                {
+                    signals = new PersonalSignals { TaxiCompanyId = rating.TaxiCompanyId };
+                    byCompany[rating.TaxiCompanyId] = signals;
+                }
+
+                signals.ReviewCount = rating.ReviewCount;
+                signals.RatingTotal = rating.RatingTotal;
+            }
             var homeCityId = ResolveHomeCityId(candidates, byCompany);
             var maxCompletedRides = candidates.Count == 0 ? 0 : candidates.Max(c => c.CompletedRides);
 

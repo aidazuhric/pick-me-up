@@ -8,10 +8,14 @@ companies on the platform, ranked best first, with the reason for each placement
 Our recommender is a hybrid of two complementary approaches. A **content-based** part looks only at
 the passenger's own record with each company: how often they have ordered from it, how many of those
 rides they completed, and how they rated it afterwards. A **popularity** part looks at how every
-passenger treats that company, through its completed rides and its average rating. A small **city
-affinity** bonus then favours companies in the city where the passenger actually rides. Blending the
-two lets us give a useful answer both to a regular with years of habits and to somebody who signed up
-a minute ago, without switching to a different algorithm for each.
+passenger treats that company, through its completed rides and its average rating. Blending the two
+lets us give a useful answer both to a regular with years of habits and to somebody who signed up a
+minute ago, without switching to a different algorithm for each.
+
+The list is drawn from one city. A passenger chooses their city when they register, and only active
+companies operating in that city are candidates, because a company cannot serve a ride that starts
+somewhere it does not work. Everything below therefore ranks companies inside the passenger's own
+city; we never put a company from another city on the list.
 
 Two design commitments shape everything below. Every score is built from signals we recorded while
 people used the application, never from values supplied by a client. And every recommendation is
@@ -44,7 +48,14 @@ that write them, and each one fires at the moment the underlying action succeeds
    dispatched ride counts towards the passenger's history exactly like a directly ordered one.
 3. **A ride is completed.** `OrderService.CompleteAsync` writes a `Completed` signal.
 4. **A passenger reviews a ride.** `ReviewService` writes a `Reviewed` signal whose `Value` is the
-   rating given, so the star count travels with the signal.
+   rating given, so the history records what was said and when.
+
+Ratings are the one signal we do **not** score from this table. A passenger may edit or delete a
+review afterwards, and a signal row written at the time cannot follow them, so scoring from it would
+rank a company on a rating its passenger has since withdrawn. Both the passenger's own rating and the
+company's overall rating are therefore read from the live `Review` rows, and the `Reviewed` signals
+stay as the audit trail of what happened. Order and completion counts still come from the signals,
+because those facts never change after the event.
 
 Recording is deliberately non-fatal. `InteractionRecorder` wraps the write in a try/catch, and if it
 fails it logs the error and lets the original action stand. Losing a recommender signal must never
@@ -73,13 +84,15 @@ This part sees only the passenger's own signals for the company:
 ```
 usage      = min(completedRidesByThisPassenger / 5, 1)
 loyalty    = min(ordersByThisPassenger / 5, 1)
-ownRating  = (thisPassengersAverageRating − 1) / 4      (0.5 when they have not rated it)
+ownRating  = (thisPassengersCurrentAverage − 1) / 4     (0.5 when they have not rated it)
 
 content    = 0.50·usage + 0.20·loyalty + 0.30·ownRating
 ```
 
 Completed rides carry more weight than orders because a finished ride is stronger evidence of a good
 experience than a placed one, and the passenger's own rating carries more than raw ordering volume.
+`thisPassengersCurrentAverage` is the average of the reviews this passenger has live right now, so an
+edited or deleted review changes this part of the score immediately.
 
 ### 3.2 The popularity part
 
@@ -87,20 +100,35 @@ This part is identical for every passenger and reflects the company's standing a
 
 ```
 ridesShare = completedRidesOverall / completedRidesOfTheBusiestCompany
-rating     = (averageRatingOverall − 1) / 4             (0.5 when it has no reviews)
+rating     = (currentAverageOverall − 1) / 4            (0.5 when it has no reviews)
 
 popularity = 0.50·ridesShare + 0.50·rating
 ```
 
 Completed rides are measured against the busiest company rather than in absolute terms, which keeps
-the component meaningful whether the platform has ten rides or ten thousand.
+the component meaningful whether the platform has ten rides or ten thousand. The rides share is
+counted over the whole platform, not only the passenger's city, so the denominator does not move when
+different passengers ask. `currentAverageOverall` is likewise the average of the reviews the company
+holds right now.
 
 ### 3.3 City affinity
 
-We derive a home city rather than asking for one. Among the companies the passenger has signals for,
-we group by city, total each city's orders and completed rides, and take the strongest; ties break on
-the lower city id. A candidate company sitting in that city earns a flat bonus. A passenger with no
-signals has no derived home city, and no company receives the bonus.
+The term exists in the formula and is worth explaining honestly, because in the shipped
+implementation it cannot change an ordering.
+
+We derive a home city rather than asking for one: among the candidate companies the passenger has
+signals for, we group by city, total each city's orders and completed rides and take the strongest,
+with ties broken on the lower city id. A candidate sitting in that city earns a flat bonus.
+
+Because the candidates were already narrowed to the passenger's registered city in section 1, every
+candidate shares one city. The derivation therefore has only two outcomes: it names that same city,
+and the bonus is added to every company equally, or the passenger has no signals with any candidate
+and no company receives it. Either way the bonus shifts all scores together and the ranking is
+unchanged. It is a constant, not a tie-breaker, and we do not claim otherwise.
+
+The term is kept rather than deleted because `isInHomeCity` is part of the figures each result
+returns and because it is what would carry the weight if candidates were ever drawn from more than
+one city. Any such change is a change to the application's scope, not to this document.
 
 ### 3.4 The final score
 
@@ -111,9 +139,10 @@ score = 0.65·content + 0.35·popularity + (0.10 if the company is in the home c
 The 0.65 to 0.35 split favours the passenger's own history while leaving popularity enough weight to
 matter, which is also what carries a brand new passenger: with no personal signals, `usage` and
 `loyalty` are 0 and `ownRating` sits at the neutral 0.5, so the content part contributes a constant
-0.15 to every company and the ranking is decided entirely by popularity. The list is ordered by score
-descending, then by completed rides overall, then by company name, so equal scores still produce a
-stable order.
+0.15 to every company and the ranking is decided entirely by popularity. The 0.10 city term, as
+section 3.3 explains, lands on every candidate or on none, so it raises or lowers the whole column
+without reordering it. The list is ordered by score descending, then by completed rides overall, then
+by company name, so equal scores still produce a stable order.
 
 **Source** — `PickMeUp.Services/Recommendations/RecommendationService.cs`,
 `PickMeUp.Model/Constants/RecommenderWeights.cs`
@@ -128,11 +157,16 @@ pick the strongest true statement available, in this order:
 | Completed rides with the company and rated it | *"You completed 5 rides with them and rated them 4.7 out of 5."* |
 | Completed rides but never rated it | *"You completed 2 rides with them."* |
 | Ordered but never completed a ride | *"You have ordered from them 3 times before."* |
-| Untried, in the home city, has ratings | *"Rated 4.5 out of 5 by other passengers in Sarajevo, where you ride most."* |
-| Untried, in the home city, no ratings yet | *"A company in Sarajevo, where you ride most, that you have not tried yet."* |
 | Passenger has no history at all | *"Popular with other passengers: 5 rides completed and rated 4.7 out of 5."* |
-| Untried, outside the home city | *"New to you, but rated 4.7 out of 5 across 5 rides."* |
+| Untried, has a derived home city, company rated | *"Rated 4.5 out of 5 by other passengers in Mostar, where you ride most."* |
+| Untried, has a derived home city, no ratings yet | *"A company in Mostar, where you ride most, that you have not tried yet."* |
+| Untried, no derived home city, company rated | *"New to you, but rated 4.7 out of 5 across 5 rides."* |
 | Untried and never reviewed | *"New to you and still waiting for its first reviews."* |
+
+The last two rows read as the "outside the home city" cases but are not: a candidate is always in the
+passenger's city, so what separates them is whether a home city could be derived at all — that is,
+whether the passenger has any signals with any candidate. A sentence placing a company outside the
+passenger's city is not reachable and none is listed.
 
 Alongside the sentence, each result returns the figures behind it — `yourOrders`,
 `yourCompletedRides`, `yourAverageRating`, `completedRidesOverall`, `averageRatingOverall`,
@@ -142,51 +176,85 @@ readability, while scoring uses the unrounded average.
 
 ## 5. A worked example
 
-The following trace comes from a running instance. `passenger3` begins with no history, so the list
-is ranked on popularity alone and `Bascarsija Taxi` sits **last** at `0.2200`. The passenger then
-takes three rides with `Bascarsija Taxi` through the normal ordering flow and rates each one 5 stars.
-Nothing else on the platform changes.
+The following trace comes from a running instance on a freshly seeded database. `passenger3` is
+registered in Mostar, so the list holds the two active Mostar companies and nothing else; the two
+Sarajevo companies are not candidates for this passenger and never appear.
 
-**Before**
-
-```
-1. Mostar Taxi        0.4329  Popular with other passengers: 5 rides completed and rated 4.7 out of 5.
-2. Sarajevo Express   0.3906  Popular with other passengers: 4 rides completed and rated 4.5 out of 5.
-3. Bascarsija Taxi    0.2200  Popular with other passengers: 1 ride completed and rated 3 out of 5.
-4. Neretva Prevoz     0.2112  Popular with other passengers: 2 rides completed and rated 2 out of 5.
-```
-
-**After**
+**Before.** The passenger has ordered once from each company and completed neither, and has rated
+nothing.
 
 ```
-1. Bascarsija Taxi    0.8611  You completed 3 rides with them and rated them 5 out of 5.
-2. Sarajevo Express   0.4906  Rated 4.5 out of 5 by other passengers in Sarajevo, where you ride most.
-3. Mostar Taxi        0.4329  New to you, but rated 4.7 out of 5 across 5 rides.
-4. Neretva Prevoz     0.2112  New to you, but rated 2 out of 5 across 2 rides.
+1. Mostar Taxi      0.5589  You have ordered from them once before.
+2. Neretva Prevoz   0.3373  You have ordered from them once before.
 ```
 
-Those three rides wrote nine rows — three each of `Ordered`, `Completed` and `Reviewed` — and they
-alone account for the movement. Recomputing the winning score by hand:
+The passenger then takes one ride with `Neretva Prevoz` through the normal flow — order, card
+payment, driver accepts, pick-up, completion — and rates it 5 stars. Nothing else on the platform
+changes.
+
+**After the ride and the 5 star review**
 
 ```
-usage      = min(3/5, 1)                            = 0.6
-loyalty    = min(3/5, 1)                            = 0.6
+1. Neretva Prevoz   0.6264  You completed 1 ride with them and rated them 5 out of 5.
+2. Mostar Taxi      0.5589  You have ordered from them once before.
+```
+
+Recomputing the new leader by hand. The passenger now has two orders and one completed ride with
+them, and their 5 joins the single existing 2 star review, so the company average becomes 3.5:
+
+```
+usage      = min(1/5, 1)                            = 0.2
+loyalty    = min(2/5, 1)                            = 0.4
 ownRating  = (5 − 1) / 4                            = 1.0
-content    = 0.50·0.6 + 0.20·0.6 + 0.30·1.0         = 0.7200
+content    = 0.50·0.2 + 0.20·0.4 + 0.30·1.0         = 0.4800
 
-ridesShare = 4 completed / 5 (Mostar Taxi, busiest) = 0.8
-rating     = (4.5 − 1) / 4                          = 0.875
-popularity = 0.50·0.8 + 0.50·0.875                  = 0.8375
+ridesShare = 3 completed / 5 (Mostar Taxi, busiest) = 0.6
+rating     = (3.5 − 1) / 4                          = 0.625
+popularity = 0.50·0.6 + 0.50·0.625                  = 0.6125
 
-score      = 0.65·0.7200 + 0.35·0.8375 + 0.10       = 0.8611
+score      = 0.65·0.4800 + 0.35·0.6125 + 0.10       = 0.6264
 ```
 
-which is what the endpoint returns. Three details in the trace are worth drawing out. The company's
-own average rose from 3 to 4.5 because the passenger's three 5 star reviews joined the single
-existing 3 star one, so the passenger's ratings move both halves of the score. `Sarajevo Express`
-climbed without gaining a single signal of its own: the new history gave the passenger a derived home
-city of Sarajevo, and the 0.10 bonus is the whole of its `0.3906 → 0.4906` gain. And `Mostar Taxi`
-did not move at all, since it gained no signals and is not in the home city.
+which is what the endpoint returns.
+
+**After editing the same review from 5 stars to 1**
+
+```
+1. Mostar Taxi      0.5589  You have ordered from them once before.
+2. Neretva Prevoz   0.3439  You completed 1 ride with them and rated them 1 out of 5.
+```
+
+The company falls back below `Mostar Taxi` and the sentence it carries changes with it. Both halves
+of its score move, because the edit lowers the passenger's own rating to 1 and the company average
+from 3.5 to 1.5:
+
+```
+content    = 0.50·0.2 + 0.20·0.4 + 0.30·0.0         = 0.1800
+popularity = 0.50·0.6 + 0.50·(1.5 − 1)/4            = 0.3625
+score      = 0.65·0.1800 + 0.35·0.3625 + 0.10       = 0.3439
+```
+
+This is the case that makes scoring from live reviews necessary. The `Reviewed` signal written when
+the review was created still reads `5.00` in `InteractionHistory` after the edit, and scoring from
+that row would have left the company ranked first on a rating its passenger had already withdrawn.
+
+**After deleting the review**
+
+```
+1. Mostar Taxi      0.5589  You have ordered from them once before.
+2. Neretva Prevoz   0.4633  You completed 1 ride with them.
+```
+
+The passenger's own rating disappears and the neutral 0.5 takes its place, the company average
+returns to the 2 stars of the one remaining review, and the explanation drops its rating clause
+rather than quoting a review that no longer exists.
+
+Three details are worth drawing out. `Mostar Taxi` scores `0.5589` in all four states: it gained
+nothing throughout, and the 0.10 city term it receives is also received by `Neretva Prevoz`, so the
+term never separates them — it is the constant described in section 3.3. The ranking swings entirely
+on the one review being added, changed and removed. And the rides share is measured against
+`Mostar Taxi` at 5 completed rides, which is the busiest company on the whole platform rather than
+the busiest of the two candidates.
 
 ## 6. Where it lives and how it runs
 
@@ -198,13 +266,16 @@ The endpoint is restricted to the passenger role and takes the passenger from th
 `userId` parameter, so nobody can request another passenger's recommendations. Results come back as
 our standard `PageResult<T>`, five per page by default and capped at 100.
 
-Inside `RecommendationService` the work happens in two queries. The first aggregates the popularity
-figures with a `GROUP BY` over `InteractionHistory` and left joins them onto the active companies, so
-a company with no signals yet still appears with zeroes instead of dropping out of the list. The
-second aggregates the same table for the signed-in passenger alone. Both aggregations run in
-PostgreSQL rather than in application memory, and neither loads individual signal rows; only the
-per-company totals come back. We then apply the weights from section 3 to those totals, sort, and
-page the result.
+Inside `RecommendationService` the work happens in four aggregations. Two run over
+`InteractionHistory` with a `GROUP BY`: one for the platform-wide order and completion counts, one
+for the signed-in passenger's own. Two more run over `Review`: one for each company's current average
+across all passengers, one for the ratings this passenger holds right now. The company-wide pair is
+left joined onto the active companies of the passenger's city, so a company with no signals and no
+reviews still appears with zeroes instead of dropping out of the list.
+
+All four aggregations run in PostgreSQL rather than in application memory, and none of them loads
+individual signal or review rows; only the per-company totals come back. We then apply the weights
+from section 3 to those totals, sort, and page the result.
 
 **Source** — `PickMeUp.WebAPI/Controllers/RecommendationsController.cs`,
 `PickMeUp.Services/Recommendations/RecommendationService.cs`
