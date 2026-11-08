@@ -133,8 +133,8 @@ namespace PickMeUp.Services
 
         public async Task<OrderResponse> AcceptAsync(int id, OrderAcceptRequest request)
         {
-            var driver = await RequireEligibleDriverAsync();
             var order = await LoadForTransitionAsync(id);
+            var driver = await RequireEligibleDriverAsync();
 
             await _shiftService.EnsureDriverMayTakeNewWorkAsync(driver.Id);
 

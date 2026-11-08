@@ -15,6 +15,7 @@ namespace PickMeUp.Services
         : BaseCompanyScopedService<Driver, DriverResponse, DriverSearch, DriverInsertRequest, DriverUpdateRequest>,
           IDriverService
     {
+        private readonly IValidator<DriverLocationUpdateRequest> _locationValidator;
         private readonly ICryptoService _cryptoService;
 
         public DriverService(
@@ -22,10 +23,12 @@ namespace PickMeUp.Services
             MapsterMapper.IMapper mapper,
             IValidator<DriverInsertRequest> insertValidator,
             IValidator<DriverUpdateRequest> updateValidator,
+            IValidator<DriverLocationUpdateRequest> locationValidator,
             IAuthenticatedUserAccessor userAccessor,
             ICryptoService cryptoService)
             : base(dbContext, mapper, insertValidator, updateValidator, userAccessor)
         {
+            _locationValidator = locationValidator;
             _cryptoService = cryptoService;
         }
 
@@ -87,7 +90,7 @@ namespace PickMeUp.Services
             var driverRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == Roles.Driver)
                 ?? throw new BusinessException($"Role '{Roles.Driver}' is missing from the database.");
 
-            var salt = _cryptoService.GenerateSlat();
+            var salt = _cryptoService.GenerateSalt();
 
             var user = new User
             {
@@ -218,15 +221,7 @@ namespace PickMeUp.Services
 
         public async Task<DriverLocationResponse> ReportOwnLocationAsync(DriverLocationUpdateRequest request)
         {
-            if (request.Latitude is < -90 or > 90)
-            {
-                throw new BusinessException("Latitude must be between -90 and 90.");
-            }
-
-            if (request.Longitude is < -180 or > 180)
-            {
-                throw new BusinessException("Longitude must be between -180 and 180.");
-            }
+            await _locationValidator.ValidateAndThrowAsync(request);
 
             var driverId = await RequireCallerDriverIdAsync();
 

@@ -33,6 +33,7 @@ namespace PickMeUp.Services.Orders
         public static Expression<Func<Order, bool>> VisibleToDriver(int driverId, int driverCompanyId, int? driverCityId) =>
             order => order.DriverId == driverId
                 || (order.OrderStatusId == (int)OrderStatusEnum.Pending
+                    && order.IsPrepaid
                     && (order.TaxiCompanyId == null || order.TaxiCompanyId == driverCompanyId)
                     && (order.CityId == null || order.CityId == driverCityId)
                     && !order.Rejections.Any(r => r.DriverId == driverId));

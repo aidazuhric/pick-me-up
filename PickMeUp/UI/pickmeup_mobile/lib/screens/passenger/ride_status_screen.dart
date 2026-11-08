@@ -403,8 +403,7 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
       ride.isPrepaid == true && ride.status == 'Pending';
 
   static bool _isCancellable(Order ride) =>
-      ride.id != null &&
-      const ['Pending', 'Confirmed', 'InProgress'].contains(ride.status);
+      ride.id != null && ride.status == 'Pending' && ride.driverName == null;
 
   String _headline(Order ride) => switch (ride.status) {
     'Pending' when ride.isPrepaid != true =>
