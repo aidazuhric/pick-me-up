@@ -862,16 +862,6 @@ namespace PickMeUp.Services.Migrations
                             TaxiCompanyId = 3,
                             UserId = 9,
                             Value = 1m
-                        },
-                        new
-                        {
-                            Id = 36,
-                            CreatedAt = new DateTime(2026, 9, 26, 10, 0, 0, 0, DateTimeKind.Utc),
-                            OrderId = 17,
-                            SignalTypeId = 1,
-                            TaxiCompanyId = 1,
-                            UserId = 4,
-                            Value = 1m
                         });
                 });
 
@@ -1425,7 +1415,6 @@ namespace PickMeUp.Services.Migrations
                             PickupLat = 43.3401,
                             PickupLng = 17.813500000000001,
                             PrepaidAt = new DateTime(2026, 9, 26, 10, 2, 0, 0, DateTimeKind.Utc),
-                            TaxiCompanyId = 1,
                             UpdatedAt = new DateTime(2026, 9, 26, 10, 20, 0, 0, DateTimeKind.Utc)
                         },
                         new

@@ -193,8 +193,8 @@ namespace PickMeUp.Services
 
         public async Task<OrderResponse> RejectAsync(int id)
         {
-            var driver = await RequireEligibleDriverAsync();
             var order = await LoadForTransitionAsync(id);
+            var driver = await RequireEligibleDriverAsync();
 
             EnsureOrderIsOfferedTo(order, driver);
 
@@ -227,8 +227,8 @@ namespace PickMeUp.Services
 
         public async Task<OrderResponse> PickupAsync(int id)
         {
-            var driver = await RequireEligibleDriverAsync();
             var order = await LoadForTransitionAsync(id);
+            var driver = await RequireEligibleDriverAsync();
 
             EnsureOrderIsOfferedTo(order, driver);
             EnsureNotAnotherDriversOrder(order, driver, id);
@@ -252,8 +252,8 @@ namespace PickMeUp.Services
 
         public async Task<OrderResponse> CompleteAsync(int id)
         {
-            var driver = await RequireEligibleDriverAsync();
             var order = await LoadForTransitionAsync(id);
+            var driver = await RequireEligibleDriverAsync();
 
             EnsureOrderIsOfferedTo(order, driver);
             EnsureNotAnotherDriversOrder(order, driver, id);

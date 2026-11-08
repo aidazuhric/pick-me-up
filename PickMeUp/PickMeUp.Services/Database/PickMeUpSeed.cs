@@ -1063,7 +1063,7 @@ namespace PickMeUp.Services.Database
                 {
                     Id = 17,
                     PassengerId = 4,
-                    TaxiCompanyId = (int?)1,
+                    TaxiCompanyId = (int?)null,
                     CityId = (int?)1,
                     DriverId = (int?)null,
                     CarId = (int?)null,
@@ -1443,8 +1443,7 @@ namespace PickMeUp.Services.Database
                 new { Id = 32, UserId = 4, TaxiCompanyId = 1, SignalTypeId = (int)InteractionSignalType.Ordered, Value = 1m, OrderId = (int?)1, CreatedAt = Day(-26, 8, 0) },
                 new { Id = 33, UserId = 4, TaxiCompanyId = 1, SignalTypeId = (int)InteractionSignalType.Completed, Value = 1m, OrderId = (int?)1, CreatedAt = Day(-26, 8, 35) },
                 new { Id = 34, UserId = 4, TaxiCompanyId = 1, SignalTypeId = (int)InteractionSignalType.Reviewed, Value = 5m, OrderId = (int?)1, CreatedAt = Day(-26, 8, 55) },
-                new { Id = 35, UserId = 9, TaxiCompanyId = 3, SignalTypeId = (int)InteractionSignalType.Ordered, Value = 1m, OrderId = (int?)18, CreatedAt = Day(-7, 11, 0) },
-                new { Id = 36, UserId = 4, TaxiCompanyId = 1, SignalTypeId = (int)InteractionSignalType.Ordered, Value = 1m, OrderId = (int?)17, CreatedAt = Day(-9, 10, 0) }
+                new { Id = 35, UserId = 9, TaxiCompanyId = 3, SignalTypeId = (int)InteractionSignalType.Ordered, Value = 1m, OrderId = (int?)18, CreatedAt = Day(-7, 11, 0) }
             );
         }
 
