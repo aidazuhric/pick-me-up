@@ -2628,6 +2628,9 @@ namespace PickMeUp.Services.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<Guid?>("ClientRefundKey")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("PaymentId")
                         .HasColumnType("integer");
 
@@ -2647,6 +2650,10 @@ namespace PickMeUp.Services.Migrations
                         .HasColumnType("character varying(120)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClientRefundKey")
+                        .IsUnique()
+                        .HasFilter("\"ClientRefundKey\" IS NOT NULL");
 
                     b.HasIndex("PaymentId");
 

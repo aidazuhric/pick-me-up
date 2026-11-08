@@ -206,6 +206,7 @@ builder.Services.AddScoped<IValidator<UserPasswordChangeRequest>, UserPasswordCh
 builder.Services.AddScoped<IValidator<DriverInsertRequest>, DriverInsertValidator>();
 builder.Services.AddScoped<IValidator<DriverUpdateRequest>, DriverUpdateValidator>();
 builder.Services.AddScoped<IValidator<DriverLocationUpdateRequest>, DriverLocationUpdateValidator>();
+builder.Services.AddScoped<IValidator<PaymentRefundRequest>, PaymentRefundValidator>();
 builder.Services.AddScoped<IValidator<SupportTicketInsertRequest>, SupportTicketInsertValidator>();
 builder.Services.AddScoped<IValidator<SupportTicketReplyRequest>, SupportTicketReplyValidator>();
 builder.Services.AddScoped<IValidator<ReviewInsertRequest>, ReviewInsertValidator>();

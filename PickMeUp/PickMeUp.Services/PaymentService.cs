@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using FluentValidation;
 using PickMeUp.Model.Constants;
 using PickMeUp.Model.Enums;
 using PickMeUp.Model.Exceptions;
@@ -10,6 +11,7 @@ using PickMeUp.Services.Orders;
 using PickMeUp.Services.Payments;
 using PickMeUp.Common.Services.Configuration;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -27,6 +29,7 @@ namespace PickMeUp.Services
         private readonly IStripeGateway _stripeGateway;
         private readonly IPaymentNotificationDispatcher _dispatcher;
         private readonly IOrderNotificationDispatcher _orderDispatcher;
+        private readonly IValidator<PaymentRefundRequest> _refundValidator;
         private readonly StripeOptions _stripeOptions;
         private readonly ILogger<PaymentService> _logger;
 
@@ -39,6 +42,7 @@ namespace PickMeUp.Services
             IStripeGateway stripeGateway,
             IPaymentNotificationDispatcher dispatcher,
             IOrderNotificationDispatcher orderDispatcher,
+            IValidator<PaymentRefundRequest> refundValidator,
             IOptions<StripeOptions> stripeOptions,
             ILogger<PaymentService> logger)
             : base(mapper, dbContext)
@@ -47,6 +51,7 @@ namespace PickMeUp.Services
             _stripeGateway = stripeGateway;
             _dispatcher = dispatcher;
             _orderDispatcher = orderDispatcher;
+            _refundValidator = refundValidator;
             _stripeOptions = stripeOptions.Value;
             _logger = logger;
         }
@@ -438,9 +443,30 @@ namespace PickMeUp.Services
 
         public async Task<PaymentResponse> RefundAsync(int id, PaymentRefundRequest request)
         {
+            await _refundValidator.ValidateAndThrowAsync(request);
+
             var payment = await _dbContext.Payments
                 .FirstOrDefaultAsync(p => p.Id == id)
                 ?? throw new KeyNotFoundException($"Payment with id {id} not found.");
+
+            var clientKey = request.IdempotencyKey!.Value;
+
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+            await LockPaymentAsync(payment.Id);
+            await _dbContext.Entry(payment).ReloadAsync();
+
+            if (await WasAlreadyRefundedUnderAsync(payment.Id, clientKey))
+            {
+                _logger.LogInformation(
+                    "Refund {ClientRefundKey} on payment {PaymentId} was already applied; "
+                    + "the repeated submit changed nothing.",
+                    clientKey, payment.Id);
+
+                await transaction.CommitAsync();
+
+                return await LoadResponseAsync(payment.Id);
+            }
 
             if (!payment.IsPaid)
             {
@@ -473,7 +499,9 @@ namespace PickMeUp.Services
                     $"At most {remaining} {payment.Currency} can still be refunded for this payment.");
             }
 
-            var outcome = await ApplyRefundAsync(payment, alreadyRefunded, amount, request.Reason);
+            var outcome = await ApplyRefundAsync(payment, alreadyRefunded, amount, request.Reason, clientKey);
+
+            await transaction.CommitAsync();
 
             if (outcome == RefundOutcome.Pending)
             {
@@ -483,6 +511,10 @@ namespace PickMeUp.Services
 
             return await LoadResponseAsync(payment.Id);
         }
+
+        private Task<bool> WasAlreadyRefundedUnderAsync(int paymentId, Guid clientKey) =>
+            _dbContext.PaymentRefunds
+                .AnyAsync(r => r.PaymentId == paymentId && r.ClientRefundKey == clientKey);
 
         public async Task<RefundOutcome> RefundCancelledOrderAsync(int orderId, string reason)
         {
@@ -507,11 +539,11 @@ namespace PickMeUp.Services
                 return RefundOutcome.Refunded;
             }
 
-            return await ApplyRefundAsync(payment, alreadyRefunded, remaining, reason);
+            return await ApplyRefundAsync(payment, alreadyRefunded, remaining, reason, clientKey: null);
         }
 
         private async Task<RefundOutcome> ApplyRefundAsync(
-            Payment payment, decimal alreadyRefunded, decimal amount, string? reason)
+            Payment payment, decimal alreadyRefunded, decimal amount, string? reason, Guid? clientKey)
         {
             if (string.IsNullOrWhiteSpace(payment.StripePaymentIntentId))
             {
@@ -523,7 +555,9 @@ namespace PickMeUp.Services
                 return RefundOutcome.NotNeeded;
             }
 
-            var key = RefundKey(payment.Id, alreadyRefunded, amount);
+            var key = clientKey.HasValue
+                ? ClientRefundKey(payment.Id, clientKey.Value)
+                : RefundKey(payment.Id, alreadyRefunded, amount);
 
             StripeRefund stripeRefund;
 
@@ -541,7 +575,7 @@ namespace PickMeUp.Services
 
             try
             {
-                await RecordRefundAsync(payment, stripeRefund, reason);
+                await RecordRefundAsync(payment, stripeRefund, reason, clientKey);
             }
             catch (Exception exception)
             {
@@ -555,12 +589,13 @@ namespace PickMeUp.Services
             return RefundOutcome.Refunded;
         }
 
-        private async Task RecordRefundAsync(Payment payment, StripeRefund stripeRefund, string? reason)
+        private async Task RecordRefundAsync(
+            Payment payment, StripeRefund stripeRefund, string? reason, Guid? clientKey)
         {
             var alreadyWritten = await _dbContext.PaymentRefunds
                 .AnyAsync(r => r.StripeRefundId == stripeRefund.RefundId);
 
-            await using var transaction = await _dbContext.Database.BeginTransactionAsync();
+            await using var transaction = await BeginUnlessAlreadyInOneAsync();
 
             if (!alreadyWritten)
             {
@@ -569,6 +604,7 @@ namespace PickMeUp.Services
                     PaymentId = payment.Id,
                     RefundedAmount = stripeRefund.Amount,
                     StripeRefundId = stripeRefund.RefundId,
+                    ClientRefundKey = clientKey,
                     Reason = reason,
                     RefundedAt = DateTime.UtcNow
                 });
@@ -598,7 +634,11 @@ namespace PickMeUp.Services
             payment.UpdatedAt = DateTime.UtcNow;
 
             await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
+
+            if (transaction != null)
+            {
+                await transaction.CommitAsync();
+            }
         }
 
         private async Task MarkRefundOwedAsync(Payment payment, Exception exception, string message)
@@ -630,6 +670,14 @@ namespace PickMeUp.Services
             _dbContext.PaymentRefunds
                 .Where(r => r.PaymentId == paymentId)
                 .SumAsync(r => r.RefundedAmount);
+
+        private async Task<IDbContextTransaction?> BeginUnlessAlreadyInOneAsync() =>
+            _dbContext.Database.CurrentTransaction == null
+                ? await _dbContext.Database.BeginTransactionAsync()
+                : null;
+
+        private static string ClientRefundKey(int paymentId, Guid clientKey) =>
+            $"payment-{paymentId}-refund-{clientKey:N}";
 
         private static string RefundKey(int paymentId, decimal alreadyRefunded, decimal amount) =>
             $"payment-{paymentId}-refund-from-{MinorUnits(alreadyRefunded)}-amount-{MinorUnits(amount)}";

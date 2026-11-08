@@ -16,6 +16,8 @@ namespace PickMeUp.Services.Database
         [MaxLength(120)]
         public string? StripeRefundId { get; set; }
 
+        public Guid? ClientRefundKey { get; set; }
+
         [MaxLength(500)]
         public string? Reason { get; set; }
 

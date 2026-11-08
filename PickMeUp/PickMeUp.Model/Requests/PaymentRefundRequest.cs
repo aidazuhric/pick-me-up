@@ -4,5 +4,6 @@ namespace PickMeUp.Model.Requests
     {
         public decimal? Amount { get; set; }
         public string? Reason { get; set; }
+        public Guid? IdempotencyKey { get; set; }
     }
 }

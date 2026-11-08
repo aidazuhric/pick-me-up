@@ -310,6 +310,11 @@ namespace PickMeUp.Services.Database
                 .IsUnique()
                 .HasFilter("\"StripeRefundId\" IS NOT NULL");
 
+            modelBuilder.Entity<PaymentRefund>()
+                .HasIndex(r => r.ClientRefundKey)
+                .IsUnique()
+                .HasFilter("\"ClientRefundKey\" IS NOT NULL");
+
             modelBuilder.Entity<PaymentRefund>().HasQueryFilter(r => !r.Payment.IsDeleted);
 
             modelBuilder.Entity<Review>()
