@@ -583,6 +583,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           TextFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             controller: _firstNameController,
             enabled: !_isSaving,
             decoration: const InputDecoration(
@@ -593,6 +594,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const SizedBox(height: AppSpacing.md),
           TextFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             controller: _lastNameController,
             enabled: !_isSaving,
             decoration: const InputDecoration(
@@ -603,6 +605,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const SizedBox(height: AppSpacing.md),
           TextFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             controller: _emailController,
             enabled: !_isSaving,
             keyboardType: TextInputType.emailAddress,
@@ -614,6 +617,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const SizedBox(height: AppSpacing.md),
           TextFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             controller: _phoneController,
             enabled: !_isSaving,
             keyboardType: TextInputType.phone,

@@ -176,6 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Text('Sign in', style: theme.textTheme.headlineMedium),
           const SizedBox(height: AppSpacing.lg),
           TextFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             controller: _usernameController,
             decoration: const InputDecoration(
               hintText: 'Username',
@@ -187,6 +188,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           const SizedBox(height: AppSpacing.md),
           TextFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             controller: _passwordController,
             decoration: InputDecoration(
               hintText: 'Password',
@@ -267,6 +269,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           const SizedBox(height: AppSpacing.lg),
           TextFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             controller: _codeController,
             autofocus: true,
             decoration: const InputDecoration(

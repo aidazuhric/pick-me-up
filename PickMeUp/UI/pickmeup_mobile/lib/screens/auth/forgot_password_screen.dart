@@ -141,6 +141,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       ),
                       const SizedBox(height: AppSpacing.lg),
                       TextFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         controller: _emailController,
                         enabled: !_isSubmitting,
                         keyboardType: TextInputType.emailAddress,

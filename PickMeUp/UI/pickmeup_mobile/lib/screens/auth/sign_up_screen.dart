@@ -257,6 +257,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.md),
       child: TextFormField(
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         controller: controller,
         decoration: InputDecoration(
           hintText: hint,

@@ -122,6 +122,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       TextFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         controller: _emailController,
                         enabled: !_isSubmitting,
                         keyboardType: TextInputType.emailAddress,
@@ -134,6 +135,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       ),
                       const SizedBox(height: AppSpacing.md),
                       TextFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         controller: _tokenController,
                         enabled: !_isSubmitting,
                         textCapitalization: TextCapitalization.characters,
@@ -149,6 +151,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       ),
                       const SizedBox(height: AppSpacing.md),
                       TextFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         controller: _passwordController,
                         enabled: !_isSubmitting,
                         obscureText: _obscure,
@@ -180,6 +183,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       ),
                       const SizedBox(height: AppSpacing.md),
                       TextFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         controller: _confirmController,
                         enabled: !_isSubmitting,
                         obscureText: _obscure,

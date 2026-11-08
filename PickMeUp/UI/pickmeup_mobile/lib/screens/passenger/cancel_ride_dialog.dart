@@ -54,6 +54,7 @@ class _CancelRideDialogState extends State<CancelRideDialog> {
             ),
             const SizedBox(height: AppSpacing.md),
             TextFormField(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               controller: _reasonController,
               autofocus: true,
               maxLines: 3,

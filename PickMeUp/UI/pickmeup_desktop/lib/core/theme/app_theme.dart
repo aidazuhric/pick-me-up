@@ -31,6 +31,7 @@ class AppTheme {
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 13),
         errorStyle: const TextStyle(fontSize: 12, height: 1.3),
+        errorMaxLines: 3,
         border: _fieldBorder(AppColors.border),
         enabledBorder: _fieldBorder(AppColors.border),
         focusedBorder: _fieldBorder(AppColors.primaryIndigo, width: 1.5),

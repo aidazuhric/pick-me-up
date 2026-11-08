@@ -90,6 +90,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             ),
             const SizedBox(height: AppSpacing.lg),
             TextFormField(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               controller: _currentController,
               enabled: !_isSubmitting,
               obscureText: _obscure,
@@ -111,6 +112,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             ),
             const SizedBox(height: AppSpacing.md),
             TextFormField(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               controller: _newController,
               enabled: !_isSubmitting,
               obscureText: _obscure,
@@ -133,6 +135,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             ),
             const SizedBox(height: AppSpacing.md),
             TextFormField(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               controller: _confirmController,
               enabled: !_isSubmitting,
               obscureText: _obscure,
