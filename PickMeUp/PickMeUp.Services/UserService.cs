@@ -215,7 +215,7 @@ namespace PickMeUp.Services
         {
             var entity = base.MapInsertRequestToEntity(request);
 
-            var salt = _cryptoService.GenerateSlat();
+            var salt = _cryptoService.GenerateSalt();
             entity.PasswordSalt = salt;
             entity.PasswordHash = _cryptoService.GenerateHash(request.Password, salt);
 
@@ -488,7 +488,7 @@ namespace PickMeUp.Services
             if (!request.NewPassword.Equals(request.ConfirmNewPassword))
                 throw new BusinessException("Password confirmation doesn't match new password.");
 
-            user.PasswordSalt = _cryptoService.GenerateSlat();
+            user.PasswordSalt = _cryptoService.GenerateSalt();
             user.PasswordHash = _cryptoService.GenerateHash(request.NewPassword, user.PasswordSalt);
             user.MustChangePassword = false;
 

@@ -74,7 +74,7 @@ namespace PickMeUp.Services
             await InvalidateLiveTokensAsync(user.Id, now, cancellationToken);
 
             var token = GenerateToken();
-            var salt = _cryptoService.GenerateSlat();
+            var salt = _cryptoService.GenerateSalt();
 
             _dbContext.PasswordResetTokens.Add(new PasswordResetToken
             {
@@ -162,7 +162,7 @@ namespace PickMeUp.Services
                 throw new BusinessException("That reset code is not correct.");
             }
 
-            var salt = _cryptoService.GenerateSlat();
+            var salt = _cryptoService.GenerateSalt();
 
             user.PasswordSalt = salt;
             user.PasswordHash = _cryptoService.GenerateHash(newPassword, salt);

@@ -56,7 +56,7 @@ namespace PickMeUp.Services
             await InvalidateLiveCodesAsync(userId, now, cancellationToken);
 
             var code = GenerateCode();
-            var salt = _cryptoService.GenerateSlat();
+            var salt = _cryptoService.GenerateSalt();
             var expiresAt = now.AddMinutes(_options.ExpiryMinutes);
 
             _dbContext.TwoFactorCodes.Add(new TwoFactorCode

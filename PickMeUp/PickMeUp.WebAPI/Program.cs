@@ -287,6 +287,17 @@ builder.Services.AddAuthentication(options =>
                 return;
             }
 
+            if (int.TryParse(context.Principal?.FindFirst(ClaimNames.Id)?.Value, out var tokenUserId))
+            {
+                var accounts = context.HttpContext.RequestServices.GetRequiredService<PickMeUpDbContext>();
+
+                if (!await accounts.Users.AnyAsync(u => u.Id == tokenUserId, context.HttpContext.RequestAborted))
+                {
+                    context.Fail("This account is closed.");
+                    return;
+                }
+            }
+
             context.HttpContext.Items[TokenClaims.TokenIdItem] = tokenId;
             context.HttpContext.Items[TokenClaims.TokenExpiresAtItem] = expiresAt;
         }

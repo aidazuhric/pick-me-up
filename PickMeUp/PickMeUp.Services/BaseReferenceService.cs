@@ -52,14 +52,14 @@ namespace PickMeUp.Services
 
         public override async Task<TResponse> InsertAsync(TInsertRequest request)
         {
-            var result = await base.InsertAsync(request);
+            var result = await SaveTranslatingDuplicateNameAsync(() => base.InsertAsync(request));
             InvalidateCache();
             return result;
         }
 
         public override async Task<TResponse> UpdateAsync(int id, TUpdateRequest request)
         {
-            var result = await base.UpdateAsync(id, request);
+            var result = await SaveTranslatingDuplicateNameAsync(() => base.UpdateAsync(id, request));
             InvalidateCache();
             return result;
         }
@@ -77,6 +77,18 @@ namespace PickMeUp.Services
             }
 
             InvalidateCache();
+        }
+
+        private async Task<TResponse> SaveTranslatingDuplicateNameAsync(Func<Task<TResponse>> save)
+        {
+            try
+            {
+                return await save();
+            }
+            catch (DbUpdateException exception) when (exception.IsUniqueViolation())
+            {
+                throw new BusinessException($"Another {EntityDisplayName} already uses that name.");
+            }
         }
 
         private static string BuildCacheKey(TSearch? search)

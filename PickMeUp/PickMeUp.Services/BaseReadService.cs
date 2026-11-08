@@ -22,6 +22,8 @@ namespace PickMeUp.Services
 
         private static readonly ConcurrentDictionary<Type, HashSet<string>> _sortableProperties = new();
 
+        private static readonly string[] SecretNameParts = { "password", "hash", "salt", "secret" };
+
         protected BaseReadService(MapsterMapper.IMapper mapper, PickMeUpDbContext dbContext)
         {
             _mapper = mapper;
@@ -64,7 +66,7 @@ namespace PickMeUp.Services
         {
             var sortable = _sortableProperties.GetOrAdd(typeof(TEntity), static type =>
                 type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                    .Where(p => p.CanRead && IsSortableType(p.PropertyType))
+                    .Where(p => p.CanRead && IsSortableType(p.PropertyType) && !IsSecret(p.Name))
                     .Select(p => p.Name)
                     .ToHashSet(StringComparer.OrdinalIgnoreCase));
 
@@ -97,6 +99,9 @@ namespace PickMeUp.Services
 
             return query.OrderBy($"{canonicalName} {direction}");
         }
+
+        private static bool IsSecret(string propertyName) =>
+            SecretNameParts.Any(part => propertyName.Contains(part, StringComparison.OrdinalIgnoreCase));
 
         private static bool IsSortableType(Type type)
         {

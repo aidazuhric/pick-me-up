@@ -6,6 +6,7 @@ import '../../models/review.dart';
 import '../../models/search_result.dart';
 import '../../providers/review_provider.dart';
 import '../../providers/taxi_company_provider.dart';
+import '../../utils/api_client_exception.dart';
 import '../../utils/formats.dart';
 import '../../widgets/crud_data_table.dart';
 import '../../widgets/filter_dropdown.dart';
@@ -25,6 +26,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
   RatingSummary? _companyAverage;
   List<RatingSummary> _driverAverages = const [];
   bool _isLoadingAverages = true;
+  String? _averagesError;
   int? _minRating;
 
   @override
@@ -34,6 +36,11 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
   }
 
   Future<void> _loadAverages() async {
+    setState(() {
+      _isLoadingAverages = true;
+      _averagesError = null;
+    });
+
     try {
       final company = await _companyProvider.getMine();
       final companies = await _provider.companyAverages();
@@ -51,9 +58,19 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
             .toList();
         _isLoadingAverages = false;
       });
+    } on ApiClientException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _averagesError = e.message;
+        _isLoadingAverages = false;
+      });
     } catch (_) {
       if (!mounted) return;
-      setState(() => _isLoadingAverages = false);
+      setState(() {
+        _averagesError =
+            'Could not reach the server. Check that the API is running.';
+        _isLoadingAverages = false;
+      });
     }
   }
 
@@ -150,6 +167,22 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
         height: 20,
         width: 20,
         child: CircularProgressIndicator(strokeWidth: 2),
+      );
+    }
+
+    final failure = _averagesError;
+
+    if (failure != null) {
+      return Row(
+        children: [
+          Expanded(
+            child: Text(
+              failure,
+              style: theme.textTheme.bodySmall?.copyWith(color: AppColors.danger),
+            ),
+          ),
+          TextButton(onPressed: _loadAverages, child: const Text('RETRY')),
+        ],
       );
     }
 

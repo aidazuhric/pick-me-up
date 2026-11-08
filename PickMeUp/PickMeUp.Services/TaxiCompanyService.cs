@@ -187,7 +187,7 @@ namespace PickMeUp.Services
             var companyRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Name == Roles.Company)
                 ?? throw new BusinessException($"Role '{Roles.Company}' is missing from the database.");
 
-            var salt = _cryptoService.GenerateSlat();
+            var salt = _cryptoService.GenerateSalt();
 
             var user = new User
             {

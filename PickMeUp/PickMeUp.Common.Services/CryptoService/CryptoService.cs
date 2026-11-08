@@ -18,7 +18,7 @@ namespace PickMeUp.Common.Services.CryptoService
             }
         }
 
-        public string GenerateSlat()
+        public string GenerateSalt()
         {
             return Convert.ToBase64String(RandomNumberGenerator.GetBytes(16));
         }
